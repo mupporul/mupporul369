@@ -1,0 +1,28 @@
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding-top: var(--space-lg);
+  padding-bottom: var(--space-md);
+}
+
+.top-bar__title {
+  margin: 0;
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-2xl);
+  line-height: var(--line-height-tight);
+}
+
+.top-bar__controls {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+@media (max-width: 48rem) {
+  .top-bar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

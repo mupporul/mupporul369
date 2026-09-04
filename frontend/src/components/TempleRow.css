@@ -1,0 +1,21 @@
+.temple-row {
+  list-style: none;
+  padding: var(--space-md);
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.temple-row__title {
+  margin: 0;
+}
+
+.temple-row__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.temple-row__actions {
+  display: flex;
+  gap: var(--space-sm);
+}

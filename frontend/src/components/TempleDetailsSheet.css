@@ -1,0 +1,13 @@
+.temple-details-sheet__overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-overlay);
+  display: grid;
+  align-items: end;
+}
+
+.temple-details-sheet {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  padding: var(--space-lg);
+}

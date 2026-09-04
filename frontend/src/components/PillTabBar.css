@@ -1,0 +1,21 @@
+.pill-tab-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.pill-tab-bar__tab {
+  min-height: 2.6rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-primary);
+  padding: 0 var(--space-md);
+  transition: all var(--motion-duration-base) var(--motion-ease-standard);
+}
+
+.pill-tab-bar__tab--active {
+  background: var(--color-accent);
+  color: var(--color-surface-2);
+  border-color: var(--color-accent);
+}

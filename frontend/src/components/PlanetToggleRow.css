@@ -1,0 +1,19 @@
+.planet-toggle-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.planet-toggle-row__item {
+  min-height: 2.2rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-primary);
+  padding: 0 var(--space-sm);
+}
+
+.planet-toggle-row__item--active {
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
+}

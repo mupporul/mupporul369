@@ -1,0 +1,7 @@
+.temple-list {
+  display: grid;
+  gap: var(--space-md);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}

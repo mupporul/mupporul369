@@ -1,0 +1,62 @@
+:root {
+  --color-surface-1: #f7f1e8;
+  --color-surface-2: #fffaf3;
+  --color-surface-3: #efe1cb;
+  --color-text-primary: #24190f;
+  --color-text-secondary: #5f5143;
+  --color-accent: #b76935;
+  --color-accent-strong: #92461d;
+  --color-accent-soft: #f4d5bc;
+  --color-border: #d9c1a3;
+  --color-success: #2c7a5d;
+  --color-warning: #a66d19;
+  --color-danger: #a53f3f;
+  --color-overlay: color-mix(
+    in srgb,
+    var(--color-text-primary) 22%,
+    transparent
+  );
+
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.9rem;
+  --radius-lg: 1.4rem;
+  --radius-xl: 2rem;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 0.5rem 1.5rem
+    color-mix(in srgb, var(--color-text-primary) 8%, transparent);
+  --shadow-md: 0 1rem 2.5rem
+    color-mix(in srgb, var(--color-text-primary) 12%, transparent);
+  --shadow-lg: 0 1.5rem 3rem
+    color-mix(in srgb, var(--color-text-primary) 18%, transparent);
+
+  --font-family-display: "Georgia", "Times New Roman", serif;
+  --font-family-body: "Segoe UI", "Noto Sans Tamil", sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.5rem;
+  --font-size-2xl: 2rem;
+  --font-size-3xl: 3rem;
+  --line-height-tight: 1.1;
+  --line-height-body: 1.55;
+
+  --motion-duration-fast: 140ms;
+  --motion-duration-base: 220ms;
+  --motion-duration-slow: 380ms;
+  --motion-ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-ease-emphasis: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  --layout-max-width: 78rem;
+  --topbar-height: 4.5rem;
+}

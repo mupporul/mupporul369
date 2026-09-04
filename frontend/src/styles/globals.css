@@ -1,0 +1,55 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 20rem;
+  min-height: 100vh;
+  background:
+    radial-gradient(
+      circle at top left,
+      color-mix(in srgb, var(--color-accent-soft) 58%, transparent),
+      transparent 36%
+    ),
+    linear-gradient(180deg, var(--color-surface-2), var(--color-surface-1));
+  color: var(--color-text-primary);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-body);
+}
+
+body,
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-family-body);
+}
+
+a {
+  color: var(--color-accent-strong);
+}
+
+button,
+input,
+select,
+textarea {
+  border: 0;
+}
+
+button {
+  cursor: pointer;
+}
+
+img {
+  max-width: 100%;
+}
+
+#root {
+  min-height: 100vh;
+}

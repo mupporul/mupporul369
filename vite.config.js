@@ -15,14 +15,14 @@ export default defineConfig(({ mode }) => {
       proxy: {
         "/api": {
           target: devApiProxyTarget,
-          changeOrigin: true
-        }
-      }
+          changeOrigin: true,
+        },
+      },
     },
     test: {
       environment: "jsdom",
       globals: true,
-      setupFiles: ["./src/setupTests.js"]
-    }
+      setupFiles: ["./frontend/src/setupTests.js"],
+    },
   };
 });

@@ -1,0 +1,13 @@
+.shell {
+  min-height: 100vh;
+}
+
+.shell__tabs {
+  width: min(100%, var(--layout-max-width));
+  margin: 0 auto;
+  padding: var(--space-sm);
+}
+
+.shell__content {
+  padding-top: var(--space-lg);
+}
