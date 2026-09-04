@@ -1,32 +1,195 @@
-.edit-modal__overlay {
+.edit-modal-overlay {
   position: fixed;
   inset: 0;
-  display: grid;
-  place-items: center;
-  background: var(--color-overlay);
-  padding: var(--space-md);
+  background: var(--modal-overlay-bg);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
 }
 
 .edit-modal {
-  width: min(100%, 40rem);
-  padding: var(--space-lg);
-  display: grid;
-  gap: var(--space-md);
+  width: 100%;
+  max-width: 480px;
+  background: var(--modal-bg);
+  border-radius: 24px 24px 0 0;
+  border: 1px solid var(--card-border);
+  padding: 0.75rem 1.25rem 2.5rem;
+  max-height: 90dvh;
+  overflow-y: auto;
+  animation: em-slide-up 0.22s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.edit-modal__planet-row {
+@keyframes em-slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.edit-modal__handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--card-border);
+  margin: 0.25rem auto 1rem;
+}
+
+.edit-modal__title {
+  margin: 0 0 1.1rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-strong);
+}
+
+.edit-modal__label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.7rem;
+}
+
+.edit-modal__input,
+.edit-modal__select {
+  padding: 0.58rem 0.75rem;
+  border: 1.5px solid var(--card-border);
+  border-radius: 10px;
+  background: var(--modal-surface-bg);
+  color: var(--text-strong);
+  font-size: 0.95rem;
+  font-weight: 500;
+  width: 100%;
+}
+
+.edit-modal__input:focus,
+.edit-modal__select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.edit-modal__fieldset {
+  border: none;
+  padding: 0;
+  margin: 0 0 0.5rem;
+}
+
+.edit-modal__legend {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.55rem;
+}
+
+.edit-modal__planets {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-xs);
+  gap: 0.4rem;
+}
+
+.edit-modal__planet {
+  padding: 0.32rem 0.75rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--card-border);
+  background: var(--modal-chip-bg);
+  color: var(--text-soft);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 0.14s,
+    color 0.14s,
+    border-color 0.14s;
 }
 
 .edit-modal__planet--active {
-  border-color: var(--color-accent);
-  background: var(--color-accent-soft);
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.edit-modal__error {
+  color: var(--accent);
+  font-size: 0.85rem;
+  margin: 0.25rem 0 0.5rem;
 }
 
 .edit-modal__actions {
   display: flex;
-  justify-content: flex-end;
-  gap: var(--space-sm);
+  gap: 0.65rem;
+  margin-top: 1.1rem;
+}
+
+.edit-modal__btn {
+  flex: 1;
+  padding: 0.72rem;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.14s;
+}
+
+.edit-modal__btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.edit-modal__btn--cancel {
+  background: var(--modal-cancel-bg);
+  color: var(--modal-cancel-text);
+}
+
+.edit-modal__btn--save {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.edit-modal__notice-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--modal-overlay-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 210;
+}
+
+.edit-modal__notice {
+  width: 100%;
+  max-width: 360px;
+  border-radius: 16px;
+  border: 1px solid var(--card-border);
+  background: var(--modal-bg);
+  box-shadow: var(--elevation-md);
+  padding: 1rem;
+}
+
+.edit-modal__notice-text {
+  margin: 0 0 0.8rem;
+  color: var(--text-strong);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.edit-modal__notice-ok {
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 0.62rem 0.8rem;
+  cursor: pointer;
 }

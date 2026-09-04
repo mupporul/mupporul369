@@ -1,59 +1,73 @@
-import PropTypes from "prop-types";
-
+import { useLang } from "../context/LangContext";
+import { toTitleCase } from "../utils/titleCase";
 import "./TempleRow.css";
 
 /**
- * Displays one temple row with actions.
+ * Single temple card with edit button.
  *
- * @param {object} props - Component props.
- * @param {object} props.temple - Temple record.
- * @param {Function} props.onView - View callback.
- * @param {Function} props.onEdit - Edit callback.
- * @returns {JSX.Element} Temple row.
+ * @param {{ row: Object, onEdit?: Function|null, onViewDetails?: Function|null }} props
+ * @returns {JSX.Element}
  */
-export default function TempleRow({ temple, onView, onEdit }) {
+export default function TempleRow({ row, onEdit, onViewDetails }) {
+  const { t } = useLang();
+  const canViewDetails = typeof onViewDetails === "function";
+
   return (
-    <li className="temple-row surface-card">
-      <div>
-        <h3 className="temple-row__title">{temple.temple}</h3>
-        <p className="helper-text">
-          {temple.location}, {temple.state}
+    <li className="temple-row">
+      <div className="temple-row__body">
+        {canViewDetails ? (
+          <button
+            type="button"
+            className="temple-row__name-btn"
+            onClick={() => onViewDetails(row)}
+            aria-label={`${row.temple} ${t.viewDetailsBtn}`}
+            title={row.temple}
+          >
+            <span className="temple-row__name">{toTitleCase(row.temple)}</span>
+          </button>
+        ) : (
+          <p className="temple-row__name" title={row.temple}>
+            {toTitleCase(row.temple)}
+          </p>
+        )}
+        <p className="temple-row__meta">
+          {toTitleCase(row.location)}, {toTitleCase(row.state)}
         </p>
-      </div>
-      <div className="temple-row__chips">
-        <span className="chip">{temple.house}</span>
-        {temple.planets.map((planet) => (
-          <span className="chip" key={planet}>
-            {planet}
+        <div className="temple-row__tags">
+          <span className="temple-row__tag temple-row__tag--house">
+            {row.house}
           </span>
-        ))}
+          {row.planets.map((p) => (
+            <span key={p} className="temple-row__tag temple-row__tag--planet">
+              {p}
+            </span>
+          ))}
+        </div>
+        {row.url && (
+          <a
+            className="temple-row__yt-link"
+            href={row.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`${row.temple} ${t.youtubeLinkLabel}`}
+          >
+            <span className="temple-row__yt-icon" aria-hidden="true">
+              <span className="temple-row__yt-eye" />
+              <span className="temple-row__yt-eye" />
+            </span>
+            <span>{t.openYoutubeBtn}</span>
+          </a>
+        )}
       </div>
-      <div className="temple-row__actions">
+      {onEdit && (
         <button
-          type="button"
-          className="ghost-button"
-          onClick={() => onView(temple)}
+          className="temple-row__edit"
+          onClick={() => onEdit(row)}
+          aria-label={`${row.temple} ${t.editBtn}`}
         >
-          View
+          {t.editBtn}
         </button>
-        <button type="button" className="button" onClick={() => onEdit(temple)}>
-          Edit
-        </button>
-      </div>
+      )}
     </li>
   );
 }
-
-TempleRow.propTypes = {
-  temple: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    temple: PropTypes.string.isRequired,
-    location: PropTypes.string.isRequired,
-    state: PropTypes.string.isRequired,
-    url: PropTypes.string,
-    house: PropTypes.string.isRequired,
-    planets: PropTypes.arrayOf(PropTypes.string).isRequired,
-  }).isRequired,
-  onView: PropTypes.func.isRequired,
-  onEdit: PropTypes.func.isRequired,
-};

@@ -1,60 +1,128 @@
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useLang } from "../context/LangContext";
+import "./LoginPage.css";
+
+const CREDENTIALS_STORAGE_KEY = "mupporul369-remembered-credentials";
+
+function readRememberedCredentials() {
+  const raw = globalThis.localStorage?.getItem(CREDENTIALS_STORAGE_KEY);
+  if (!raw) {
+    return { mobile: "", password: "", remember: false };
+  }
+
+  try {
+    const parsed = JSON.parse(raw);
+    return {
+      mobile: String(parsed.mobile || ""),
+      password: String(parsed.password || ""),
+      remember: Boolean(parsed.remember),
+    };
+  } catch {
+    return { mobile: "", password: "", remember: false };
+  }
+}
 
 /**
- * Login screen for mobile and password authentication.
+ * Login page using mobile number + password.
  *
- * @returns {JSX.Element} Login page.
+ * @returns {JSX.Element}
  */
 export default function LoginPage() {
+  const { t } = useLang();
   const { login } = useAuth();
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberCredentials, setRememberCredentials] = useState(false);
   const [error, setError] = useState("");
-  const [busy, setBusy] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const submit = async (event) => {
+  useEffect(() => {
+    const remembered = readRememberedCredentials();
+    if (remembered.remember) {
+      setMobile(remembered.mobile);
+      setPassword(remembered.password);
+      setRememberCredentials(true);
+    }
+  }, []);
+
+  async function handleSubmit(event) {
     event.preventDefault();
     setError("");
-    setBusy(true);
+    setSubmitting(true);
+
     try {
       await login(mobile, password);
-    } catch (authError) {
-      setError(authError.message);
+
+      if (rememberCredentials) {
+        globalThis.localStorage?.setItem(
+          CREDENTIALS_STORAGE_KEY,
+          JSON.stringify({
+            mobile,
+            password,
+            remember: true,
+          }),
+        );
+      } else {
+        globalThis.localStorage?.removeItem(CREDENTIALS_STORAGE_KEY);
+      }
+    } catch (err) {
+      setError(err.message);
     } finally {
-      setBusy(false);
+      setSubmitting(false);
     }
-  };
+  }
 
   return (
-    <main className="app-shell fade-in">
-      <section className="surface-card page-stack login-page">
-        <h1>Mupporul 369</h1>
-        <p className="helper-text">Sign in with your mobile number.</p>
-        <form className="form-grid" onSubmit={submit}>
-          <label className="label">
-            Mobile
-            <input
-              className="field"
-              value={mobile}
-              onChange={(event) => setMobile(event.target.value)}
-              required
-            />
+    <main className="login-page">
+      <section className="login-card">
+        <h1 className="login-card__title">MupporuL369</h1>
+        <p className="login-card__subtitle">{t.loginSubtitle}</p>
+
+        <form className="login-card__form" onSubmit={handleSubmit}>
+          <label className="login-card__label" htmlFor="mobile-input">
+            {t.mobileLabel}
           </label>
-          <label className="label">
-            Password
-            <input
-              className="field"
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              required
-            />
+          <input
+            id="mobile-input"
+            className="login-card__input"
+            type="tel"
+            inputMode="numeric"
+            placeholder="919876543210"
+            value={mobile}
+            onChange={(event) => setMobile(event.target.value)}
+            required
+          />
+
+          <label className="login-card__label" htmlFor="password-input">
+            {t.passwordLabel}
           </label>
-          {error ? <p className="error-text">{error}</p> : null}
-          <button type="submit" className="button" disabled={busy}>
-            {busy ? "Signing in..." : "Login"}
+          <input
+            id="password-input"
+            className="login-card__input"
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            required
+          />
+
+          <label className="login-card__remember">
+            <input
+              type="checkbox"
+              checked={rememberCredentials}
+              onChange={(event) => setRememberCredentials(event.target.checked)}
+            />
+            <span>{t.rememberCredentialsLabel}</span>
+          </label>
+
+          {error && <p className="login-card__error">{error}</p>}
+
+          <button
+            className="login-card__submit"
+            type="submit"
+            disabled={submitting}
+          >
+            {submitting ? "..." : t.loginBtn}
           </button>
         </form>
       </section>

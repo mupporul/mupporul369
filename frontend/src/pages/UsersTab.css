@@ -1,0 +1,187 @@
+.users-tab {
+  padding: 1rem;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.users-tab__status {
+  text-align: center;
+  padding: 2.2rem 1rem;
+  color: var(--text-soft);
+}
+
+.users-tab__error {
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.users-tab__section {
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  background: var(--temple-row-bg);
+}
+
+.users-tab__title {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-strong);
+}
+
+.users-tab__desc {
+  margin: 0 0 0.9rem;
+  font-size: 0.82rem;
+  color: var(--text-soft);
+}
+
+.users-tab__file-actions {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
+}
+
+.users-tab__btn-export {
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  background: var(--ui-surface-bg);
+  color: var(--text-strong);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.users-tab__btn-export:hover,
+.users-tab__btn-export:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+  outline: none;
+}
+
+.users-tab__import-label {
+  display: inline-block;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.users-tab__import-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.users-tab__form {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 400px;
+}
+
+.users-tab__input,
+.users-tab__select {
+  padding: 0.6rem 0.85rem;
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  background: var(--ui-surface-bg);
+  color: var(--text-strong);
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+.users-tab__input::placeholder {
+  color: var(--text-soft);
+}
+
+.users-tab__input:focus,
+.users-tab__select:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--page-bg);
+}
+
+.users-tab__btn-add {
+  padding: 0.6rem 1rem;
+  margin-top: 0.5rem;
+  border: none;
+  border-radius: 6px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.users-tab__btn-add:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.users-tab__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.users-tab__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  border-radius: 8px;
+  background: var(--ui-surface-bg);
+  border: 1px solid var(--card-border);
+}
+
+.users-tab__user-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.users-tab__user-mobile {
+  margin: 0;
+  font-weight: 600;
+  color: var(--text-strong);
+  font-size: 0.95rem;
+}
+
+.users-tab__user-meta {
+  margin: 0.2rem 0 0;
+  font-size: 0.8rem;
+  color: var(--text-soft);
+}
+
+.users-tab__btn-delete {
+  padding: 0.4rem 0.8rem;
+  margin-left: 0.5rem;
+  border: none;
+  border-radius: 4px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.users-tab__btn-delete:hover {
+  background: var(--accent);
+  color: var(--on-accent);
+}

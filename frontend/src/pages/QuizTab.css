@@ -1,0 +1,141 @@
+.quiz-tab {
+  padding: 1rem;
+}
+
+.quiz-tab__status {
+  text-align: center;
+  padding: 2.2rem 1rem;
+  color: var(--text-soft);
+}
+
+.quiz-tab__status--error {
+  color: var(--accent);
+}
+
+.quiz-tab__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+
+.quiz-tab__progress,
+.quiz-tab__score {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-soft);
+}
+
+.quiz-card {
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  background: var(--temple-row-bg);
+  padding: 1rem;
+}
+
+.quiz-card__prompt {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--text-soft);
+}
+
+.quiz-card__temple {
+  margin: 0.35rem 0 1rem;
+  font-size: 1.25rem;
+  color: var(--text-strong);
+}
+
+.quiz-card__planets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.quiz-card__planet-btn {
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  background: var(--ui-surface-bg);
+  color: var(--text-soft);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  min-height: 38px;
+}
+
+.quiz-card__planet-btn--active {
+  background: var(--accent);
+  color: var(--on-accent);
+  border-color: var(--accent);
+}
+
+.quiz-card__planet-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.quiz-card__actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.55rem;
+}
+
+.quiz-card__lock-btn,
+.quiz-card__next-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  min-height: 40px;
+}
+
+.quiz-card__next-btn {
+  border-color: var(--card-border);
+  background: var(--ui-surface-bg);
+  color: var(--text-strong);
+}
+
+.quiz-card__lock-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.quiz-card__result {
+  margin-top: 0.95rem;
+  border-radius: 12px;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid transparent;
+}
+
+.quiz-card__result--ok {
+  background: var(--success-soft);
+  border-color: var(--success-strong);
+}
+
+.quiz-card__result--bad {
+  background: var(--danger-soft);
+  border-color: var(--danger-strong);
+}
+
+.quiz-card__result-mark {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.quiz-card__result-text {
+  margin: 0.25rem 0 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.quiz-card__answer {
+  margin: 0.35rem 0 0;
+  font-size: 0.78rem;
+  color: var(--text-soft);
+}

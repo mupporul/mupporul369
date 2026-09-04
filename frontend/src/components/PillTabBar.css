@@ -1,21 +1,67 @@
 .pill-tab-bar {
+  padding: 0.45rem 0.8rem 0.56rem;
+}
+
+.pill-tab-bar__scroll {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
+  gap: 0.38rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 2px;
+}
+
+.pill-tab-bar__scroll::-webkit-scrollbar {
+  display: none;
 }
 
 .pill-tab-bar__tab {
-  min-height: 2.6rem;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--color-border);
-  background: transparent;
-  color: var(--color-text-primary);
-  padding: 0 var(--space-md);
-  transition: all var(--motion-duration-base) var(--motion-ease-standard);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  flex-shrink: 0;
+  padding: 0.38rem 0.9rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--card-border);
+  background: var(--tab-idle-bg);
+  color: var(--text-soft);
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s,
+    box-shadow 0.15s,
+    transform 0.08s;
 }
 
 .pill-tab-bar__tab--active {
-  background: var(--color-accent);
-  color: var(--color-surface-2);
-  border-color: var(--color-accent);
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+  box-shadow:
+    0 0 0 2px var(--tab-active-ring),
+    0 4px 10px var(--tab-active-shadow);
+}
+
+.pill-tab-bar__tab:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.pill-tab-bar__text {
+  white-space: nowrap;
+}
+
+.pill-tab-bar__badge {
+  min-width: 1rem;
+  height: 1rem;
+  border-radius: 999px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0 0.24rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--accent);
 }

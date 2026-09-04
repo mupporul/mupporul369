@@ -1,54 +1,51 @@
-import PropTypes from "prop-types";
-
 import TopAppBar from "./TopAppBar";
 import PillTabBar from "./PillTabBar";
 import "./Shell.css";
 
 /**
- * App layout shell containing header, tabs, and page content.
+ * Top-level layout shell.
+ * Provides a fixed branded header with a pill tab bar and a scrollable content area below.
  *
- * @param {object} props - Component props.
- * @param {string} props.title - App title.
- * @param {Array<{id: string, label: string}>} props.tabs - Tab definitions.
- * @param {string} props.activeTab - Active tab id.
- * @param {Function} props.onTabChange - Active tab change callback.
- * @param {Function} props.onLogout - Logout action callback.
- * @param {React.ReactNode} props.children - Page content.
- * @returns {JSX.Element} Shell component.
+ * @param {{ tabs: Array<{id:string,label:string,badgeCount?:number}>, activeTab: string, onTabChange: Function, user: Object, onLogout: Function, headerAction?: {label:string,onClick:Function,ariaLabel?:string}, children: import('react').ReactNode }} props
+ * @returns {JSX.Element}
  */
 export default function Shell({
-  title,
   tabs,
   activeTab,
   onTabChange,
+  user,
   onLogout,
+  headerAction,
   children,
 }) {
   return (
-    <div className="shell fade-in">
-      <TopAppBar title={title} onLogout={onLogout} />
-      <div className="shell__tabs surface-card">
-        <PillTabBar
-          tabs={tabs}
-          activeTab={activeTab}
-          onTabChange={onTabChange}
-        />
-      </div>
-      <main className="shell__content app-shell">{children}</main>
+    <div className="shell">
+      <header className="shell__header">
+        <TopAppBar user={user} onLogout={onLogout} />
+        <div className="shell__tabs-row">
+          <PillTabBar
+            tabs={tabs}
+            activeTab={activeTab}
+            onTabChange={onTabChange}
+          />
+          {headerAction && (
+            <button
+              type="button"
+              className="shell__header-action"
+              onClick={headerAction.onClick}
+              aria-label={headerAction.ariaLabel || headerAction.label}
+            >
+              <span className="shell__header-action-text">
+                {headerAction.label}
+              </span>
+              <span className="shell__header-action-icon" aria-hidden="true">
+                +
+              </span>
+            </button>
+          )}
+        </div>
+      </header>
+      <main className="shell__content">{children}</main>
     </div>
   );
 }
-
-Shell.propTypes = {
-  title: PropTypes.string.isRequired,
-  tabs: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      label: PropTypes.string.isRequired,
-    }),
-  ).isRequired,
-  activeTab: PropTypes.string.isRequired,
-  onTabChange: PropTypes.func.isRequired,
-  onLogout: PropTypes.func.isRequired,
-  children: PropTypes.node.isRequired,
-};

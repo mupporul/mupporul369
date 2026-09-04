@@ -1,11 +1,480 @@
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+﻿/* ── Design tokens ── */
+:root {
+  --font-ui:
+    "SF Pro Text", "Segoe UI", "Roboto", "Noto Sans", "Helvetica Neue",
+    system-ui, sans-serif;
+  --page-bg: radial-gradient(
+    circle at top,
+    #2b1f3d 0%,
+    #1b1430 54%,
+    #120d22 100%
+  );
+  --card-bg: rgba(35, 26, 54, 0.9);
+  --card-border: rgba(218, 183, 150, 0.3);
+  --text-strong: #efe7ff;
+  --text-soft: #bfaed6;
+  --accent: #b87333;
+  --accent-soft: rgba(184, 115, 51, 0.24);
+  --on-accent: #fff8f2;
+  --surface-muted: rgba(228, 193, 161, 0.14);
+  --success-soft: rgba(74, 222, 128, 0.2);
+  --success-strong: rgba(74, 222, 128, 0.52);
+  --danger-soft: rgba(248, 113, 113, 0.18);
+  --danger-strong: rgba(248, 113, 113, 0.5);
+  --elevation-md: 0 10px 28px rgba(6, 3, 12, 0.56);
+  --shadow: 0 24px 58px rgba(6, 3, 12, 0.56);
+  --header-bg: linear-gradient(180deg, #3a2a55 0%, #2a1f43 52%, #1a142e 100%);
+  --header-inset-top: rgba(215, 197, 241, 0.2);
+  --header-inset-bottom: rgba(8, 5, 16, 0.74);
+  --filter-bg: linear-gradient(180deg, #35264d 0%, #271d3f 54%, #19142d 100%);
+  --filter-inset-top: rgba(215, 197, 241, 0.16);
+  --filter-inset-bottom: rgba(8, 5, 16, 0.7);
+  --temple-row-bg: linear-gradient(
+    180deg,
+    rgba(52, 39, 77, 0.96) 0%,
+    rgba(38, 30, 62, 0.97) 52%,
+    rgba(27, 21, 47, 0.99) 100%
+  );
+  --ui-surface-bg: rgba(30, 22, 48, 0.92);
+  --ui-surface-text: var(--text-strong);
+  --ui-surface-border: rgba(218, 183, 150, 0.42);
+  --dropdown-menu-bg: #231937;
+  --dropdown-menu-text: #f3edff;
+  --tab-idle-bg: rgba(25, 19, 41, 0.86);
+  --tab-active-ring: rgba(184, 115, 51, 0.38);
+  --tab-active-shadow: rgba(184, 115, 51, 0.34);
+  --chip-idle-bg: rgba(28, 21, 44, 0.9);
+  --chip-idle-border: rgba(215, 164, 121, 0.96);
+  --chip-idle-text: #edd3ba;
+  --chip-active-ring: rgba(184, 115, 51, 0.32);
+  --chip-active-shadow: rgba(184, 115, 51, 0.28);
+  --modal-overlay-bg: rgba(3, 2, 8, 0.72);
+  --modal-bg: #211734;
+  --modal-surface-bg: #2c2043;
+  --modal-chip-bg: rgba(36, 25, 55, 0.94);
+  --modal-cancel-bg: rgba(184, 115, 51, 0.2);
+  --modal-cancel-text: #f2d8bd;
+  --brand-elephant-color: var(--text-strong);
+  --brand-flower-color: var(--accent);
+  --radius-xl: 28px;
+  --radius-pill: 999px;
+  --space-sm: 0.75rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+}
+
+:root[data-theme="rose-gold"] {
+  --page-bg: radial-gradient(
+    circle at top,
+    #f4d6dc 0%,
+    #fbe8ec 47%,
+    #fff8f9 100%
+  );
+  --card-bg: rgba(255, 252, 253, 0.9);
+  --card-border: rgba(138, 96, 110, 0.18);
+  --text-strong: #2f2028;
+  --text-soft: #6b5260;
+  --accent: #b76e79;
+  --accent-soft: rgba(183, 110, 121, 0.14);
+  --on-accent: #ffffff;
+  --surface-muted: rgba(90, 66, 78, 0.1);
+  --success-soft: rgba(34, 197, 94, 0.14);
+  --success-strong: rgba(34, 197, 94, 0.44);
+  --danger-soft: rgba(239, 68, 68, 0.12);
+  --danger-strong: rgba(239, 68, 68, 0.4);
+  --elevation-md: 0 8px 24px rgba(86, 57, 70, 0.2);
+  --shadow: 0 22px 54px rgba(86, 57, 70, 0.18);
+  --header-bg: linear-gradient(180deg, #f7e0e5 0%, #fcedf0 52%, #fff7f9 100%);
+  --header-inset-top: rgba(255, 255, 255, 0.84);
+  --header-inset-bottom: rgba(161, 110, 123, 0.18);
+  --filter-bg: linear-gradient(180deg, #f7e3e8 0%, #fdf0f2 54%, #fff8fa 100%);
+  --filter-inset-top: rgba(255, 255, 255, 0.86);
+  --filter-inset-bottom: rgba(161, 110, 123, 0.16);
+  --temple-row-bg: linear-gradient(
+    180deg,
+    rgba(241, 221, 227, 0.94) 0%,
+    rgba(249, 236, 240, 0.96) 52%,
+    rgba(255, 247, 249, 0.98) 100%
+  );
+  --ui-surface-bg: rgba(255, 255, 255, 0.86);
+  --ui-surface-text: #2f2028;
+  --ui-surface-border: rgba(138, 96, 110, 0.3);
+  --dropdown-menu-bg: #ffffff;
+  --dropdown-menu-text: #2f2028;
+  --tab-idle-bg: rgba(255, 255, 255, 0.8);
+  --tab-active-ring: rgba(183, 110, 121, 0.22);
+  --tab-active-shadow: rgba(183, 110, 121, 0.24);
+  --chip-idle-bg: rgba(255, 255, 255, 0.9);
+  --chip-idle-border: rgba(183, 110, 121, 0.78);
+  --chip-idle-text: #a75f6b;
+  --chip-active-ring: rgba(183, 110, 121, 0.22);
+  --chip-active-shadow: rgba(183, 110, 121, 0.2);
+  --modal-overlay-bg: rgba(31, 24, 30, 0.5);
+  --modal-bg: #fff7f9;
+  --modal-surface-bg: #ffffff;
+  --modal-chip-bg: rgba(255, 255, 255, 0.9);
+  --modal-cancel-bg: rgba(183, 110, 121, 0.12);
+  --modal-cancel-text: #b76e79;
+}
+
+:root[data-theme="lavender-copper"] {
+  --page-bg: radial-gradient(
+    circle at top,
+    #2b1f3d 0%,
+    #1b1430 54%,
+    #120d22 100%
+  );
+  --card-bg: rgba(35, 26, 54, 0.9);
+  --card-border: rgba(218, 183, 150, 0.3);
+  --text-strong: #efe7ff;
+  --text-soft: #bfaed6;
+  --accent: #b87333;
+  --accent-soft: rgba(184, 115, 51, 0.24);
+  --on-accent: #fff8f2;
+  --surface-muted: rgba(228, 193, 161, 0.14);
+  --success-soft: rgba(74, 222, 128, 0.2);
+  --success-strong: rgba(74, 222, 128, 0.52);
+  --danger-soft: rgba(248, 113, 113, 0.18);
+  --danger-strong: rgba(248, 113, 113, 0.5);
+  --elevation-md: 0 10px 28px rgba(6, 3, 12, 0.56);
+  --shadow: 0 24px 58px rgba(6, 3, 12, 0.56);
+  --header-bg: linear-gradient(180deg, #3a2a55 0%, #2a1f43 52%, #1a142e 100%);
+  --header-inset-top: rgba(215, 197, 241, 0.2);
+  --header-inset-bottom: rgba(8, 5, 16, 0.74);
+  --filter-bg: linear-gradient(180deg, #35264d 0%, #271d3f 54%, #19142d 100%);
+  --filter-inset-top: rgba(215, 197, 241, 0.16);
+  --filter-inset-bottom: rgba(8, 5, 16, 0.7);
+  --temple-row-bg: linear-gradient(
+    180deg,
+    rgba(52, 39, 77, 0.96) 0%,
+    rgba(38, 30, 62, 0.97) 52%,
+    rgba(27, 21, 47, 0.99) 100%
+  );
+  --ui-surface-bg: rgba(30, 22, 48, 0.92);
+  --ui-surface-text: #efe7ff;
+  --ui-surface-border: rgba(218, 183, 150, 0.42);
+  --dropdown-menu-bg: #231937;
+  --dropdown-menu-text: #f3edff;
+  --tab-idle-bg: rgba(25, 19, 41, 0.86);
+  --tab-active-ring: rgba(184, 115, 51, 0.38);
+  --tab-active-shadow: rgba(184, 115, 51, 0.34);
+  --chip-idle-bg: rgba(28, 21, 44, 0.9);
+  --chip-idle-border: rgba(215, 164, 121, 0.96);
+  --chip-idle-text: #edd3ba;
+  --chip-active-ring: rgba(184, 115, 51, 0.32);
+  --chip-active-shadow: rgba(184, 115, 51, 0.28);
+  --modal-overlay-bg: rgba(3, 2, 8, 0.72);
+  --modal-bg: #211734;
+  --modal-surface-bg: #2c2043;
+  --modal-chip-bg: rgba(36, 25, 55, 0.94);
+  --modal-cancel-bg: rgba(184, 115, 51, 0.2);
+  --modal-cancel-text: #f2d8bd;
+}
+
+:root[data-theme="orchid-silver"] {
+  --page-bg: radial-gradient(
+    circle at top,
+    #d7dce5 0%,
+    #eceff4 48%,
+    #f8fafd 100%
+  );
+  --card-bg: rgba(255, 255, 255, 0.9);
+  --card-border: rgba(120, 128, 143, 0.24);
+  --text-strong: #1a1f2b;
+  --text-soft: #5a6274;
+  --accent: #b13ac8;
+  --accent-soft: rgba(177, 58, 200, 0.14);
+  --on-accent: #ffffff;
+  --surface-muted: rgba(79, 90, 111, 0.12);
+  --success-soft: rgba(22, 163, 74, 0.14);
+  --success-strong: rgba(22, 163, 74, 0.44);
+  --danger-soft: rgba(220, 38, 38, 0.12);
+  --danger-strong: rgba(220, 38, 38, 0.4);
+  --elevation-md: 0 10px 26px rgba(63, 73, 92, 0.2);
+  --shadow: 0 24px 60px rgba(63, 73, 92, 0.2);
+  --header-bg: linear-gradient(180deg, #e3e6ec 0%, #eff2f7 52%, #f8fafd 100%);
+  --header-inset-top: rgba(255, 255, 255, 0.86);
+  --header-inset-bottom: rgba(126, 135, 151, 0.2);
+  --filter-bg: linear-gradient(180deg, #e6e9ef 0%, #f1f3f8 54%, #f9fbfd 100%);
+  --filter-inset-top: rgba(255, 255, 255, 0.88);
+  --filter-inset-bottom: rgba(126, 135, 151, 0.18);
+  --temple-row-bg: linear-gradient(
+    180deg,
+    rgba(221, 225, 234, 0.95) 0%,
+    rgba(236, 240, 246, 0.97) 52%,
+    rgba(248, 250, 253, 0.99) 100%
+  );
+  --ui-surface-bg: rgba(255, 255, 255, 0.88);
+  --ui-surface-text: #1a1f2b;
+  --ui-surface-border: rgba(120, 128, 143, 0.32);
+  --dropdown-menu-bg: #ffffff;
+  --dropdown-menu-text: #1a1f2b;
+  --tab-idle-bg: rgba(255, 255, 255, 0.8);
+  --tab-active-ring: rgba(177, 58, 200, 0.25);
+  --tab-active-shadow: rgba(177, 58, 200, 0.26);
+  --chip-idle-bg: rgba(255, 255, 255, 0.9);
+  --chip-idle-border: rgba(177, 58, 200, 0.65);
+  --chip-idle-text: #8c2ea0;
+  --chip-active-ring: rgba(177, 58, 200, 0.25);
+  --chip-active-shadow: rgba(177, 58, 200, 0.24);
+  --modal-overlay-bg: rgba(25, 32, 44, 0.52);
+  --modal-bg: #f6f8fc;
+  --modal-surface-bg: #ffffff;
+  --modal-chip-bg: rgba(255, 255, 255, 0.9);
+  --modal-cancel-bg: rgba(177, 58, 200, 0.12);
+  --modal-cancel-text: #8c2ea0;
+}
+
+:root[data-theme="marigold-bronze"] {
+  --page-bg: radial-gradient(
+    circle at top,
+    #f2c75a 0%,
+    #f6d97f 46%,
+    #f9ebc4 100%
+  );
+  --card-bg: rgba(255, 250, 240, 0.9);
+  --card-border: rgba(109, 74, 46, 0.22);
+  --text-strong: #2b221b;
+  --text-soft: #6a5443;
+  --accent: #a66a3f;
+  --accent-soft: rgba(166, 106, 63, 0.15);
+  --on-accent: #ffffff;
+  --surface-muted: rgba(74, 92, 58, 0.12);
+  --success-soft: rgba(46, 125, 50, 0.18);
+  --success-strong: rgba(46, 125, 50, 0.5);
+  --danger-soft: rgba(198, 40, 40, 0.16);
+  --danger-strong: rgba(198, 40, 40, 0.48);
+  --elevation-md: 0 10px 26px rgba(87, 59, 38, 0.24);
+  --shadow: 0 24px 62px rgba(87, 59, 38, 0.2);
+  --header-bg: linear-gradient(180deg, #f2d39d 0%, #f5dfba 52%, #f9ecd2 100%);
+  --header-inset-top: rgba(255, 255, 255, 0.82);
+  --header-inset-bottom: rgba(118, 82, 49, 0.22);
+  --filter-bg: linear-gradient(180deg, #f3d8a7 0%, #f7e3c2 54%, #f9edd8 100%);
+  --filter-inset-top: rgba(255, 255, 255, 0.84);
+  --filter-inset-bottom: rgba(118, 82, 49, 0.2);
+  --temple-row-bg: linear-gradient(
+    180deg,
+    rgba(219, 197, 170, 0.95) 0%,
+    rgba(236, 220, 198, 0.97) 52%,
+    rgba(248, 239, 226, 0.99) 100%
+  );
+  --ui-surface-bg: rgba(255, 251, 244, 0.88);
+  --ui-surface-text: #2b221b;
+  --ui-surface-border: rgba(109, 74, 46, 0.3);
+  --dropdown-menu-bg: #fff9ef;
+  --dropdown-menu-text: #2b221b;
+  --tab-idle-bg: rgba(255, 248, 233, 0.84);
+  --tab-active-ring: rgba(166, 106, 63, 0.24);
+  --tab-active-shadow: rgba(166, 106, 63, 0.26);
+  --chip-idle-bg: rgba(255, 251, 241, 0.9);
+  --chip-idle-border: rgba(166, 106, 63, 0.78);
+  --chip-idle-text: #8d5a36;
+  --chip-active-ring: rgba(166, 106, 63, 0.24);
+  --chip-active-shadow: rgba(166, 106, 63, 0.22);
+  --modal-overlay-bg: rgba(38, 29, 19, 0.52);
+  --modal-bg: #fff9ef;
+  --modal-surface-bg: #ffffff;
+  --modal-chip-bg: rgba(255, 255, 255, 0.9);
+  --modal-cancel-bg: rgba(166, 106, 63, 0.14);
+  --modal-cancel-text: #8d5a36;
+}
+
+:root[data-theme="jasmine-platinum"] {
+  --page-bg: radial-gradient(
+    circle at top,
+    #fff9dc 0%,
+    #f7f9fc 52%,
+    #eef2f8 100%
+  );
+  --card-bg: rgba(255, 255, 255, 0.94);
+  --card-border: rgba(120, 129, 148, 0.22);
+  --text-strong: #1c2333;
+  --text-soft: #5e6a80;
+  --accent: #8c98a8;
+  --accent-soft: rgba(140, 152, 168, 0.16);
+  --on-accent: #ffffff;
+  --surface-muted: rgba(76, 89, 112, 0.1);
+  --success-soft: rgba(22, 163, 74, 0.14);
+  --success-strong: rgba(22, 163, 74, 0.44);
+  --danger-soft: rgba(220, 38, 38, 0.12);
+  --danger-strong: rgba(220, 38, 38, 0.4);
+  --elevation-md: 0 10px 26px rgba(80, 92, 115, 0.2);
+  --shadow: 0 24px 60px rgba(80, 92, 115, 0.18);
+  --header-bg: linear-gradient(180deg, #fffbe9 0%, #f5f7fb 52%, #eef2f8 100%);
+  --header-inset-top: rgba(255, 255, 255, 0.9);
+  --header-inset-bottom: rgba(129, 139, 156, 0.18);
+  --filter-bg: linear-gradient(180deg, #fffced 0%, #f7f9fc 54%, #f0f4f9 100%);
+  --filter-inset-top: rgba(255, 255, 255, 0.92);
+  --filter-inset-bottom: rgba(129, 139, 156, 0.16);
+  --temple-row-bg: linear-gradient(
+    180deg,
+    rgba(237, 241, 247, 0.95) 0%,
+    rgba(246, 248, 252, 0.97) 52%,
+    rgba(252, 253, 255, 0.99) 100%
+  );
+  --ui-surface-bg: rgba(255, 255, 255, 0.9);
+  --ui-surface-text: #1c2333;
+  --ui-surface-border: rgba(120, 129, 148, 0.3);
+  --dropdown-menu-bg: #ffffff;
+  --dropdown-menu-text: #1c2333;
+  --tab-idle-bg: rgba(255, 255, 255, 0.86);
+  --tab-active-ring: rgba(140, 152, 168, 0.24);
+  --tab-active-shadow: rgba(140, 152, 168, 0.26);
+  --chip-idle-bg: rgba(255, 255, 255, 0.92);
+  --chip-idle-border: rgba(140, 152, 168, 0.74);
+  --chip-idle-text: #67748a;
+  --chip-active-ring: rgba(140, 152, 168, 0.24);
+  --chip-active-shadow: rgba(140, 152, 168, 0.2);
+  --modal-overlay-bg: rgba(21, 30, 45, 0.48);
+  --modal-bg: #fdfefe;
+  --modal-surface-bg: #ffffff;
+  --modal-chip-bg: rgba(255, 255, 255, 0.94);
+  --modal-cancel-bg: rgba(140, 152, 168, 0.14);
+  --modal-cancel-text: #67748a;
+}
+
+:root[data-theme="lotus-titanium"] {
+  --page-bg: radial-gradient(
+    circle at top,
+    #d6dcee 0%,
+    #e8edf8 50%,
+    #f4f7fd 100%
+  );
+  --card-bg: rgba(250, 252, 255, 0.92);
+  --card-border: rgba(93, 109, 138, 0.24);
+  --text-strong: #162238;
+  --text-soft: #5a6d8d;
+  --accent: #6f7f9c;
+  --accent-soft: rgba(111, 127, 156, 0.16);
+  --on-accent: #ffffff;
+  --surface-muted: rgba(85, 103, 132, 0.1);
+  --success-soft: rgba(22, 163, 74, 0.14);
+  --success-strong: rgba(22, 163, 74, 0.44);
+  --danger-soft: rgba(220, 38, 38, 0.12);
+  --danger-strong: rgba(220, 38, 38, 0.4);
+  --elevation-md: 0 10px 26px rgba(64, 82, 114, 0.2);
+  --shadow: 0 24px 62px rgba(64, 82, 114, 0.18);
+  --header-bg: linear-gradient(180deg, #dfe5f3 0%, #edf2fa 52%, #f6f8fd 100%);
+  --header-inset-top: rgba(255, 255, 255, 0.88);
+  --header-inset-bottom: rgba(93, 109, 138, 0.2);
+  --filter-bg: linear-gradient(180deg, #e4e9f5 0%, #f0f3fa 54%, #f7f9fd 100%);
+  --filter-inset-top: rgba(255, 255, 255, 0.9);
+  --filter-inset-bottom: rgba(93, 109, 138, 0.16);
+  --temple-row-bg: linear-gradient(
+    180deg,
+    rgba(223, 231, 244, 0.95) 0%,
+    rgba(237, 242, 250, 0.97) 52%,
+    rgba(248, 250, 254, 0.99) 100%
+  );
+  --ui-surface-bg: rgba(255, 255, 255, 0.9);
+  --ui-surface-text: #162238;
+  --ui-surface-border: rgba(93, 109, 138, 0.32);
+  --dropdown-menu-bg: #ffffff;
+  --dropdown-menu-text: #162238;
+  --tab-idle-bg: rgba(255, 255, 255, 0.84);
+  --tab-active-ring: rgba(111, 127, 156, 0.24);
+  --tab-active-shadow: rgba(111, 127, 156, 0.26);
+  --chip-idle-bg: rgba(255, 255, 255, 0.9);
+  --chip-idle-border: rgba(111, 127, 156, 0.72);
+  --chip-idle-text: #526482;
+  --chip-active-ring: rgba(111, 127, 156, 0.24);
+  --chip-active-shadow: rgba(111, 127, 156, 0.22);
+  --modal-overlay-bg: rgba(22, 31, 49, 0.5);
+  --modal-bg: #f7f9fd;
+  --modal-surface-bg: #ffffff;
+  --modal-chip-bg: rgba(255, 255, 255, 0.92);
+  --modal-cancel-bg: rgba(111, 127, 156, 0.14);
+  --modal-cancel-text: #526482;
+}
+
+:root[data-theme="hibiscus-chrome"] {
+  --page-bg: radial-gradient(
+    circle at top,
+    #2b2f3b 0%,
+    #1f2330 52%,
+    #161a24 100%
+  );
+  --card-bg: rgba(33, 38, 51, 0.92);
+  --card-border: rgba(179, 191, 214, 0.3);
+  --text-strong: #eef2fb;
+  --text-soft: #b2bfd9;
+  --accent: #d64b6b;
+  --accent-soft: rgba(214, 75, 107, 0.24);
+  --on-accent: #fff8fb;
+  --surface-muted: rgba(168, 183, 210, 0.16);
+  --success-soft: rgba(74, 222, 128, 0.2);
+  --success-strong: rgba(74, 222, 128, 0.5);
+  --danger-soft: rgba(248, 113, 113, 0.2);
+  --danger-strong: rgba(248, 113, 113, 0.5);
+  --elevation-md: 0 10px 28px rgba(5, 7, 12, 0.56);
+  --shadow: 0 24px 62px rgba(5, 7, 12, 0.58);
+  --header-bg: linear-gradient(180deg, #343949 0%, #272c3a 52%, #1c202b 100%);
+  --header-inset-top: rgba(204, 216, 240, 0.2);
+  --header-inset-bottom: rgba(7, 10, 16, 0.76);
+  --filter-bg: linear-gradient(180deg, #323747 0%, #252a38 54%, #1a1f2a 100%);
+  --filter-inset-top: rgba(204, 216, 240, 0.18);
+  --filter-inset-bottom: rgba(7, 10, 16, 0.72);
+  --temple-row-bg: linear-gradient(
+    180deg,
+    rgba(45, 52, 69, 0.96) 0%,
+    rgba(34, 40, 54, 0.97) 52%,
+    rgba(24, 30, 41, 0.99) 100%
+  );
+  --ui-surface-bg: rgba(31, 36, 49, 0.93);
+  --ui-surface-text: #eef2fb;
+  --ui-surface-border: rgba(179, 191, 214, 0.45);
+  --dropdown-menu-bg: #232938;
+  --dropdown-menu-text: #eef2fb;
+  --tab-idle-bg: rgba(29, 35, 47, 0.88);
+  --tab-active-ring: rgba(214, 75, 107, 0.34);
+  --tab-active-shadow: rgba(214, 75, 107, 0.32);
+  --chip-idle-bg: rgba(30, 35, 48, 0.9);
+  --chip-idle-border: rgba(214, 75, 107, 0.8);
+  --chip-idle-text: #ffdce6;
+  --chip-active-ring: rgba(214, 75, 107, 0.32);
+  --chip-active-shadow: rgba(214, 75, 107, 0.28);
+  --modal-overlay-bg: rgba(2, 4, 8, 0.72);
+  --modal-bg: #222735;
+  --modal-surface-bg: #2a3040;
+  --modal-chip-bg: rgba(39, 45, 61, 0.94);
+  --modal-cancel-bg: rgba(214, 75, 107, 0.22);
+  --modal-cancel-text: #ffd5df;
+}
+
+/* ── Global resets ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--page-bg);
+  color: var(--text-strong);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+/* ── Placeholder for names tab ── */
+.names-tab-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60dvh;
+  color: var(--text-soft);
+  font-size: 1rem;
 }

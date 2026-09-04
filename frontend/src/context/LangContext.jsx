@@ -1,70 +1,36 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import PropTypes from "prop-types";
-
-import { STORAGE_KEYS } from "../utils/constants";
-
-const COPY = {
-  en: {
-    appName: "Mupporul 369",
-    temples: "Temples",
-    reviews: "Reviews",
-    users: "Users",
-    logout: "Logout",
-    login: "Login",
-  },
-  ta: {
-    appName: "முப்பொருள் 369",
-    temples: "கோவில்கள்",
-    reviews: "மதிப்பாய்வுகள்",
-    users: "பயனர்கள்",
-    logout: "வெளியேறு",
-    login: "உள் நுழை",
-  },
-};
+import { createContext, useContext, useState } from "react";
+import STRINGS from "../constants/strings";
 
 const LangContext = createContext(null);
 
 /**
- * Provides language state and lightweight UI copy.
+ * Provides the current language and a toggle function to the component tree.
  *
- * @param {object} props - Component props.
- * @param {React.ReactNode} props.children - Descendant elements.
- * @returns {JSX.Element} Context provider.
+ * @param {{ children: import('react').ReactNode }} props
+ * @returns {JSX.Element}
  */
 export function LangProvider({ children }) {
-  const [language, setLanguage] = useState(
-    () => localStorage.getItem(STORAGE_KEYS.language) || "en",
-  );
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.language, language);
-    document.documentElement.lang = language === "ta" ? "ta" : "en";
-  }, [language]);
-
+  const [lang, setLangState] = useState("ta");
+  const t = STRINGS[lang];
+  const toggle = () => setLangState((l) => (l === "ta" ? "en" : "ta"));
+  const setLang = (nextLang) => {
+    if (nextLang === "ta" || nextLang === "en") {
+      setLangState(nextLang);
+    }
+  };
   return (
-    <LangContext.Provider
-      value={{ language, setLanguage, copy: COPY[language] || COPY.en }}
-    >
+    <LangContext.Provider value={{ lang, t, toggle, setLang }}>
       {children}
     </LangContext.Provider>
   );
 }
 
-LangProvider.propTypes = {
-  children: PropTypes.node.isRequired,
-};
-
 /**
- * Reads the current language context.
+ * Returns { lang, t, toggle, setLang } from the nearest LangProvider.
+ * `t` is the strings object for the current language.
  *
- * @returns {{language: string, setLanguage: Function, copy: object}} Language context value.
+ * @returns {{ lang: string, t: Object, toggle: Function, setLang: Function }}
  */
 export function useLang() {
-  const context = useContext(LangContext);
-
-  if (!context) {
-    throw new Error("useLang must be used within LangProvider");
-  }
-
-  return context;
+  return useContext(LangContext);
 }

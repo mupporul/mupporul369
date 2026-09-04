@@ -1,51 +1,40 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import PropTypes from "prop-types";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { DEFAULT_THEME, THEMES } from "../constants/themes";
 
-import { STORAGE_KEYS, THEME_OPTIONS } from "../utils/constants";
-
+const THEME_STORAGE_KEY = "mupporul369-theme";
 const ThemeContext = createContext(null);
 
 /**
- * Provides theme state and applies the selected theme to the document root.
+ * Theme provider with localStorage persistence.
+ * Applies `data-theme` on the root html element.
  *
- * @param {object} props - Component props.
- * @param {React.ReactNode} props.children - Descendant elements.
- * @returns {JSX.Element} Context provider.
+ * @param {{ children: import('react').ReactNode }} props
+ * @returns {JSX.Element}
  */
 export function ThemeProvider({ children }) {
-  const [themeId, setThemeId] = useState(
-    () => localStorage.getItem(STORAGE_KEYS.theme) || THEME_OPTIONS[0].id,
-  );
+  const [theme, setTheme] = useState(() => {
+    const saved = globalThis.localStorage?.getItem(THEME_STORAGE_KEY);
+    const isValidTheme = THEMES.some((item) => item.id === saved);
+    return isValidTheme ? saved : DEFAULT_THEME;
+  });
 
   useEffect(() => {
-    document.documentElement.dataset.theme = themeId;
-    localStorage.setItem(STORAGE_KEYS.theme, themeId);
-  }, [themeId]);
+    document.documentElement.setAttribute("data-theme", theme);
+    globalThis.localStorage?.setItem(THEME_STORAGE_KEY, theme);
+  }, [theme]);
+
+  const value = useMemo(() => ({ theme, setTheme, themes: THEMES }), [theme]);
 
   return (
-    <ThemeContext.Provider
-      value={{ themeId, setThemeId, themes: THEME_OPTIONS }}
-    >
-      {children}
-    </ThemeContext.Provider>
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
   );
 }
 
-ThemeProvider.propTypes = {
-  children: PropTypes.node.isRequired,
-};
-
 /**
- * Reads the current theme context.
+ * Returns the active theme and setter from ThemeProvider.
  *
- * @returns {{themeId: string, setThemeId: Function, themes: Array}} Theme context value.
+ * @returns {{ theme: string, setTheme: Function, themes: Array<{id:string,labelTa:string,labelEn:string}> }}
  */
 export function useTheme() {
-  const context = useContext(ThemeContext);
-
-  if (!context) {
-    throw new Error("useTheme must be used within ThemeProvider");
-  }
-
-  return context;
+  return useContext(ThemeContext);
 }

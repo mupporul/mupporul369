@@ -1,37 +1,41 @@
-import { useEffect, useState } from "react";
-import PropTypes from "prop-types";
-
-import {
-  DEFAULT_TEMPLE_FORM,
-  HOUSE_OPTIONS,
-  PLANET_OPTIONS,
-} from "../utils/constants";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
+import { useLang } from "../context/LangContext";
+import { RASI_LIST, UNKNOWN_RASI } from "../constants/rasi";
+import { PLANET_LIST } from "../constants/planets";
+import { INDIAN_STATES } from "../constants/states";
+import { NEW_TEMPLE_DEFAULTS } from "../constants/newTempleDefaults";
 import "./EditModal.css";
 
 /**
- * Modal for temple add/edit review queue requests.
+ * Slide-up bottom-sheet modal for editing all fields of a temple record.
+ * Rendered into document.body via a portal so it escapes any scroll container.
  *
- * @param {object} props - Component props.
- * @param {boolean} props.open - Modal visibility.
- * @param {object|null} props.temple - Selected temple.
- * @param {Function} props.onClose - Close callback.
- * @param {Function} props.onCreate - Add callback.
- * @param {Function} props.onEdit - Edit callback.
- * @returns {JSX.Element|null} Edit modal.
+ * @param {{ temple: Object|null, mode: "edit"|"create", locationOptions?: string[], onSave: Function, onCreate: Function, onClose: Function }} props
+ * @returns {JSX.Element|null}
  */
 export default function EditModal({
-  open,
-  temple = null,
-  onClose,
+  temple,
+  mode,
+  locationOptions = [],
+  onSave,
   onCreate,
-  onEdit,
+  onClose,
 }) {
-  const [form, setForm] = useState(DEFAULT_TEMPLE_FORM);
-  const [error, setError] = useState("");
-  const [busy, setBusy] = useState(false);
-  const isEdit = Boolean(temple);
+  const { t } = useLang();
+  const [form, setForm] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
+  const [showNoChangesNotice, setShowNoChangesNotice] = useState(false);
+  const isCreate = mode === "create";
 
   useEffect(() => {
+    if (isCreate) {
+      setForm({ ...NEW_TEMPLE_DEFAULTS });
+      setError(null);
+      setShowNoChangesNotice(false);
+      return;
+    }
     if (temple) {
       setForm({
         temple: temple.temple,
@@ -39,139 +43,203 @@ export default function EditModal({
         state: temple.state,
         url: temple.url || "",
         house: temple.house,
-        planets: temple.planets,
+        planets: [...temple.planets],
       });
+      setError(null);
+      setShowNoChangesNotice(false);
+    }
+  }, [temple, isCreate]);
+
+  if ((!isCreate && !temple) || !form) return null;
+
+  function handleField(key, val) {
+    setForm((f) => ({ ...f, [key]: val }));
+  }
+
+  function handlePlanetToggle(planet) {
+    setForm((f) => ({
+      ...f,
+      planets: f.planets.includes(planet)
+        ? f.planets.filter((p) => p !== planet)
+        : [...f.planets, planet],
+    }));
+  }
+
+  async function handleSave() {
+    const hasRequiredFields =
+      String(form.temple || "").trim() &&
+      String(form.location || "").trim() &&
+      String(form.state || "").trim() &&
+      Array.isArray(form.planets) &&
+      form.planets.length > 0;
+
+    if (!hasRequiredFields) {
+      setError(t.requiredFieldsExceptRasiError);
       return;
     }
 
-    setForm(DEFAULT_TEMPLE_FORM);
-  }, [temple]);
-
-  if (!open) {
-    return null;
-  }
-
-  const togglePlanet = (planet) => {
-    setForm((current) => ({
-      ...current,
-      planets: current.planets.includes(planet)
-        ? current.planets.filter((item) => item !== planet)
-        : [...current.planets, planet],
-    }));
-  };
-
-  const onField = (key, value) =>
-    setForm((current) => ({ ...current, [key]: value }));
-
-  const submit = async () => {
-    setError("");
-    setBusy(true);
+    setSaving(true);
+    setError(null);
     try {
-      if (!form.temple.trim() || !form.location.trim() || !form.state.trim()) {
-        throw new Error("Temple, location and state are required.");
-      }
-
-      if (isEdit) {
-        await onEdit(temple.id, form);
-      } else {
+      if (isCreate) {
         await onCreate(form);
+      } else {
+        const result = await onSave(temple.id, form);
+        if (result?.noChanges) {
+          setShowNoChangesNotice(true);
+          return;
+        }
       }
       onClose();
-    } catch (submitError) {
-      setError(submitError.message);
+    } catch (err) {
+      setError(err.message);
     } finally {
-      setBusy(false);
+      setSaving(false);
     }
-  };
+  }
 
-  return (
-    <div className="edit-modal__overlay" role="presentation" onClick={onClose}>
-      <section
-        className="edit-modal surface-card"
-        onClick={(event) => event.stopPropagation()}
+  return createPortal(
+    <div className="edit-modal-overlay" onClick={onClose} role="presentation">
+      <div
+        className="edit-modal"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label={isCreate ? t.modalAriaLabelAdd : t.modalAriaLabel}
       >
-        <h3>{isEdit ? "Edit Temple" : "Add Temple"}</h3>
-        <label className="label">
-          Temple
+        <div className="edit-modal__handle" aria-hidden="true" />
+        <h2 className="edit-modal__title">
+          {isCreate ? t.modalTitleAdd : t.modalTitle}
+        </h2>
+
+        <label className="edit-modal__label">
+          {t.fieldTemple}
           <input
-            className="field"
+            className="edit-modal__input"
             value={form.temple}
-            onChange={(event) => onField("temple", event.target.value)}
+            onChange={(e) => handleField("temple", e.target.value)}
           />
         </label>
-        <label className="label">
-          Location
+
+        <label className="edit-modal__label">
+          {t.fieldLocation}
           <input
-            className="field"
+            className="edit-modal__input"
+            type="search"
+            list="location-options"
             value={form.location}
-            onChange={(event) => onField("location", event.target.value)}
+            onChange={(e) => handleField("location", e.target.value)}
           />
+          <datalist id="location-options">
+            {locationOptions.map((locationName) => (
+              <option key={locationName} value={locationName} />
+            ))}
+          </datalist>
         </label>
-        <label className="label">
-          State
-          <input
-            className="field"
-            value={form.state}
-            onChange={(event) => onField("state", event.target.value)}
-          />
-        </label>
-        <label className="label">
-          URL
-          <input
-            className="field"
-            value={form.url}
-            onChange={(event) => onField("url", event.target.value)}
-          />
-        </label>
-        <label className="label">
-          House
+
+        <label className="edit-modal__label">
+          {t.fieldState}
           <select
-            className="select"
-            value={form.house}
-            onChange={(event) => onField("house", event.target.value)}
+            className="edit-modal__select"
+            value={form.state}
+            onChange={(e) => handleField("state", e.target.value)}
+            aria-label={t.stateSelectAriaLabel}
           >
-            {HOUSE_OPTIONS.map((house) => (
-              <option key={house} value={house}>
-                {house}
+            {INDIAN_STATES.map((stateName) => (
+              <option key={stateName} value={stateName}>
+                {stateName}
               </option>
             ))}
           </select>
         </label>
-        <div className="edit-modal__planet-row">
-          {PLANET_OPTIONS.map((planet) => (
-            <button
-              key={planet}
-              type="button"
-              className={`ghost-button${form.planets.includes(planet) ? " edit-modal__planet--active" : ""}`}
-              onClick={() => togglePlanet(planet)}
-            >
-              {planet}
-            </button>
-          ))}
-        </div>
-        {error ? <p className="error-text">{error}</p> : null}
+
+        <label className="edit-modal__label">
+          {t.fieldUrl}
+          <input
+            className="edit-modal__input"
+            type="url"
+            value={form.url}
+            onChange={(e) => handleField("url", e.target.value)}
+          />
+        </label>
+
+        <label className="edit-modal__label">
+          {t.fieldRasi}
+          <select
+            className="edit-modal__select"
+            value={form.house}
+            onChange={(e) => handleField("house", e.target.value)}
+          >
+            <option value="">{t.fieldRasiUnknownOption}</option>
+            <option value={UNKNOWN_RASI}>{t.fieldRasiUnknownValue}</option>
+            {RASI_LIST.map((r) => (
+              <option key={r} value={r}>
+                {r}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <fieldset className="edit-modal__fieldset">
+          <legend className="edit-modal__legend">{t.fieldPlanets}</legend>
+          <div className="edit-modal__planets">
+            {PLANET_LIST.map((planet) => {
+              const active = form.planets.includes(planet);
+              return (
+                <button
+                  key={planet}
+                  type="button"
+                  className={`edit-modal__planet${active ? " edit-modal__planet--active" : ""}`}
+                  onClick={() => handlePlanetToggle(planet)}
+                  aria-pressed={active}
+                >
+                  {planet}
+                </button>
+              );
+            })}
+          </div>
+        </fieldset>
+
+        {error && <p className="edit-modal__error">{error}</p>}
+
         <div className="edit-modal__actions">
-          <button type="button" className="ghost-button" onClick={onClose}>
-            Cancel
+          <button
+            className="edit-modal__btn edit-modal__btn--cancel"
+            onClick={onClose}
+            disabled={saving}
+          >
+            {t.cancelBtn}
           </button>
           <button
-            type="button"
-            className="button"
-            onClick={submit}
-            disabled={busy}
+            className="edit-modal__btn edit-modal__btn--save"
+            onClick={handleSave}
+            disabled={saving}
           >
-            {busy ? "Saving..." : isEdit ? "Queue Edit" : "Queue Add"}
+            {saving ? "..." : isCreate ? t.addBtn : t.saveBtn}
           </button>
         </div>
-      </section>
-    </div>
+
+        {showNoChangesNotice && (
+          <div className="edit-modal__notice-overlay" role="presentation">
+            <div
+              className="edit-modal__notice"
+              role="alertdialog"
+              aria-modal="true"
+              aria-label={t.noEditChangesMessage}
+            >
+              <p className="edit-modal__notice-text">{t.noEditChangesMessage}</p>
+              <button
+                type="button"
+                className="edit-modal__notice-ok"
+                onClick={onClose}
+              >
+                {t.okBtn}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>,
+    document.body,
   );
 }
-
-EditModal.propTypes = {
-  open: PropTypes.bool.isRequired,
-  temple: PropTypes.object,
-  onClose: PropTypes.func.isRequired,
-  onCreate: PropTypes.func.isRequired,
-  onEdit: PropTypes.func.isRequired,
-};

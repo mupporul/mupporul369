@@ -1,33 +1,32 @@
-import PropTypes from "prop-types";
-
+import { useLang } from "../context/LangContext";
 import TempleRow from "./TempleRow";
 import "./TempleList.css";
 
 /**
- * Flat list of filtered temple rows.
+ * Renders a filtered list of temple rows, or an empty-state message.
  *
- * @param {object} props - Component props.
- * @param {Array} props.rows - Temple rows.
- * @param {Function} props.onView - View callback.
- * @param {Function} props.onEdit - Edit callback.
- * @returns {JSX.Element} Temple list.
+ * @param {{ rows: Array, onEdit?: Function|null, onViewDetails?: Function|null }} props
+ * @returns {JSX.Element}
  */
-export default function TempleList({ rows, onView, onEdit }) {
-  if (!rows.length) {
-    return <p className="empty-state">No temples match your filter.</p>;
+export default function TempleList({ rows, onEdit, onViewDetails }) {
+  const { t } = useLang();
+  if (rows.length === 0) {
+    return (
+      <p className="temple-list__empty" role="status">
+        {t.noResults}
+      </p>
+    );
   }
-
   return (
-    <ul className="temple-list stagger-list" aria-label="Temples">
+    <ul className="temple-list" aria-label={t.listAriaLabel}>
       {rows.map((row) => (
-        <TempleRow key={row.id} temple={row} onView={onView} onEdit={onEdit} />
+        <TempleRow
+          key={row.id}
+          row={row}
+          onEdit={onEdit}
+          onViewDetails={onViewDetails}
+        />
       ))}
     </ul>
   );
 }
-
-TempleList.propTypes = {
-  rows: PropTypes.arrayOf(PropTypes.object).isRequired,
-  onView: PropTypes.func.isRequired,
-  onEdit: PropTypes.func.isRequired,
-};

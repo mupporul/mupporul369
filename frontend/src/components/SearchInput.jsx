@@ -1,31 +1,21 @@
-import PropTypes from "prop-types";
-
-import "./SearchInput.css";
+import { useLang } from "../context/LangContext";
 
 /**
- * Controlled search field.
+ * Controlled text input for searching temple records.
  *
- * @param {object} props - Component props.
- * @param {string} props.value - Current query.
- * @param {Function} props.onChange - Query change callback.
- * @returns {JSX.Element} Search field.
+ * @param {{ value: string, onChange: Function }} props
+ * @returns {JSX.Element}
  */
 export default function SearchInput({ value, onChange }) {
+  const { t } = useLang();
   return (
-    <label className="search-input">
-      <span className="visually-hidden">Search temples</span>
-      <input
-        className="field"
-        type="search"
-        value={value}
-        placeholder="Search by temple, location or state"
-        onChange={(event) => onChange(event.target.value)}
-      />
-    </label>
+    <input
+      className="search-input"
+      type="search"
+      placeholder={t.searchPlaceholder}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      aria-label={t.searchAriaLabel}
+    />
   );
 }
-
-SearchInput.propTypes = {
-  value: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-};

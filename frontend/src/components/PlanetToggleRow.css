@@ -1,19 +1,42 @@
 .planet-toggle-row {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-xs);
+  gap: 0.4rem;
+  overflow-x: visible;
+  padding-bottom: 0.2rem;
 }
 
-.planet-toggle-row__item {
-  min-height: 2.2rem;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--color-border);
-  background: transparent;
-  color: var(--color-text-primary);
-  padding: 0 var(--space-sm);
+.planet-toggle-row::-webkit-scrollbar {
+  display: none;
 }
 
-.planet-toggle-row__item--active {
-  background: var(--color-accent-soft);
-  border-color: var(--color-accent);
+.planet-toggle {
+  flex-shrink: 1;
+  padding: 0.32rem 0.72rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--chip-idle-border);
+  background: var(--chip-idle-bg);
+  color: var(--chip-idle-text);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s,
+    box-shadow 0.15s,
+    transform 0.08s;
+}
+
+.planet-toggle--active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+  box-shadow:
+    0 0 0 2px var(--chip-active-ring),
+    0 4px 10px var(--chip-active-shadow);
+}
+
+.planet-toggle:active {
+  transform: translateY(1px) scale(0.98);
 }

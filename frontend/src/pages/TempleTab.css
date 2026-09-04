@@ -1,0 +1,10 @@
+.temple-tab__status {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  color: var(--text-soft);
+  font-size: 0.95rem;
+}
+
+.temple-tab__status--error {
+  color: var(--accent);
+}

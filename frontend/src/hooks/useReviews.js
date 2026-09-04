@@ -1,71 +1,47 @@
-import { useEffect, useState } from "react";
-
-import { useAuth } from "../context/AuthContext";
-
-const readJsonSafely = async (response) => {
-  const text = await response.text();
-  return text ? JSON.parse(text) : null;
-};
+import { useCallback, useEffect, useState } from "react";
 
 /**
- * Loads review queue items and exposes approval actions.
+ * Fetches and manages pending review items.
  *
- * @returns {object} Review state and actions.
+ * @param {Function} authFetch
+ * @returns {{ reviews: Array, loading: boolean, error: string|null, fetchReviews: Function, approveReview: Function }}
  */
-export function useReviews() {
-  const { authFetch } = useAuth();
+export default function useReviews(authFetch) {
   const [reviews, setReviews] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const loadReviews = async () => {
-    setIsLoading(true);
-    setError("");
-
+  const fetchReviews = useCallback(async () => {
+    if (!authFetch) return;
     try {
-      const response = await authFetch("/api/reviews");
-      const data = await readJsonSafely(response);
-
-      if (!response.ok) {
-        throw new Error(data?.message || "Unable to load reviews.");
-      }
-
-      setReviews(Array.isArray(data) ? data : []);
-    } catch (requestError) {
-      setError(requestError.message);
+      setLoading(true);
+      setError(null);
+      const res = await authFetch("/api/reviews");
+      if (!res.ok) throw new Error(`Server error ${res.status}`);
+      setReviews(await res.json());
+    } catch (err) {
+      setError(err.message);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
-  };
+  }, [authFetch]);
 
   useEffect(() => {
-    loadReviews();
-  }, []);
+    fetchReviews();
+  }, [fetchReviews]);
 
-  const approveReview = async (reviewId) => {
-    const response = await authFetch(`/api/reviews/${reviewId}/approve`, {
-      method: "POST",
-    });
-    const data = await readJsonSafely(response);
+  const approveReview = useCallback(
+    async (reviewId) => {
+      const res = await authFetch(`/api/reviews/${reviewId}/approve`, {
+        method: "POST",
+      });
+      if (!res.ok) throw new Error(`Approve failed (${res.status})`);
+      const payload = await res.json();
+      setReviews(payload.reviews || []);
+      return payload;
+    },
+    [authFetch],
+  );
 
-    if (!response.ok) {
-      throw new Error(data?.message || "Unable to approve review.");
-    }
-
-    setReviews((currentReviews) =>
-      currentReviews.map((review) =>
-        review.id === reviewId ? { ...review, ...data } : review,
-      ),
-    );
-
-    return data;
-  };
-
-  return {
-    reviews,
-    isLoading,
-    error,
-    loadReviews,
-    approveReview,
-  };
+  return { reviews, loading, error, fetchReviews, approveReview };
 }

@@ -1,85 +1,153 @@
-import { useMemo, useState } from "react";
-
-import { AuthProvider, useAuth } from "./context/AuthContext";
-import { LangProvider, useLang } from "./context/LangContext";
+﻿import { useState } from "react";
+import { LangProvider } from "./context/LangContext";
+import { useLang } from "./context/LangContext";
 import { ThemeProvider } from "./context/ThemeContext";
-import { useAuthGuard } from "./hooks/useAuthGuard";
-import { PAGE_OPTIONS } from "./utils/constants";
+import { AuthProvider } from "./context/AuthContext";
+import { useAuth } from "./context/AuthContext";
 import Shell from "./components/Shell";
+import TempleTab from "./pages/TempleTab";
+import ReviewTab from "./pages/ReviewTab";
+import UsersTab from "./pages/UsersTab";
+import QuizTab from "./pages/QuizTab";
 import LoginPage from "./pages/LoginPage";
-import TemplesPage from "./pages/TemplesPage";
-import ReviewsPage from "./pages/ReviewsPage";
-import UsersPage from "./pages/UsersPage";
+import useTemples from "./hooks/useTemples";
+import useReviews from "./hooks/useReviews";
+import "./index.css";
+import "./pages/TempleTab.css";
+import "./pages/ReviewTab.css";
+import "./pages/QuizTab.css";
+import "./pages/LoginPage.css";
 
-/**
- * Renders the authenticated app shell with page tabs.
- *
- * @returns {JSX.Element} Authenticated content.
- */
-export function AppAuthed() {
-  const { logout } = useAuth();
-  const { copy } = useLang();
-  const [activePage, setActivePage] = useState("temples");
+function AuthenticatedApp({ user, logout }) {
+  const { t } = useLang();
+  const { authFetch } = useAuth();
+  const [activeTab, setActiveTab] = useState("temples");
+  const [addTempleClickCount, setAddTempleClickCount] = useState(0);
 
-  const tabs = useMemo(
-    () => [
-      { id: "temples", label: copy.temples },
-      { id: "reviews", label: copy.reviews },
-      { id: "users", label: copy.users },
-    ],
-    [copy],
-  );
+  const { temples, loading, error, createTemple, patchTemple, fetchTemples } =
+    useTemples(authFetch);
+  const {
+    reviews,
+    loading: reviewsLoading,
+    error: reviewsError,
+    fetchReviews,
+    approveReview,
+  } = useReviews(authFetch);
+
+  const isAdmin = user.role === "admin";
+  const canContribute = user.role === "contributor" || isAdmin;
+  const reviewCount = reviews.length;
+
+  const TABS = [
+    { id: "temples", label: t.tabTemples },
+    { id: "quiz", label: t.tabQuiz },
+    ...(canContribute
+      ? [{ id: "review", label: t.tabReview, badgeCount: reviewCount }]
+      : []),
+    ...(isAdmin ? [{ id: "users", label: t.tabUsers }] : []),
+  ];
+
+  async function handleProposalQueued() {
+    await fetchReviews();
+    setActiveTab("review");
+  }
+
+  async function handleApprove(reviewId) {
+    const payload = await approveReview(reviewId);
+    if (payload.applied) {
+      await fetchTemples();
+    }
+  }
+
+  async function handleDelete(reviewId) {
+    try {
+      const response = await authFetch(`/api/reviews/${reviewId}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          // Auth error - user will be logged out by authFetch
+          return;
+        }
+        throw new Error(`Delete failed (${response.status})`);
+      }
+      // Refresh the reviews list after successful delete
+      await fetchReviews();
+    } catch (err) {
+      // If 401/403, authFetch already cleared auth or error was thrown
+      // Otherwise error will be caught but not shown (UI handles retry via modal)
+    }
+  }
 
   return (
     <Shell
-      title={copy.appName}
-      tabs={tabs}
-      activeTab={activePage}
-      onTabChange={setActivePage}
+      tabs={TABS}
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+      user={user}
       onLogout={logout}
+      headerAction={
+        activeTab === "temples" && canContribute
+          ? {
+              label: t.addTempleBtn,
+              onClick: () => setAddTempleClickCount((count) => count + 1),
+            }
+          : null
+      }
     >
-      {activePage === PAGE_OPTIONS[0].id && <TemplesPage />}
-      {activePage === PAGE_OPTIONS[1].id && <ReviewsPage />}
-      {activePage === PAGE_OPTIONS[2].id && <UsersPage />}
+      {activeTab === "temples" && (
+        <TempleTab
+          temples={temples}
+          loading={loading}
+          error={error}
+          canContribute={canContribute}
+          addTempleClickCount={addTempleClickCount}
+          onCreate={createTemple}
+          onPatch={patchTemple}
+          onProposalQueued={handleProposalQueued}
+        />
+      )}
+      {activeTab === "review" && (
+        <ReviewTab
+          reviews={reviews}
+          loading={reviewsLoading}
+          error={reviewsError}
+          currentUser={user}
+          onApprove={handleApprove}
+          onDelete={handleDelete}
+        />
+      )}
+      {activeTab === "quiz" && (
+        <QuizTab temples={temples} loading={loading} error={error} />
+      )}
+      {activeTab === "users" && isAdmin && <UsersTab authFetch={authFetch} />}
     </Shell>
   );
 }
 
 /**
- * Handles auth bootstrap and route-level gating.
+ * Inner app — reads lang context so tab labels are reactive.
  *
- * @returns {JSX.Element} App body.
+ * @returns {JSX.Element}
  */
-export function AppGate() {
-  const { status } = useAuth();
-  const { isReady, isAllowed } = useAuthGuard();
-
-  if (!isReady) {
-    return (
-      <main className="app-shell fade-in status-text">
-        Bootstrapping session...
-      </main>
-    );
-  }
-
-  if (!isAllowed || status === "anonymous") {
-    return <LoginPage />;
-  }
-
-  return <AppAuthed />;
+function AppInner() {
+  const { user, logout, isAuthReady } = useAuth();
+  if (!isAuthReady) return null;
+  if (!user) return <LoginPage />;
+  return <AuthenticatedApp user={user} logout={logout} />;
 }
 
 /**
- * Main frontend application component.
+ * Application root for MupporuL369.
  *
- * @returns {JSX.Element} Provider tree and app content.
+ * @returns {JSX.Element}
  */
 export default function App() {
   return (
     <ThemeProvider>
       <LangProvider>
         <AuthProvider>
-          <AppGate />
+          <AppInner />
         </AuthProvider>
       </LangProvider>
     </ThemeProvider>

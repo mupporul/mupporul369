@@ -1,174 +1,145 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import PropTypes from "prop-types";
-
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { buildApiUrl } from "../utils/apiUrl";
-import { STORAGE_KEYS } from "../utils/constants";
 
+const AUTH_STORAGE_KEY = "mupporul369-auth";
 const AuthContext = createContext(null);
 
-const readJsonSafely = async (response) => {
-  const text = await response.text();
-  return text ? JSON.parse(text) : null;
-};
+function readStoredAuth() {
+  const raw = globalThis.localStorage?.getItem(AUTH_STORAGE_KEY);
+  if (!raw) return { token: "", user: null };
+
+  try {
+    const parsed = JSON.parse(raw);
+    if (!parsed?.token || !parsed?.user) return { token: "", user: null };
+    return parsed;
+  } catch {
+    return { token: "", user: null };
+  }
+}
 
 /**
- * Provides authentication state, token bootstrap, and authorized fetch access.
+ * Auth provider for login/logout and authenticated fetch calls.
  *
- * @param {object} props - Component props.
- * @param {React.ReactNode} props.children - Descendant elements.
- * @returns {JSX.Element} Context provider.
+ * @param {{ children: import('react').ReactNode }} props
+ * @returns {JSX.Element}
  */
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(
-    () => localStorage.getItem(STORAGE_KEYS.authToken) || "",
-  );
-  const [user, setUser] = useState(null);
-  const [status, setStatus] = useState("bootstrapping");
-  const [error, setError] = useState("");
+  const [auth, setAuth] = useState(readStoredAuth);
+  const [isAuthReady, setIsAuthReady] = useState(false);
 
-  const clearAuth = () => {
-    localStorage.removeItem(STORAGE_KEYS.authToken);
-    setToken("");
-    setUser(null);
-    setStatus("anonymous");
-  };
-
-  const validateToken = async (currentToken) => {
-    const response = await fetch(buildApiUrl("/api/auth/me"), {
-      headers: {
-        Authorization: `Bearer ${currentToken}`,
-      },
-    });
-
-    if (response.status === 401) {
-      clearAuth();
-      return;
-    }
-
-    if (!response.ok) {
-      throw new Error("Unable to validate session.");
-    }
-
-    const data = await readJsonSafely(response);
-    setUser(data);
-    setStatus("authenticated");
-  };
+  const clearAuth = useCallback(() => {
+    setAuth({ token: "", user: null });
+    globalThis.localStorage?.removeItem(AUTH_STORAGE_KEY);
+  }, []);
 
   useEffect(() => {
-    let ignore = false;
-
-    const bootstrapAuth = async () => {
-      if (!token) {
-        setStatus("anonymous");
+    async function validateSession() {
+      if (!auth.token) {
+        setIsAuthReady(true);
         return;
       }
 
       try {
-        await validateToken(token);
-      } catch (authError) {
-        if (!ignore) {
-          setError(authError.message);
+        const res = await fetch(buildApiUrl("/api/auth/me"), {
+          headers: { Authorization: `Bearer ${auth.token}` },
+        });
+
+        if (!res.ok) {
           clearAuth();
+          setIsAuthReady(true);
+          return;
         }
+
+        const payload = await res.json();
+        if (!payload?.user) {
+          clearAuth();
+          setIsAuthReady(true);
+          return;
+        }
+
+        const nextAuth = { token: auth.token, user: payload.user };
+        setAuth(nextAuth);
+        globalThis.localStorage?.setItem(
+          AUTH_STORAGE_KEY,
+          JSON.stringify(nextAuth),
+        );
+      } catch {
+        clearAuth();
+      } finally {
+        setIsAuthReady(true);
       }
-    };
+    }
 
-    bootstrapAuth();
+    validateSession();
+  }, [auth.token, clearAuth]);
 
-    return () => {
-      ignore = true;
-    };
-  }, [token]);
-
-  const login = async (mobile, password) => {
-    setStatus("loading");
-    setError("");
-
-    const response = await fetch(buildApiUrl("/api/auth/login"), {
+  const login = useCallback(async (mobile, password) => {
+    const res = await fetch(buildApiUrl("/api/auth/login"), {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ mobile, password }),
     });
 
-    const data = await readJsonSafely(response);
-
-    if (!response.ok) {
-      setStatus("anonymous");
-      throw new Error(data?.message || "Login failed.");
+    if (!res.ok) {
+      throw new Error("Invalid mobile number or password");
     }
 
-    const nextToken = data?.token || data?.accessToken || "";
-    localStorage.setItem(STORAGE_KEYS.authToken, nextToken);
-    setToken(nextToken);
-    setUser(data?.user || data?.profile || null);
-    setStatus("authenticated");
-    return data;
-  };
+    const payload = await res.json();
+    const nextAuth = { token: payload.token, user: payload.user };
+    setAuth(nextAuth);
+    globalThis.localStorage?.setItem(
+      AUTH_STORAGE_KEY,
+      JSON.stringify(nextAuth),
+    );
+  }, []);
 
-  const logout = () => {
-    setError("");
+  const logout = useCallback(() => {
     clearAuth();
-  };
+  }, [clearAuth]);
 
-  const authFetch = async (path, options = {}) => {
-    const headers = new Headers(options.headers || {});
-
-    if (token) {
-      headers.set("Authorization", `Bearer ${token}`);
-    }
-
-    if (options.body && !headers.has("Content-Type")) {
-      headers.set("Content-Type", "application/json");
-    }
-
-    const response = await fetch(buildApiUrl(path), {
-      ...options,
-      headers,
-    });
-
-    if (response.status === 401) {
-      clearAuth();
-      throw new Error("Unauthorized");
-    }
-
-    return response;
-  };
-
-  return (
-    <AuthContext.Provider
-      value={{
-        token,
-        user,
-        status,
-        error,
-        isAuthenticated: status === "authenticated" && Boolean(token),
-        login,
-        logout,
-        authFetch,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+  const authFetch = useCallback(
+    async (url, options = {}) => {
+      const headers = {
+        ...(options.headers || {}),
+        ...(auth.token ? { Authorization: `Bearer ${auth.token}` } : {}),
+      };
+      const res = await fetch(buildApiUrl(url), { ...options, headers });
+      if (res.status === 401) {
+        clearAuth();
+        throw new Error("Session expired. Please login again");
+      }
+      return res;
+    },
+    [auth.token, clearAuth],
   );
+
+  const value = useMemo(
+    () => ({
+      user: auth.user,
+      token: auth.token,
+      isAuthReady,
+      login,
+      logout,
+      authFetch,
+    }),
+    [auth.user, auth.token, isAuthReady, login, logout, authFetch],
+  );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-AuthProvider.propTypes = {
-  children: PropTypes.node.isRequired,
-};
-
 /**
- * Reads the authentication context.
+ * Returns auth state and auth actions.
  *
- * @returns {object} Authentication state and actions.
+ * @returns {{ user: Object|null, token: string, isAuthReady: boolean, login: Function, logout: Function, authFetch: Function }}
  */
 export function useAuth() {
-  const context = useContext(AuthContext);
-
-  if (!context) {
-    throw new Error("useAuth must be used within AuthProvider");
-  }
-
-  return context;
+  return useContext(AuthContext);
 }

@@ -1,38 +1,22 @@
-const ABSOLUTE_URL_PATTERN = /^https?:\/\//i;
-
-const readEnv = (key) => {
-  if (typeof import.meta !== "undefined" && import.meta.env) {
-    return import.meta.env[key];
-  }
-
-  return undefined;
-};
-
-const normalizeBaseUrl = (value) => {
-  if (!value) {
-    return "";
-  }
-
-  return value.replace(/\/+$/, "");
-};
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || "")
+  .trim()
+  .replace(/\/$/, "");
 
 /**
- * Builds an API URL using the configured Vite environment variables.
+ * Builds an absolute API URL when VITE_API_BASE_URL is set.
+ * Falls back to the same relative URL for local proxy-based development.
  *
- * @param {string} path - Relative API path or absolute URL.
- * @returns {string} Normalized request URL.
+ * @param {string} path
+ * @returns {string}
  */
 export function buildApiUrl(path) {
-  if (ABSOLUTE_URL_PATTERN.test(path)) {
+  if (!path || typeof path !== "string") {
     return path;
   }
 
-  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  const apiBaseUrl = normalizeBaseUrl(readEnv("VITE_API_BASE_URL"));
-
-  if (!apiBaseUrl) {
-    return normalizedPath;
+  if (/^https?:\/\//i.test(path)) {
+    return path;
   }
 
-  return `${apiBaseUrl}${normalizedPath}`;
+  return `${API_BASE_URL}${path}`;
 }

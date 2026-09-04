@@ -1,40 +1,60 @@
-import PropTypes from "prop-types";
-
+import { useLang } from "../context/LangContext";
 import "./PillTabBar.css";
 
+function getCompactLabel(tabId, lang, fallbackLabel) {
+  const compact = {
+    en: {
+      temples: "Temple",
+      quiz: "Quiz",
+      review: "Review",
+      users: "Users",
+    },
+    ta: {
+      temples: "கோவில்",
+      quiz: "வினா",
+      review: "பரிசீ",
+      users: "பயனர்",
+    },
+  };
+
+  return compact[lang]?.[tabId] || fallbackLabel;
+}
+
 /**
- * Pill-style tab switcher.
+ * Horizontally scrollable pill-style tab navigation bar.
  *
- * @param {object} props - Component props.
- * @param {Array<{id: string, label: string}>} props.tabs - Tabs.
- * @param {string} props.activeTab - Selected tab id.
- * @param {Function} props.onTabChange - Selection callback.
- * @returns {JSX.Element} Tab bar.
+ * @param {{ tabs: Array<{id:string,label:string,badgeCount?:number}>, activeTab: string, onTabChange: Function }} props
+ * @returns {JSX.Element}
  */
 export default function PillTabBar({ tabs, activeTab, onTabChange }) {
+  const { t, lang } = useLang();
   return (
-    <nav className="pill-tab-bar" aria-label="Primary navigation">
-      {tabs.map((tab) => (
-        <button
-          key={tab.id}
-          type="button"
-          className={`pill-tab-bar__tab${activeTab === tab.id ? " pill-tab-bar__tab--active" : ""}`}
-          onClick={() => onTabChange(tab.id)}
-        >
-          {tab.label}
-        </button>
-      ))}
+    <nav className="pill-tab-bar" aria-label={t.navAriaLabel}>
+      <div className="pill-tab-bar__scroll">
+        {tabs.map((tab) => {
+          const compactLabel = getCompactLabel(tab.id, lang, tab.label);
+
+          return (
+            <button
+              key={tab.id}
+              className={`pill-tab-bar__tab${activeTab === tab.id ? " pill-tab-bar__tab--active" : ""}`}
+              onClick={() => onTabChange(tab.id)}
+              aria-current={activeTab === tab.id ? "page" : undefined}
+              aria-label={tab.label}
+            >
+              <span className="pill-tab-bar__text">{compactLabel}</span>
+              {tab.badgeCount > 0 && (
+                <span
+                  className="pill-tab-bar__badge"
+                  aria-label={`${tab.badgeCount}`}
+                >
+                  {tab.badgeCount}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
     </nav>
   );
 }
-
-PillTabBar.propTypes = {
-  tabs: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      label: PropTypes.string.isRequired,
-    }),
-  ).isRequired,
-  activeTab: PropTypes.string.isRequired,
-  onTabChange: PropTypes.func.isRequired,
-};

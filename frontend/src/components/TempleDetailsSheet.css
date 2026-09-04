@@ -1,13 +1,103 @@
-.temple-details-sheet__overlay {
+.temple-details-overlay {
   position: fixed;
   inset: 0;
-  background: var(--color-overlay);
-  display: grid;
-  align-items: end;
+  z-index: 190;
+  background: var(--modal-overlay-bg);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
 }
 
 .temple-details-sheet {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  padding: var(--space-lg);
+  width: 100%;
+  max-width: 520px;
+  max-height: 85dvh;
+  overflow-y: auto;
+  border-radius: 24px 24px 0 0;
+  border: 1px solid var(--card-border);
+  background: var(--modal-bg);
+  padding: 0.85rem 1.25rem 1.4rem;
+  animation: temple-details-slide-up 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes temple-details-slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.temple-details-sheet__handle {
+  width: 38px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--card-border);
+  margin: 0.2rem auto 0.95rem;
+}
+
+.temple-details-sheet__title {
+  margin: 0 0 0.9rem;
+  color: var(--text-strong);
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.temple-details-sheet__grid {
+  margin: 0;
+}
+
+.temple-details-sheet__row {
+  padding: 0.62rem 0;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.temple-details-sheet__row:last-child {
+  border-bottom: none;
+}
+
+.temple-details-sheet__row dt {
+  margin: 0 0 0.24rem;
+  color: var(--text-soft);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.temple-details-sheet__row dd {
+  margin: 0;
+  color: var(--text-strong);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.temple-details-sheet__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.34rem;
+}
+
+.temple-details-sheet__chip {
+  border-radius: 999px;
+  padding: 0.2rem 0.62rem;
+  background: rgba(58, 44, 35, 0.07);
+  color: var(--text-soft);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.temple-details-sheet__close {
+  width: 100%;
+  margin-top: 1rem;
+  border: none;
+  border-radius: 12px;
+  padding: 0.72rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--on-accent);
+  background: var(--accent);
+  cursor: pointer;
 }

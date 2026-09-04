@@ -1,27 +1,29 @@
-import PropTypes from "prop-types";
-
-import { PLANET_OPTIONS } from "../utils/constants";
+import { useLang } from "../context/LangContext";
+import { PLANET_LIST } from "../constants/planets";
 import "./PlanetToggleRow.css";
 
 /**
- * Multi-select toggle row for planets.
+ * Horizontally scrollable row of 9 Navagraha planet toggle buttons.
  *
- * @param {object} props - Component props.
- * @param {string[]} props.selectedPlanets - Selected planet names.
- * @param {Function} props.onToggle - Toggle callback.
- * @returns {JSX.Element} Planet toggle row.
+ * @param {{ activePlanets: string[], onToggle: Function }} props
+ * @returns {JSX.Element}
  */
-export default function PlanetToggleRow({ selectedPlanets, onToggle }) {
+export default function PlanetToggleRow({ activePlanets, onToggle }) {
+  const { t } = useLang();
   return (
-    <div className="planet-toggle-row">
-      {PLANET_OPTIONS.map((planet) => {
-        const isActive = selectedPlanets.includes(planet);
+    <div
+      className="planet-toggle-row"
+      role="group"
+      aria-label={t.planetFilterAriaLabel}
+    >
+      {PLANET_LIST.map((planet) => {
+        const active = activePlanets.includes(planet);
         return (
           <button
             key={planet}
-            type="button"
-            className={`planet-toggle-row__item${isActive ? " planet-toggle-row__item--active" : ""}`}
+            className={`planet-toggle${active ? " planet-toggle--active" : ""}`}
             onClick={() => onToggle(planet)}
+            aria-pressed={active}
           >
             {planet}
           </button>
@@ -30,8 +32,3 @@ export default function PlanetToggleRow({ selectedPlanets, onToggle }) {
     </div>
   );
 }
-
-PlanetToggleRow.propTypes = {
-  selectedPlanets: PropTypes.arrayOf(PropTypes.string).isRequired,
-  onToggle: PropTypes.func.isRequired,
-};

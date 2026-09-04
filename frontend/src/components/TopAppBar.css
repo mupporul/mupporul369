@@ -1,28 +1,239 @@
-.top-bar {
+.top-app-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-md);
-  padding-top: var(--space-lg);
-  padding-bottom: var(--space-md);
+  padding: 0 1rem;
+  height: 50px;
 }
 
-.top-bar__title {
-  margin: 0;
-  font-family: var(--font-family-display);
-  font-size: var(--font-size-2xl);
-  line-height: var(--line-height-tight);
+.top-app-bar__brand-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  min-width: 0;
 }
 
-.top-bar__controls {
+.top-app-bar__brand-word,
+.top-app-bar__brand-number {
+  color: var(--accent);
+  font-size: 0.94rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.top-app-bar__brand-emblem {
+  width: 0.84rem;
+  height: 1.92rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(0.1rem);
+  filter: drop-shadow(0 1px 1px rgba(94, 60, 14, 0.28));
+}
+
+.top-app-bar__brand-emblem-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+@media (max-width: 380px) {
+  .top-app-bar__brand-word,
+  .top-app-bar__brand-number {
+    font-size: 0.84rem;
+    letter-spacing: 0.035em;
+  }
+
+  .top-app-bar__brand-emblem {
+    width: 0.72rem;
+    height: 1.68rem;
+  }
+}
+
+.top-app-bar__controls {
   display: flex;
-  gap: var(--space-sm);
+  align-items: center;
+  gap: 0.45rem;
+  position: relative;
+}
+
+.top-app-bar__theme-wrap {
+  display: flex;
   align-items: center;
 }
 
-@media (max-width: 48rem) {
-  .top-bar {
-    align-items: flex-start;
-    flex-direction: column;
-  }
+.top-app-bar__theme-select {
+  max-width: 8.2rem;
+  padding: 0.26rem 1.45rem 0.26rem 0.5rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--ui-surface-border);
+  background: var(--ui-surface-bg);
+  color: var(--ui-surface-text);
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2352606d' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+}
+
+.top-app-bar__theme-select:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
+.top-app-bar__theme-select option {
+  background: var(--dropdown-menu-bg);
+  color: var(--dropdown-menu-text);
+}
+
+.top-app-bar__account-menu {
+  position: relative;
+}
+
+.top-app-bar__account-trigger {
+  list-style: none;
+  min-width: 2.4rem;
+  height: 2.1rem;
+  padding: 0 0.58rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.top-app-bar__account-initials {
+  font-size: 0.98rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+}
+
+.top-app-bar__account-trigger::-webkit-details-marker {
+  display: none;
+}
+
+.top-app-bar__account-trigger:hover,
+.top-app-bar__account-trigger:focus-visible,
+.top-app-bar__account-menu[open] .top-app-bar__account-trigger {
+  background: var(--accent);
+  color: var(--on-accent);
+  outline: none;
+}
+
+.top-app-bar__account-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.35rem);
+  min-width: 12.4rem;
+  border-radius: 12px;
+  border: 1px solid var(--card-border);
+  background: var(--ui-surface-bg);
+  box-shadow: 0 10px 20px rgba(24, 30, 42, 0.22);
+  padding: 0.5rem;
+  z-index: 120;
+}
+
+.top-app-bar__account-id {
+  margin: 0;
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--text-strong);
+}
+
+.top-app-bar__menu-link {
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  color: var(--text-strong);
+  font-size: 0.86rem;
+  font-weight: 700;
+  padding: 0.28rem 0.1rem 0.45rem;
+  cursor: pointer;
+}
+
+.top-app-bar__menu-link:hover,
+.top-app-bar__menu-link:focus-visible {
+  color: var(--accent);
+  outline: none;
+}
+
+.top-app-bar__profile-card {
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  background: var(--modal-chip-bg);
+  padding: 0.42rem 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.top-app-bar__profile-line {
+  margin: 0.2rem 0 0;
+  font-size: 0.72rem;
+  color: var(--text-soft);
+}
+
+.top-app-bar__lang-pref {
+  margin-bottom: 0.5rem;
+}
+
+.top-app-bar__lang-pref-label {
+  margin: 0 0 0.32rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-soft);
+}
+
+.top-app-bar__lang-pref-actions {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.top-app-bar__lang-pref-btn {
+  flex: 1;
+  border-radius: 999px;
+  border: 1.5px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  padding: 0.2rem 0.5rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.top-app-bar__lang-pref-btn--active,
+.top-app-bar__lang-pref-btn:hover,
+.top-app-bar__lang-pref-btn:focus-visible {
+  background: var(--accent);
+  color: var(--on-accent);
+  outline: none;
+}
+
+.top-app-bar__logout {
+  width: 100%;
+  padding: 0.28rem 0.65rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  font-size: 0.76rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.top-app-bar__logout:hover,
+.top-app-bar__logout:focus-visible {
+  background: var(--accent);
+  color: var(--on-accent);
+  outline: none;
 }

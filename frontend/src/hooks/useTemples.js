@@ -1,108 +1,82 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 
-import { useAuth } from "../context/AuthContext";
-
-const readJsonSafely = async (response) => {
-  const text = await response.text();
-  return text ? JSON.parse(text) : null;
-};
-
-const normalizePayload = (payload) => ({
-  ...payload,
-  temple: payload.temple.trim(),
-  location: payload.location.trim(),
-  state: payload.state.trim(),
-  url: payload.url.trim(),
-  planets: payload.planets,
-});
+const API_BASE = "/api/temples";
 
 /**
- * Loads temple groups and queues temple add/edit requests through review APIs.
+ * Fetches and manages the full temples dataset from the server.
  *
- * @returns {object} Temple state and queue actions.
+ * @param {Function} authFetch
+ * @returns {{
+ *   temples: Array,
+ *   loading: boolean,
+ *   error: string|null,
+ *   fetchTemples: () => Promise<void>,
+ *   createTemple: (payload: Object) => Promise<void>,
+ *   patchTemple: (id: string, payload: Object) => Promise<void>
+ * }}
  */
-export function useTemples() {
-  const { authFetch } = useAuth();
-  const [templeGroups, setTempleGroups] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [submitMessage, setSubmitMessage] = useState("");
+export default function useTemples(authFetch) {
+  const [temples, setTemples] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const loadTemples = async () => {
-    setIsLoading(true);
-    setError("");
-
+  const fetchTemples = useCallback(async () => {
+    if (!authFetch) return;
     try {
-      const response = await authFetch("/api/temples");
-      const data = await readJsonSafely(response);
-
-      if (!response.ok) {
-        throw new Error(data?.message || "Unable to load temples.");
-      }
-
-      setTempleGroups(Array.isArray(data) ? data : []);
-    } catch (requestError) {
-      setError(requestError.message);
+      setLoading(true);
+      setError(null);
+      const res = await authFetch(API_BASE);
+      if (!res.ok) throw new Error(`Server error ${res.status}`);
+      setTemples(await res.json());
+    } catch (err) {
+      setError(err.message);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
-  };
+  }, [authFetch]);
 
   useEffect(() => {
-    loadTemples();
-  }, []);
+    fetchTemples();
+  }, [fetchTemples]);
 
-  const queueTempleCreate = async (payload) => {
-    setSubmitMessage("");
-    const response = await authFetch("/api/reviews", {
-      method: "POST",
-      body: JSON.stringify({
-        action: "add",
-        payload: normalizePayload(payload),
-      }),
-    });
-    const data = await readJsonSafely(response);
+  /**
+   * Patch a single temple record and refresh local state from the server response.
+   *
+   * @param {string} id - UUID of the temple to update.
+   * @param {{ temple: string, location: string, state: string, house: string, planets: string[] }} payload
+   * @returns {Promise<void>}
+   */
+  const patchTemple = useCallback(
+    async (id, payload) => {
+      const res = await authFetch(`${API_BASE}/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error(`Update failed (${res.status})`);
+      return res.json();
+    },
+    [authFetch],
+  );
 
-    if (!response.ok) {
-      throw new Error(data?.message || "Unable to queue temple add request.");
-    }
+  /**
+   * Create a new temple record and refresh local state from server response.
+   *
+   * @param {{ temple: string, location: string, state: string, house: string, planets: string[] }} payload
+   * @returns {Promise<void>}
+   */
+  const createTemple = useCallback(
+    async (payload) => {
+      const res = await authFetch(API_BASE, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error(`Create failed (${res.status})`);
+      return res.json();
+    },
+    [authFetch],
+  );
 
-    setSubmitMessage("Temple add request queued for review.");
-    return data;
-  };
-
-  const queueTempleEdit = async (templeId, payload) => {
-    setSubmitMessage("");
-    const response = await authFetch("/api/reviews", {
-      method: "POST",
-      body: JSON.stringify({
-        action: "edit",
-        templeId,
-        payload: normalizePayload(payload),
-      }),
-    });
-    const data = await readJsonSafely(response);
-
-    if (!response.ok) {
-      throw new Error(data?.message || "Unable to queue temple edit request.");
-    }
-
-    if (data?.noChanges) {
-      setSubmitMessage("No changes detected. Review request was not created.");
-      return data;
-    }
-
-    setSubmitMessage("Temple edit request queued for review.");
-    return data;
-  };
-
-  return {
-    templeGroups,
-    isLoading,
-    error,
-    submitMessage,
-    loadTemples,
-    queueTempleCreate,
-    queueTempleEdit,
-  };
+  return { temples, loading, error, fetchTemples, createTemple, patchTemple };
 }
