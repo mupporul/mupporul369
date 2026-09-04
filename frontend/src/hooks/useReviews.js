@@ -37,7 +37,15 @@ export default function useReviews(authFetch) {
       });
       if (!res.ok) throw new Error(`Approve failed (${res.status})`);
       const payload = await res.json();
-      setReviews(payload.reviews || []);
+      if (Array.isArray(payload.reviews)) {
+        setReviews(payload.reviews);
+      } else if (payload?.status) {
+        setReviews((currentReviews) =>
+          currentReviews.map((item) =>
+            item.id === reviewId ? { ...item, status: payload.status } : item,
+          ),
+        );
+      }
       return payload;
     },
     [authFetch],

@@ -24,8 +24,7 @@ function AuthenticatedApp({ user, logout }) {
   const [activeTab, setActiveTab] = useState("temples");
   const [addTempleClickCount, setAddTempleClickCount] = useState(0);
 
-  const { temples, loading, error, createTemple, patchTemple, fetchTemples } =
-    useTemples(authFetch);
+  const { temples, loading, error, fetchTemples } = useTemples(authFetch);
   const {
     reviews,
     loading: reviewsLoading,
@@ -49,7 +48,6 @@ function AuthenticatedApp({ user, logout }) {
 
   async function handleProposalQueued() {
     await fetchReviews();
-    setActiveTab("review");
   }
 
   async function handleApprove(reviewId) {
@@ -57,6 +55,30 @@ function AuthenticatedApp({ user, logout }) {
     if (payload.applied) {
       await fetchTemples();
     }
+  }
+
+  async function queueTempleCreate(payload) {
+    const response = await authFetch("/api/reviews", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "add", payload }),
+    });
+    if (!response.ok) {
+      throw new Error(`Create failed (${response.status})`);
+    }
+    return response.json();
+  }
+
+  async function queueTempleEdit(templeId, payload) {
+    const response = await authFetch("/api/reviews", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "edit", templeId, payload }),
+    });
+    if (!response.ok) {
+      throw new Error(`Update failed (${response.status})`);
+    }
+    return response.json();
   }
 
   async function handleDelete(reviewId) {
@@ -102,8 +124,8 @@ function AuthenticatedApp({ user, logout }) {
           error={error}
           canContribute={canContribute}
           addTempleClickCount={addTempleClickCount}
-          onCreate={createTemple}
-          onPatch={patchTemple}
+          onCreate={queueTempleCreate}
+          onPatch={queueTempleEdit}
           onProposalQueued={handleProposalQueued}
         />
       )}

@@ -9,7 +9,7 @@ import "./TempleRow.css";
  * @returns {JSX.Element}
  */
 export default function TempleRow({ row, onEdit, onViewDetails }) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const canViewDetails = typeof onViewDetails === "function";
 
   return (
@@ -63,7 +63,7 @@ export default function TempleRow({ row, onEdit, onViewDetails }) {
         <button
           className="temple-row__edit"
           onClick={() => onEdit(row)}
-          aria-label={`${row.temple} ${t.editBtn}`}
+          aria-label={lang === "en" ? t.editBtn : `${row.temple} ${t.editBtn}`}
         >
           {t.editBtn}
         </button>

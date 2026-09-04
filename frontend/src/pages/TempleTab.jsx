@@ -29,6 +29,7 @@ export default function TempleTab({
   const [editingTemple, setEditingTemple] = useState(null);
   const [modalMode, setModalMode] = useState("edit");
   const [selectedTemple, setSelectedTemple] = useState(null);
+  const [submitMessage, setSubmitMessage] = useState("");
 
   useEffect(() => {
     if (!canContribute || addTempleClickCount === 0) return;
@@ -106,6 +107,10 @@ export default function TempleTab({
 
   return (
     <>
+      <div className="surface-card temples-page__header">
+        <h2>{t.templeRegistryTitle}</h2>
+      </div>
+
       <FilterBar
         rasi={rasi}
         onRasiChange={setRasi}
@@ -122,7 +127,12 @@ export default function TempleTab({
       )}
       {error && (
         <p className="temple-tab__status temple-tab__status--error">
-          {t.errorPrefix}: {error}
+          {error}
+        </p>
+      )}
+      {submitMessage && (
+        <p className="temple-tab__status" role="status">
+          {submitMessage}
         </p>
       )}
       {!loading && !error && (
@@ -140,13 +150,19 @@ export default function TempleTab({
         mode={modalMode}
         locationOptions={locationOptions}
         onCreate={async (payload) => {
+          setSubmitMessage("");
           await onCreate(payload);
+          setSubmitMessage(t.reviewQueuedMessage);
           await onProposalQueued();
         }}
         onSave={async (id, payload) => {
+          setSubmitMessage("");
           const result = await onPatch(id, payload);
           if (!result?.noChanges) {
+            setSubmitMessage(t.reviewQueuedMessage);
             await onProposalQueued();
+          } else {
+            setSubmitMessage(t.noEditChangesMessage);
           }
           return result;
         }}

@@ -1,18 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 
 import App from "../src/App";
 
 const templePayload = [
   {
-    house: "மீனம்",
-    planets: ["சனி", "குரு"],
+    house: "மேஷம்",
+    planets: ["சூரி", "செ"],
     data: [
       {
-        id: "a1b2c3d4-0001-0001-0001-000000000001",
-        temple: "Some Temple",
-        location: "Madurai",
-        state: "Tamil Nadu",
+        id: "t-1",
+        temple: "Arulmigu Subramania Swami Temple",
+        location: "Tiruchendur",
+        state: "Tamilnadu",
         url: "https://example.com",
       },
     ],
@@ -26,13 +26,23 @@ describe("app auth bootstrap", () => {
   });
 
   it("loads authenticated app when stored token validates", async () => {
-    localStorage.setItem("mupporul369.authToken", "valid-token");
+    const user = {
+      id: "u1",
+      mobile: "919876543210",
+      initials: "TR",
+      role: "contributor",
+    };
+
+    localStorage.setItem(
+      "mupporul369-auth",
+      JSON.stringify({ token: "valid-token", user }),
+    );
 
     vi.spyOn(global, "fetch").mockImplementation((url, options = {}) => {
       const method = options.method || "GET";
       if (String(url).includes("/api/auth/me") && method === "GET") {
         return Promise.resolve(
-          new Response(JSON.stringify({ id: "u1", name: "Tester" }), {
+          new Response(JSON.stringify({ user }), {
             status: 200,
           }),
         );
@@ -47,7 +57,8 @@ describe("app auth bootstrap", () => {
 
     render(<App />);
 
-    await screen.findByText("Temple Registry");
-    expect(await screen.findByText("Some Temple")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Arulmigu Subramania Swami Temple"),
+    ).toBeInTheDocument();
   });
 });

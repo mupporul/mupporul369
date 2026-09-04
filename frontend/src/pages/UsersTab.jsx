@@ -153,10 +153,6 @@ export default function UsersTab({ authFetch }) {
   }
 
   async function handleDeleteUser(userId) {
-    if (!window.confirm("Are you sure you want to delete this user?")) {
-      return;
-    }
-
     try {
       const response = await authFetch(`/api/users/${userId}`, {
         method: "DELETE",
@@ -220,33 +216,53 @@ export default function UsersTab({ authFetch }) {
       <div className="users-tab__section">
         <h2 className="users-tab__title">{t.usersAddTitle}</h2>
         <form className="users-tab__form" onSubmit={handleAddUser}>
+          <label className="users-tab__label" htmlFor="users-mobile-input">
+            Mobile
+          </label>
           <input
+            id="users-mobile-input"
             type="text"
             placeholder="Mobile (12 digits)"
+            aria-label="Mobile"
             value={newUser.mobile}
             onChange={(e) => setNewUser({ ...newUser, mobile: e.target.value })}
             className="users-tab__input"
             maxLength="12"
           />
+          <label className="users-tab__label" htmlFor="users-password-input">
+            Password
+          </label>
           <input
+            id="users-password-input"
             type="password"
             placeholder="Password"
+            aria-label="Password"
             value={newUser.password}
             onChange={(e) =>
               setNewUser({ ...newUser, password: e.target.value })
             }
             className="users-tab__input"
           />
+          <label className="users-tab__label" htmlFor="users-name-input">
+            Name
+          </label>
           <input
+            id="users-name-input"
             type="text"
             placeholder="Name"
+            aria-label="Name"
             value={newUser.name}
             onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
             className="users-tab__input"
           />
+          <label className="users-tab__label" htmlFor="users-initials-input">
+            Initials
+          </label>
           <input
+            id="users-initials-input"
             type="text"
             placeholder="Initials (2 chars)"
+            aria-label="Initials"
             value={newUser.initials}
             onChange={(e) =>
               setNewUser({ ...newUser, initials: e.target.value.toUpperCase() })
@@ -289,7 +305,7 @@ export default function UsersTab({ authFetch }) {
                 <button
                   className="users-tab__btn-delete"
                   onClick={() => handleDeleteUser(user.id)}
-                  aria-label={`Delete ${user.initials}`}
+                  aria-label={t.deleteBtn}
                 >
                   {t.deleteBtn}
                 </button>

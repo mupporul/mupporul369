@@ -47,6 +47,7 @@ const STRINGS = {
     quizAnswerLabel: "சரியான பதில்",
 
     // Temple list
+    templeRegistryTitle: "கோவில் பதிவகம்",
     noResults: "பொருத்தமான முடிவுகள் இல்லை",
     listAriaLabel: "கோவில்கள் பட்டியல்",
     editBtn: "திருத்து",
@@ -131,7 +132,7 @@ const STRINGS = {
     // Tabs
     tabTemples: "Temples",
     tabQuiz: "Quiz",
-    tabReview: "Review",
+    tabReview: "Reviews",
     tabUsers: "Users",
 
     // Admin export/import
@@ -153,7 +154,7 @@ const STRINGS = {
       "Download or import all server .json files for deployment recovery.",
     usersFileTypeError: "Only JSON files can be imported",
     usersAddTitle: "Add New User",
-    usersAddSubmitBtn: "Add User",
+    usersAddSubmitBtn: "Create User",
     usersListTitle: "Users List",
 
     // Quiz
@@ -171,6 +172,7 @@ const STRINGS = {
     quizAnswerLabel: "Answer",
 
     // Temple list
+    templeRegistryTitle: "Temple Registry",
     noResults: "No results found",
     listAriaLabel: "Temples list",
     editBtn: "Edit",
@@ -181,7 +183,7 @@ const STRINGS = {
     templeDetailsTitle: "Temple Details",
     detailsCloseBtn: "Close",
     addTempleBtn: "Add Temple",
-    reviewQueuedMessage: "Sent to review queue",
+    reviewQueuedMessage: "Temple add request queued for review.",
 
     // Status
     loading: "Loading...",
@@ -199,15 +201,16 @@ const STRINGS = {
     fieldRasiUnknownOption: "Rasi unknown",
     fieldRasiUnknownValue: "Unknown",
     fieldPlanets: "Planets",
-    saveBtn: "Save",
+    saveBtn: "Queue Edit",
     okBtn: "OK",
-    addBtn: "Add",
+    addBtn: "Queue Add",
     cancelBtn: "Cancel",
     modalTitleAdd: "New Temple",
     modalAriaLabelAdd: "Add new temple",
     requiredFieldsExceptRasiError:
       "All fields are mandatory except Rasi and Video URL.",
-    noEditChangesMessage: "You have not modified anything.",
+    noEditChangesMessage:
+      "No changes detected. Review request was not created.",
 
     // Navigation
     navAriaLabel: "Page navigation",

@@ -54,6 +54,10 @@ export default function TopAppBar({ user, onLogout }) {
   }, []);
 
   useEffect(() => {
+    if (!user.mobile) {
+      setLang("en");
+      return;
+    }
     const prefs = readUserPrefs();
     const preferredLang = prefs[user.mobile]?.lang;
     if (preferredLang === "ta" || preferredLang === "en") {

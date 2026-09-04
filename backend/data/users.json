@@ -1,0 +1,48 @@
+[
+  {
+    "id": "u-admin-001",
+    "mobile": "919876543200",
+    "initials": "SA",
+    "role": "admin",
+    "passwordHash": "scrypt$dab93d41d1c73ca3718100a751f86388$70f5e454b6b6e1cc1f34885f7fff3d1279d4b2e69fe550556efad69c94befb02ede3624df830facd5297d23ea828804a9be30bc516ce05ab0c3d327a6e5d25d5"
+  },
+  {
+    "id": "u-contrib-001",
+    "mobile": "919876543210",
+    "initials": "TR",
+    "name": "Thangaraj",
+    "role": "contributor",
+    "passwordHash": "scrypt$8af407c04ceebd948be8a19adea5da22$d695b9e303e140faf17121dbdd7f442c7d89b2e5081f6589b2252d7e4a6f4a2c13137ee000be61bfb1938307ccb256acb15e8966bdc9b43acfd96801fd7947d9"
+  },
+  {
+    "id": "u-contrib-002",
+    "mobile": "919876543211",
+    "initials": "RR",
+    "name": "Ramya Rajkumar",
+    "role": "contributor",
+    "passwordHash": "scrypt$396ac36c31abe71ebf3ecc461756f101$c6f39e6b752bb64e00c86b0ef1103da92015ff0347de3f05cc6541679dd7e1eedca29ad864cdb8379d25c46d1ec10a42731f8f4fc7289de57d40e9b7119b4fdc"
+  },
+  {
+    "id": "u-contrib-003",
+    "mobile": "919876543212",
+    "initials": "RA",
+    "name": "Radha",
+    "role": "contributor",
+    "passwordHash": "scrypt$24ab1a7d1ac0b90e00daef7ffd16046f$080b39662e7341c3ce74588f38a46dc95cd37e86766a5d70876db219c82fa1e8bf8c976e15b08cc38a1b32ca5e735db35b889f0a799539f35fd2863ec12b4d76"
+  },
+  {
+    "id": "u-contrib-004",
+    "mobile": "919876543213",
+    "initials": "MA",
+    "name": "Murugan Amir",
+    "role": "contributor",
+    "passwordHash": "scrypt$69a538a24f04b8408663d5249dab84e0$26debeee6c5d725024ec85a522766db9cf403da4c59a7de1d44387529ea89b023596e0a6d6a5b3a850e93d7b23cd995060319dd0c867cb2ff711412f061a133b"
+  },
+  {
+    "id": "u-1787930788447-8cff0a58-bb64-4c1e-a9df-d95359b81eb4",
+    "mobile": "919876543214",
+    "initials": "UC",
+    "role": "user",
+    "passwordHash": "scrypt$2de9bbc63c473c158ef38715e0c12352$19129df6310f081ae0ee5efe6e7957b2f01cafe85ac7230de358c9189b9677f8a3ebc950af44bb1f0ddc14c5885bf479a8d17d927f2d93321a07a9c9a1c8d66e"
+  }
+]

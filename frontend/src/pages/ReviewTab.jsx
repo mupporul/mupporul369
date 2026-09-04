@@ -27,7 +27,16 @@ export default function ReviewTab({
       reviews.map((item) => ({
         id: item.id,
         action: item.action,
-        payload: item.payload,
+        status: item.status || "pending",
+        payload: {
+          temple: item.payload?.temple || "",
+          location: item.payload?.location || "",
+          state: item.payload?.state || "",
+          house: item.payload?.house || "",
+          planets: Array.isArray(item.payload?.planets)
+            ? item.payload.planets
+            : [],
+        },
         createdBy: item.createdBy,
         modifiedBy: item.modifiedBy,
         approvals: item.approvals || [],
@@ -102,15 +111,16 @@ export default function ReviewTab({
             <li className="review-item" key={row.id}>
               <div className="review-item__main">
                 <p className="review-item__name">
-                  {toTitleCase(row.payload.temple)}
+                  {toTitleCase(row.payload.temple) || "-"}
                 </p>
                 <p className="review-item__meta">
-                  {toTitleCase(row.payload.location)},{" "}
-                  {toTitleCase(row.payload.state)}
+                  {toTitleCase(row.payload.location) || "-"},{" "}
+                  {toTitleCase(row.payload.state) || "-"}
                 </p>
+                <p className="review-item__meta">{row.status}</p>
                 <div className="review-item__tags">
                   <span className="review-item__tag review-item__tag--house">
-                    {row.payload.house}
+                    {row.payload.house || "-"}
                   </span>
                   {row.payload.planets.map((planet) => (
                     <span
@@ -127,6 +137,16 @@ export default function ReviewTab({
                   role="group"
                   aria-label={t.reviewApproversLabel}
                 >
+                  {!currentUser.initials &&
+                  !alreadyApproved &&
+                  row.status === "pending" ? (
+                    <button
+                      className="review-item__approver-btn"
+                      onClick={() => onApprove(row.id)}
+                    >
+                      {t.approveBtn}
+                    </button>
+                  ) : null}
                   {candidates.map((initial) => {
                     const isCurrentUser = currentUser.initials === initial;
                     const isApproved = approvedInitials.includes(initial);

@@ -69,9 +69,7 @@ export default function EditModal({
     const hasRequiredFields =
       String(form.temple || "").trim() &&
       String(form.location || "").trim() &&
-      String(form.state || "").trim() &&
-      Array.isArray(form.planets) &&
-      form.planets.length > 0;
+      String(form.state || "").trim();
 
     if (!hasRequiredFields) {
       setError(t.requiredFieldsExceptRasiError);

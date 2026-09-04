@@ -2,6 +2,21 @@ import { useState, useEffect, useCallback } from "react";
 
 const API_BASE = "/api/temples";
 
+async function parseJsonSafe(response) {
+  if (!response) return null;
+
+  if (typeof response.text === "function") {
+    const text = await response.text();
+    return text ? JSON.parse(text) : null;
+  }
+
+  if (typeof response.json === "function") {
+    return response.json();
+  }
+
+  return null;
+}
+
 /**
  * Fetches and manages the full temples dataset from the server.
  *
@@ -26,8 +41,11 @@ export default function useTemples(authFetch) {
       setLoading(true);
       setError(null);
       const res = await authFetch(API_BASE);
-      if (!res.ok) throw new Error(`Server error ${res.status}`);
-      setTemples(await res.json());
+      const data = await parseJsonSafe(res);
+      if (!res.ok) {
+        throw new Error(data?.message || `Server error ${res.status}`);
+      }
+      setTemples(Array.isArray(data) ? data : []);
     } catch (err) {
       setError(err.message);
     } finally {

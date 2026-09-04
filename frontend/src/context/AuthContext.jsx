@@ -9,11 +9,18 @@ import {
 import { buildApiUrl } from "../utils/apiUrl";
 
 const AUTH_STORAGE_KEY = "mupporul369-auth";
+const LEGACY_TOKEN_KEY = "mupporul369.authToken";
 const AuthContext = createContext(null);
 
 function readStoredAuth() {
   const raw = globalThis.localStorage?.getItem(AUTH_STORAGE_KEY);
-  if (!raw) return { token: "", user: null };
+  if (!raw) {
+    const legacyToken =
+      globalThis.localStorage?.getItem(LEGACY_TOKEN_KEY) || "";
+    return legacyToken
+      ? { token: legacyToken, user: null }
+      : { token: "", user: null };
+  }
 
   try {
     const parsed = JSON.parse(raw);
@@ -37,6 +44,18 @@ export function AuthProvider({ children }) {
   const clearAuth = useCallback(() => {
     setAuth({ token: "", user: null });
     globalThis.localStorage?.removeItem(AUTH_STORAGE_KEY);
+    globalThis.localStorage?.removeItem(LEGACY_TOKEN_KEY);
+  }, []);
+
+  const normalizeUser = useCallback((candidate) => {
+    if (!candidate || typeof candidate !== "object") return null;
+    return {
+      id: candidate.id || "",
+      mobile: candidate.mobile || "",
+      initials: candidate.initials || "",
+      name: candidate.name || "",
+      role: candidate.role || "admin",
+    };
   }, []);
 
   useEffect(() => {
@@ -58,13 +77,14 @@ export function AuthProvider({ children }) {
         }
 
         const payload = await res.json();
-        if (!payload?.user) {
+        const resolvedUser = normalizeUser(payload?.user || payload);
+        if (!resolvedUser?.id) {
           clearAuth();
           setIsAuthReady(true);
           return;
         }
 
-        const nextAuth = { token: auth.token, user: payload.user };
+        const nextAuth = { token: auth.token, user: resolvedUser };
         setAuth(nextAuth);
         globalThis.localStorage?.setItem(
           AUTH_STORAGE_KEY,
@@ -78,27 +98,32 @@ export function AuthProvider({ children }) {
     }
 
     validateSession();
-  }, [auth.token, clearAuth]);
+  }, [auth.token, clearAuth, normalizeUser]);
 
-  const login = useCallback(async (mobile, password) => {
-    const res = await fetch(buildApiUrl("/api/auth/login"), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mobile, password }),
-    });
+  const login = useCallback(
+    async (mobile, password) => {
+      const res = await fetch(buildApiUrl("/api/auth/login"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile, password }),
+      });
 
-    if (!res.ok) {
-      throw new Error("Invalid mobile number or password");
-    }
+      if (!res.ok) {
+        throw new Error("Invalid mobile number or password");
+      }
 
-    const payload = await res.json();
-    const nextAuth = { token: payload.token, user: payload.user };
-    setAuth(nextAuth);
-    globalThis.localStorage?.setItem(
-      AUTH_STORAGE_KEY,
-      JSON.stringify(nextAuth),
-    );
-  }, []);
+      const payload = await res.json();
+      const resolvedUser = normalizeUser(payload?.user || payload);
+      const nextAuth = { token: payload.token, user: resolvedUser };
+      setAuth(nextAuth);
+      globalThis.localStorage?.setItem(
+        AUTH_STORAGE_KEY,
+        JSON.stringify(nextAuth),
+      );
+      globalThis.localStorage?.removeItem(LEGACY_TOKEN_KEY);
+    },
+    [normalizeUser],
+  );
 
   const logout = useCallback(() => {
     clearAuth();

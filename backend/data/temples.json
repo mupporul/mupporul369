@@ -1,0 +1,233 @@
+[
+  {
+    "house": "மேஷம்",
+    "planets": [
+      "சூரி",
+      "செ"
+    ],
+    "data": [
+      {
+        "id": "a1b2c3d4-0001-0001-0001-000000000001",
+        "temple": "Arulmigu Subramania Swami Temple",
+        "location": "Tiruchendur",
+        "state": "Tamilnadu"
+      },
+      {
+        "id": "a1b2c3d4-0001-0001-0001-000000000002",
+        "temple": "Kanda Swami Temple",
+        "location": "Chennai",
+        "state": "Tamilnadu"
+      }
+    ]
+  },
+  {
+    "house": "ரிஷபம்",
+    "planets": [
+      "சுக்",
+      "சந்"
+    ],
+    "data": [
+      {
+        "id": "a1b2c3d4-0002-0001-0001-000000000001",
+        "temple": "Arulmigu Kamakshi Amman Temple",
+        "location": "Kanchipuram",
+        "state": "Tamilnadu"
+      }
+    ]
+  },
+  {
+    "house": "மிதுனம்",
+    "planets": [
+      "புத",
+      "ராகு"
+    ],
+    "data": [
+      {
+        "id": "a1b2c3d4-0003-0001-0001-000000000001",
+        "temple": "Arulmigu Kailasanathar Temple",
+        "location": "Kanchipuram",
+        "state": "Tamilnadu"
+      },
+      {
+        "id": "a1b2c3d4-0003-0001-0001-000000000002",
+        "temple": "Kapaleeshwarar Temple",
+        "location": "Chennai",
+        "state": "Tamilnadu"
+      }
+    ]
+  },
+  {
+    "house": "கடகம்",
+    "planets": [
+      "சந்",
+      "குரு"
+    ],
+    "data": [
+      {
+        "id": "a1b2c3d4-0004-0001-0001-000000000001",
+        "temple": "Ranganathaswamy Temple",
+        "location": "Srirangam",
+        "state": "Tamilnadu"
+      }
+    ]
+  },
+  {
+    "house": "சிம்மம்",
+    "planets": [
+      "சூரி"
+    ],
+    "data": [
+      {
+        "id": "a1b2c3d4-0005-0001-0001-000000000001",
+        "temple": "Brihadeeswarar Temple",
+        "location": "Thanjavur",
+        "state": "Tamilnadu"
+      },
+      {
+        "id": "a1b2c3d4-0005-0001-0001-000000000002",
+        "temple": "Arulmigu Azhagar Temple",
+        "location": "Madurai",
+        "state": "Tamilnadu"
+      }
+    ]
+  },
+  {
+    "house": "கன்னி",
+    "planets": [
+      "புத",
+      "கேது"
+    ],
+    "data": [
+      {
+        "id": "a1b2c3d4-0006-0001-0001-000000000001",
+        "temple": "Arulmigu Mariamman Temple",
+        "location": "Samayapuram",
+        "state": "Tamilnadu"
+      },
+      {
+        "id": "75b4a0f2-a090-4fbc-ae50-3e6b9bb1150d",
+        "temple": "Uschitha Ganapathy",
+        "location": "Tirunelveli",
+        "state": "Tamilnadu"
+      }
+    ]
+  },
+  {
+    "house": "துலாம்",
+    "planets": [
+      "சுக்",
+      "சனி"
+    ],
+    "data": [
+      {
+        "id": "a1b2c3d4-0007-0001-0001-000000000001",
+        "temple": "Thillai Natarajah Temple",
+        "location": "Chidambaram",
+        "state": "Tamilnadu"
+      }
+    ]
+  },
+  {
+    "house": "விருச்சிகம்",
+    "planets": [
+      "செ",
+      "ராகு"
+    ],
+    "data": [
+      {
+        "id": "a1b2c3d4-0008-0001-0001-000000000001",
+        "temple": "Arulmigu Bhavani Sangameshwarar Temple",
+        "location": "Bhavani",
+        "state": "Tamilnadu"
+      }
+    ]
+  },
+  {
+    "house": "விருச்சிகம்",
+    "planets": [
+      "செ",
+      "குரு"
+    ],
+    "data": [
+      {
+        "id": "a1b2c3d4-0008-0002-0001-000000000001",
+        "temple": "Arulmigu Kuzhandhai Velappar Thirukkovil",
+        "location": "Kodaikanal",
+        "state": "Tamilnadu",
+        "url": "https://www.youtube.com/watch?v=pX5VBhaVPas"
+      }
+    ]
+  },
+  {
+    "house": "தனுசு",
+    "planets": [
+      "குரு"
+    ],
+    "data": [
+      {
+        "id": "a1b2c3d4-0009-0001-0001-000000000001",
+        "temple": "Arulmigu Dhandayuthapani Swami Temple",
+        "location": "Palani",
+        "state": "Tamilnadu"
+      }
+    ]
+  },
+  {
+    "house": "மகரம்",
+    "planets": [
+      "சனி",
+      "புத"
+    ],
+    "data": [
+      {
+        "id": "a1b2c3d4-0010-0001-0001-000000000001",
+        "temple": "Arulmigu Suchindram Temple",
+        "location": "Suchindram",
+        "state": "Tamilnadu"
+      }
+    ]
+  },
+  {
+    "house": "கும்பம்",
+    "planets": [
+      "சனி",
+      "ராகு"
+    ],
+    "data": [
+      {
+        "id": "a1b2c3d4-0011-0001-0001-000000000001",
+        "temple": "Arulmigu Agneeswarar Temple",
+        "location": "Kanjanur",
+        "state": "Tamilnadu"
+      }
+    ]
+  },
+  {
+    "house": "கன்னி",
+    "planets": [
+      "சூரி"
+    ],
+    "data": [
+      {
+        "id": "a1b2c3d4-0012-0001-0001-000000000002",
+        "temple": "Nellaiappar Temple",
+        "location": "Tirunelveli",
+        "state": "Tamilnadu"
+      }
+    ]
+  },
+  {
+    "house": "மீனம்",
+    "planets": [
+      "சனி"
+    ],
+    "data": [
+      {
+        "id": "a1b2c3d4-0012-0001-0001-000000000001",
+        "temple": "Meenakshi Amman Temple",
+        "location": "Madurai",
+        "state": "Tamilnadu"
+      }
+    ]
+  }
+]
