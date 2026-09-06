@@ -40,8 +40,8 @@ async function requestSupabase(relativePath, options = {}) {
     );
   }
 
-  if (response.status === 204) return null;
-  return response.json();
+  const responseText = await response.text();
+  return responseText ? JSON.parse(responseText) : null;
 }
 
 module.exports = { requestSupabase };

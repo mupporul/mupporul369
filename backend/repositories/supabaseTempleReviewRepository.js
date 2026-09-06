@@ -47,11 +47,8 @@ async function requestSupabase(relativePath, options = {}) {
     );
   }
 
-  if (response.status === 204) {
-    return null;
-  }
-
-  return response.json();
+  const responseText = await response.text();
+  return responseText ? JSON.parse(responseText) : null;
 }
 
 function normalizeTempleGroupRow(row) {
@@ -78,7 +75,7 @@ function normalizeReviewRow(row) {
 }
 
 async function replaceTable(tableName, rows) {
-  await requestSupabase(`${tableName}`, {
+  await requestSupabase(`${tableName}?id=not.is.null`, {
     method: "DELETE",
     headers: {
       Prefer: "return=minimal",
