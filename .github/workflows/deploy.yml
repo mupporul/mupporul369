@@ -37,6 +37,7 @@ jobs:
         run: npm run build --prefix frontend
         env:
           VITE_BASE_PATH: /mupporul369/
+          VITE_API_BASE_URL: https://mupporul369-backend.onrender.com
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
