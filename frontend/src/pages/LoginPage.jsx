@@ -34,6 +34,7 @@ export default function LoginPage() {
   const { login } = useAuth();
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [rememberCredentials, setRememberCredentials] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -98,14 +99,46 @@ export default function LoginPage() {
           <label className="login-card__label" htmlFor="password-input">
             {t.passwordLabel}
           </label>
-          <input
-            id="password-input"
-            className="login-card__input"
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            required
-          />
+          <div className="login-card__password-field">
+            <input
+              id="password-input"
+              className="login-card__input"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              required
+            />
+            <button
+              className="login-card__password-toggle"
+              type="button"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              onClick={() => setShowPassword((visible) => !visible)}
+            >
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                {showPassword ? (
+                  <>
+                    <path d="M3 3l18 18" />
+                    <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" />
+                    <path d="M9.9 4.2A10.8 10.8 0 0 1 12 4c5 0 8.7 4 10 8a16.7 16.7 0 0 1-3.1 5.1" />
+                    <path d="M6.6 6.6A16.7 16.7 0 0 0 2 12c1.3 4 5 8 10 8a10.8 10.8 0 0 0 2.1-.2" />
+                  </>
+                ) : (
+                  <>
+                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </>
+                )}
+              </svg>
+            </button>
+          </div>
 
           <label className="login-card__remember">
             <input
