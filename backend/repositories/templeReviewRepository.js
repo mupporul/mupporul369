@@ -14,7 +14,10 @@ function getConfiguredDataProvider() {
 function getTempleReviewRepository() {
   const configuredProvider = getConfiguredDataProvider();
 
-  if (configuredProvider === DATA_PROVIDER_SUPABASE) {
+  if (
+    process.env.NODE_ENV !== "test" &&
+    configuredProvider === DATA_PROVIDER_SUPABASE
+  ) {
     // Lazy-load Supabase repository so JSON mode remains dependency-free.
     const supabaseRepository = require("./supabaseTempleReviewRepository");
     return supabaseRepository;
