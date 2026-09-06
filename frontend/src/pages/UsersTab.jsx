@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLang } from "../context/LangContext";
+import InlineSpinner from "../components/InlineSpinner";
 import "./UsersTab.css";
 
 /**
@@ -16,6 +17,8 @@ export default function UsersTab({ authFetch }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [importingFile, setImportingFile] = useState(false);
+  const [addingUser, setAddingUser] = useState(false);
+  const [deletingUserId, setDeletingUserId] = useState(null);
   const [newUser, setNewUser] = useState({
     mobile: "",
     password: "",
@@ -128,6 +131,7 @@ export default function UsersTab({ authFetch }) {
     }
 
     try {
+      setAddingUser(true);
       const response = await authFetch("/api/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -149,11 +153,14 @@ export default function UsersTab({ authFetch }) {
       setError(null);
     } catch (err) {
       setError(err.message);
+    } finally {
+      setAddingUser(false);
     }
   }
 
   async function handleDeleteUser(userId) {
     try {
+      setDeletingUserId(userId);
       const response = await authFetch(`/api/users/${userId}`, {
         method: "DELETE",
       });
@@ -166,6 +173,8 @@ export default function UsersTab({ authFetch }) {
       setError(null);
     } catch (err) {
       setError(err.message);
+    } finally {
+      setDeletingUserId(null);
     }
   }
 
@@ -279,8 +288,12 @@ export default function UsersTab({ authFetch }) {
             <option value="contributor">Contributor</option>
             <option value="admin">Admin</option>
           </select>
-          <button type="submit" className="users-tab__btn-add">
-            {t.usersAddSubmitBtn}
+          <button
+            type="submit"
+            className="users-tab__btn-add"
+            disabled={addingUser}
+          >
+            {addingUser ? <InlineSpinner label={t.loading} /> : t.usersAddSubmitBtn}
           </button>
         </form>
       </div>
@@ -306,8 +319,13 @@ export default function UsersTab({ authFetch }) {
                   className="users-tab__btn-delete"
                   onClick={() => handleDeleteUser(user.id)}
                   aria-label={t.deleteBtn}
+                  disabled={deletingUserId === user.id}
                 >
-                  {t.deleteBtn}
+                  {deletingUserId === user.id ? (
+                    <InlineSpinner label={t.loading} />
+                  ) : (
+                    t.deleteBtn
+                  )}
                 </button>
               </li>
             ))}

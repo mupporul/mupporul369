@@ -48,7 +48,8 @@ describe("users page", () => {
     });
 
     render(<App />);
-    await screen.findByText("Temple Registry");
+    await screen.findByRole("searchbox");
+    fireEvent.click(screen.getByRole("button", { name: "English" }));
 
     fireEvent.click(screen.getByRole("button", { name: "Users" }));
     await screen.findByText("Create User");

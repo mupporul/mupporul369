@@ -131,6 +131,12 @@
   transform: translateY(-1px);
 }
 
+.users-tab__btn-add:disabled,
+.users-tab__btn-delete:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .users-tab__list {
   list-style: none;
   margin: 0;

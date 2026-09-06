@@ -131,6 +131,13 @@
   outline: none;
 }
 
+.review-item__approver-btn:disabled,
+.review-item__delete-btn:disabled,
+.review-confirm-modal__btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .review-item__approval-label {
   margin: 0.45rem 0 0;
   font-size: 0.75rem;

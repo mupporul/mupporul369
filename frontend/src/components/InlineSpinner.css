@@ -1,0 +1,25 @@
+.inline-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+}
+
+.inline-spinner__circle {
+  width: 0.9rem;
+  height: 0.9rem;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: inline-spinner-rotate 0.7s linear infinite;
+}
+
+.inline-spinner__label {
+  line-height: 1;
+}
+
+@keyframes inline-spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}

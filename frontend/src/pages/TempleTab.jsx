@@ -107,10 +107,6 @@ export default function TempleTab({
 
   return (
     <>
-      <div className="surface-card temples-page__header">
-        <h2>{t.templeRegistryTitle}</h2>
-      </div>
-
       <FilterBar
         rasi={rasi}
         onRasiChange={setRasi}

@@ -52,7 +52,8 @@ describe("reviews page", () => {
     });
 
     render(<App />);
-    await screen.findByText("Temple Registry");
+    await screen.findByRole("searchbox");
+    fireEvent.click(screen.getByRole("button", { name: "English" }));
 
     fireEvent.click(screen.getByRole("button", { name: "Reviews" }));
     await screen.findByText(/pending/i);

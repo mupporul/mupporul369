@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useLang } from "../context/LangContext";
 import { toTitleCase } from "../utils/titleCase";
+import InlineSpinner from "../components/InlineSpinner";
 import "./ReviewTab.css";
 
 const CONTRIBUTOR_INITIALS = ["TR", "RR", "RA", "MA"];
@@ -21,6 +22,8 @@ export default function ReviewTab({
 }) {
   const { t } = useLang();
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
+  const [approvingId, setApprovingId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
   const rows = useMemo(
     () =>
@@ -50,8 +53,23 @@ export default function ReviewTab({
 
   const handleConfirmDelete = async () => {
     if (deleteConfirmId && onDelete) {
-      await onDelete(deleteConfirmId);
-      setDeleteConfirmId(null);
+      const id = deleteConfirmId;
+      try {
+        setDeletingId(id);
+        await onDelete(id);
+        setDeleteConfirmId(null);
+      } finally {
+        setDeletingId(null);
+      }
+    }
+  };
+
+  const handleApprove = async (id) => {
+    try {
+      setApprovingId(id);
+      await onApprove(id);
+    } finally {
+      setApprovingId(null);
     }
   };
 
@@ -142,9 +160,14 @@ export default function ReviewTab({
                   row.status === "pending" ? (
                     <button
                       className="review-item__approver-btn"
-                      onClick={() => onApprove(row.id)}
+                      onClick={() => handleApprove(row.id)}
+                      disabled={approvingId === row.id}
                     >
-                      {t.approveBtn}
+                      {approvingId === row.id ? (
+                        <InlineSpinner label={t.loading} />
+                      ) : (
+                        t.approveBtn
+                      )}
                     </button>
                   ) : null}
                   {candidates.map((initial) => {
@@ -156,9 +179,14 @@ export default function ReviewTab({
                         <button
                           key={initial}
                           className="review-item__approver-btn"
-                          onClick={() => onApprove(row.id)}
+                          onClick={() => handleApprove(row.id)}
+                          disabled={approvingId === row.id}
                         >
-                          {initial}
+                          {approvingId === row.id ? (
+                            <InlineSpinner label={t.loading} />
+                          ) : (
+                            initial
+                          )}
                         </button>
                       );
                     }
@@ -187,6 +215,7 @@ export default function ReviewTab({
                     className="review-item__delete-btn"
                     onClick={() => handleDeleteClick(row.id)}
                     aria-label={t.deleteBtn}
+                    disabled={Boolean(deletingId)}
                   >
                     {t.deleteBtn}
                   </button>
@@ -214,8 +243,13 @@ export default function ReviewTab({
               <button
                 className="review-confirm-modal__btn review-confirm-modal__btn--delete"
                 onClick={handleConfirmDelete}
+                disabled={Boolean(deletingId)}
               >
-                {t.deleteConfirmDeleteBtn}
+                {deletingId ? (
+                  <InlineSpinner label={t.loading} />
+                ) : (
+                  t.deleteConfirmDeleteBtn
+                )}
               </button>
             </div>
           </div>

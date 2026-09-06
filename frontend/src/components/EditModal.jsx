@@ -5,6 +5,7 @@ import { RASI_LIST, UNKNOWN_RASI } from "../constants/rasi";
 import { PLANET_LIST } from "../constants/planets";
 import { INDIAN_STATES } from "../constants/states";
 import { NEW_TEMPLE_DEFAULTS } from "../constants/newTempleDefaults";
+import InlineSpinner from "./InlineSpinner";
 import "./EditModal.css";
 
 /**
@@ -97,7 +98,11 @@ export default function EditModal({
   }
 
   return createPortal(
-    <div className="edit-modal-overlay" onClick={onClose} role="presentation">
+    <div
+      className="edit-modal-overlay"
+      onClick={saving ? undefined : onClose}
+      role="presentation"
+    >
       <div
         className="edit-modal"
         onClick={(e) => e.stopPropagation()}
@@ -213,7 +218,13 @@ export default function EditModal({
             onClick={handleSave}
             disabled={saving}
           >
-            {saving ? "..." : isCreate ? t.addBtn : t.saveBtn}
+            {saving ? (
+              <InlineSpinner label={t.loading} />
+            ) : isCreate ? (
+              t.addBtn
+            ) : (
+              t.saveBtn
+            )}
           </button>
         </div>
 

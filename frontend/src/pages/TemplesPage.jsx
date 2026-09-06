@@ -67,12 +67,9 @@ export default function TemplesPage() {
 
   return (
     <section className="page-stack">
-      <div className="surface-card temples-page__header">
-        <h2>Temple Registry</h2>
-        <button type="button" className="button" onClick={openCreate}>
-          Add Temple
-        </button>
-      </div>
+      <button type="button" className="button" onClick={openCreate}>
+        Add Temple
+      </button>
       <FilterBar
         search={search}
         onSearchChange={setSearch}
