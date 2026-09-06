@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useLang } from "../context/LangContext";
+import InlineSpinner from "../components/InlineSpinner";
 import "./LoginPage.css";
 
 const CREDENTIALS_STORAGE_KEY = "mupporul369-remembered-credentials";
@@ -122,7 +123,11 @@ export default function LoginPage() {
             type="submit"
             disabled={submitting}
           >
-            {submitting ? "..." : t.loginBtn}
+            {submitting ? (
+              <InlineSpinner label={t.loading} />
+            ) : (
+              t.loginBtn
+            )}
           </button>
         </form>
       </section>
