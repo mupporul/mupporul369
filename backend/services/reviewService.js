@@ -71,16 +71,6 @@ function normalizeTemplePayload(payload) {
   };
 }
 
-function findTempleById(groups, templeId) {
-  for (const group of groups) {
-    const temple = group.data.find((item) => item.id === templeId);
-    if (temple) {
-      return temple;
-    }
-  }
-  return null;
-}
-
 function findTempleContextById(groups, templeId) {
   for (const group of groups) {
     const temple = group.data.find((item) => item.id === templeId);

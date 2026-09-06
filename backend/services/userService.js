@@ -1,18 +1,7 @@
 "use strict";
 
 const crypto = require("crypto");
-const fs = require("fs");
-const path = require("path");
-
-const USERS_PATH = path.join(__dirname, "../data/users.json");
-
-function readUsers() {
-  return JSON.parse(fs.readFileSync(USERS_PATH, "utf8"));
-}
-
-function writeUsers(users) {
-  fs.writeFileSync(USERS_PATH, JSON.stringify(users, null, 2), "utf8");
-}
+const { getUserRepository } = require("../repositories/userRepository");
 
 function sanitizeUser(user) {
   return {
@@ -30,12 +19,12 @@ function hashPassword(password) {
   return `scrypt$${salt}$${hash}`;
 }
 
-function getAllUsers() {
-  const users = readUsers();
+async function getAllUsers() {
+  const users = await getUserRepository().findAll();
   return users.map(sanitizeUser);
 }
 
-function createUser(mobile, password, name, initials, role) {
+async function createUser(mobile, password, name, initials, role) {
   const normalizedMobile = String(mobile || "").trim();
   const normalizedName = String(name || "").trim();
   const normalizedInitials = String(initials || "")
@@ -53,7 +42,8 @@ function createUser(mobile, password, name, initials, role) {
     return null;
   }
 
-  const users = readUsers();
+  const repository = getUserRepository();
+  const users = await repository.findAll();
 
   // Check if user already exists
   if (users.some((u) => u.mobile === normalizedMobile)) {
@@ -69,23 +59,13 @@ function createUser(mobile, password, name, initials, role) {
     passwordHash: hashPassword(password),
   };
 
-  users.push(newUser);
-  writeUsers(users);
+  await repository.insert(newUser);
 
   return sanitizeUser(newUser);
 }
 
-function deleteUser(userId) {
-  const users = readUsers();
-  const index = users.findIndex((u) => u.id === userId);
-
-  if (index === -1) {
-    return false;
-  }
-
-  users.splice(index, 1);
-  writeUsers(users);
-  return true;
+async function deleteUser(userId) {
+  return getUserRepository().remove(userId);
 }
 
 module.exports = {

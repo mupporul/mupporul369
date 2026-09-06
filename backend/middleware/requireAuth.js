@@ -9,9 +9,9 @@ function extractToken(authHeader) {
   return withoutBearer;
 }
 
-function requireAuth(req, res, next) {
+async function requireAuth(req, res, next) {
   const token = extractToken(req.headers.authorization);
-  const user = getUserFromToken(token);
+  const user = await getUserFromToken(token);
 
   if (!user) {
     return res.status(401).json({ error: "Unauthorized" });

@@ -3,14 +3,10 @@
 const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
+const { getUserRepository } = require("../repositories/userRepository");
 
-const USERS_PATH = path.join(__dirname, "../data/users.json");
 const SESSIONS_PATH = path.join(__dirname, "../data/sessions.json");
 const TOKEN_TTL_MS = 1000 * 60 * 60 * 12;
-
-function readUsers() {
-  return JSON.parse(fs.readFileSync(USERS_PATH, "utf8"));
-}
 
 function readSessions() {
   try {
@@ -60,7 +56,7 @@ function createSession(user) {
   return token;
 }
 
-function getUserFromToken(token) {
+async function getUserFromToken(token) {
   const sessions = readSessions();
   const session = sessions[token];
 
@@ -71,17 +67,17 @@ function getUserFromToken(token) {
     return null;
   }
 
-  const user = readUsers().find((item) => item.id === session.userId);
+  const user = await getUserRepository().findById(session.userId);
   return user ? sanitizeUser(user) : null;
 }
 
-function loginUser(mobile, password) {
+async function loginUser(mobile, password) {
   const normalizedMobile = String(mobile || "").trim();
   if (!/^\d{12}$/.test(normalizedMobile) || !password) {
     return null;
   }
 
-  const user = readUsers().find((item) => item.mobile === normalizedMobile);
+  const user = await getUserRepository().findByMobile(normalizedMobile);
   if (!user || !verifyPassword(password, user.passwordHash)) {
     return null;
   }

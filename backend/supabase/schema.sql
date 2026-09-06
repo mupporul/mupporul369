@@ -3,6 +3,18 @@
 
 create extension if not exists pgcrypto;
 
+create table if not exists public.users (
+  id text primary key,
+  mobile text not null unique,
+  initials text not null,
+  name text,
+  role text not null check (role in ('user', 'contributor', 'admin')),
+  password_hash text not null,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists idx_users_mobile on public.users (mobile);
+
 create table if not exists public.temple_groups (
   id uuid primary key default gen_random_uuid(),
   house text not null,

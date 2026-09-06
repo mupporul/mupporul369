@@ -6,13 +6,13 @@ const requireAuth = require("../middleware/requireAuth");
 
 const router = express.Router();
 
-router.post("/login", (req, res) => {
+router.post("/login", async (req, res) => {
   const { mobile, password } = req.body || {};
   if (typeof mobile !== "string" || typeof password !== "string") {
     return res.status(400).json({ error: "Mobile and password are required" });
   }
 
-  const loggedIn = loginUser(mobile, password);
+  const loggedIn = await loginUser(mobile, password);
   if (!loggedIn) {
     return res.status(401).json({ error: "Invalid credentials" });
   }

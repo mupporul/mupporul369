@@ -16,9 +16,9 @@ router.use(requireAuth);
 router.use(requireRole(["admin"]));
 
 // GET /api/users — list all users
-router.get("/", (_req, res) => {
+router.get("/", async (_req, res) => {
   try {
-    const users = getAllUsers();
+    const users = await getAllUsers();
     return res.json(users);
   } catch {
     return res.status(500).json({ error: "Failed to fetch users" });
@@ -26,7 +26,7 @@ router.get("/", (_req, res) => {
 });
 
 // POST /api/users — create new user
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const { mobile, password, name, initials, role } = req.body;
 
@@ -38,7 +38,7 @@ router.post("/", (req, res) => {
       return res.status(400).json({ error: "Mobile must be 12 digits" });
     }
 
-    const user = createUser(mobile, password, name, initials, role);
+    const user = await createUser(mobile, password, name, initials, role);
     if (!user) {
       return res
         .status(400)
@@ -52,10 +52,10 @@ router.post("/", (req, res) => {
 });
 
 // DELETE /api/users/:id — delete user
-router.delete("/:id", (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const success = deleteUser(id);
+    const success = await deleteUser(id);
 
     if (!success) {
       return res.status(404).json({ error: "User not found" });
