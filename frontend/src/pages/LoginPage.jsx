@@ -24,6 +24,34 @@ function readRememberedCredentials() {
   }
 }
 
+function PasswordVisibilityIcon({ visible }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {visible ? (
+        <>
+          <path d="M3 3l18 18" />
+          <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" />
+          <path d="M9.9 4.2A10.8 10.8 0 0 1 12 4c5 0 8.7 4 10 8a16.7 16.7 0 0 1-3.1 5.1" />
+          <path d="M6.6 6.6A16.7 16.7 0 0 0 2 12c1.3 4 5 8 10 8a10.8 10.8 0 0 0 2.1-.2" />
+        </>
+      ) : (
+        <>
+          <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+          <circle cx="12" cy="12" r="3" />
+        </>
+      )}
+    </svg>
+  );
+}
+
 /**
  * Login page using mobile number + password.
  *
@@ -31,10 +59,20 @@ function readRememberedCredentials() {
  */
 export default function LoginPage() {
   const { t } = useLang();
-  const { login } = useAuth();
+  const { changePassword, login } = useAuth();
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [changePasswordForm, setChangePasswordForm] = useState({
+    mobile: "",
+    oldPassword: "",
+    newPassword: "",
+  });
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [changePasswordMessage, setChangePasswordMessage] = useState("");
+  const [changePasswordError, setChangePasswordError] = useState("");
   const [rememberCredentials, setRememberCredentials] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -75,13 +113,133 @@ export default function LoginPage() {
     }
   }
 
+  async function handleChangePassword(event) {
+    event.preventDefault();
+    setChangePasswordMessage("");
+    setChangePasswordError("");
+
+    if (
+      changePasswordForm.oldPassword === changePasswordForm.newPassword
+    ) {
+      setChangePasswordError(t.changePasswordDifferentError);
+      return;
+    }
+
+    try {
+      await changePassword(
+        changePasswordForm.mobile,
+        changePasswordForm.oldPassword,
+        changePasswordForm.newPassword,
+      );
+      setChangePasswordForm({ mobile: "", oldPassword: "", newPassword: "" });
+      setChangePasswordMessage(t.changePasswordSuccess);
+    } catch (err) {
+      setChangePasswordError(err.message);
+    }
+  }
+
+  function updateChangePasswordField(field, value) {
+    setChangePasswordForm((current) => ({ ...current, [field]: value }));
+  }
+
   return (
     <main className="login-page">
       <section className="login-card">
         <h1 className="login-card__title">MupporuL369</h1>
-        <p className="login-card__subtitle">{t.loginSubtitle}</p>
+        <p className="login-card__subtitle">
+          {showChangePassword ? t.changePasswordSubtitle : t.loginSubtitle}
+        </p>
 
-        <form className="login-card__form" onSubmit={handleSubmit}>
+        {showChangePassword ? (
+          <form className="login-card__form" onSubmit={handleChangePassword}>
+            <label className="login-card__label" htmlFor="change-mobile-input">
+              {t.mobileLabel}
+            </label>
+            <input
+              id="change-mobile-input"
+              className="login-card__input"
+              type="tel"
+              inputMode="numeric"
+              placeholder="919876543210"
+              value={changePasswordForm.mobile}
+              onChange={(event) =>
+                updateChangePasswordField("mobile", event.target.value)
+              }
+              required
+            />
+
+            <label className="login-card__label" htmlFor="old-password-input">
+              {t.oldPasswordLabel}
+            </label>
+            <div className="login-card__password-field">
+              <input
+                id="old-password-input"
+                className="login-card__input"
+                type={showOldPassword ? "text" : "password"}
+                value={changePasswordForm.oldPassword}
+                onChange={(event) =>
+                  updateChangePasswordField("oldPassword", event.target.value)
+                }
+                required
+              />
+              <button
+                className="login-card__password-toggle"
+                type="button"
+                aria-label={showOldPassword ? "Hide old password" : "Show old password"}
+                onClick={() => setShowOldPassword((visible) => !visible)}
+              >
+                <PasswordVisibilityIcon visible={showOldPassword} />
+              </button>
+            </div>
+
+            <label className="login-card__label" htmlFor="new-password-input">
+              {t.newPasswordLabel}
+            </label>
+            <div className="login-card__password-field">
+              <input
+                id="new-password-input"
+                className="login-card__input"
+                type={showNewPassword ? "text" : "password"}
+                value={changePasswordForm.newPassword}
+                onChange={(event) =>
+                  updateChangePasswordField("newPassword", event.target.value)
+                }
+                required
+              />
+              <button
+                className="login-card__password-toggle"
+                type="button"
+                aria-label={showNewPassword ? "Hide new password" : "Show new password"}
+                onClick={() => setShowNewPassword((visible) => !visible)}
+              >
+                <PasswordVisibilityIcon visible={showNewPassword} />
+              </button>
+            </div>
+
+            {changePasswordError && (
+              <p className="login-card__error">{changePasswordError}</p>
+            )}
+            {changePasswordMessage && (
+              <p className="login-card__success">{changePasswordMessage}</p>
+            )}
+
+            <button className="login-card__submit" type="submit">
+              {t.changePasswordBtn}
+            </button>
+            <button
+              className="login-card__link"
+              type="button"
+              onClick={() => {
+                setShowChangePassword(false);
+                setChangePasswordError("");
+                setChangePasswordMessage("");
+              }}
+            >
+              {t.backToLoginLink}
+            </button>
+          </form>
+        ) : (
+          <form className="login-card__form" onSubmit={handleSubmit}>
           <label className="login-card__label" htmlFor="mobile-input">
             {t.mobileLabel}
           </label>
@@ -162,7 +320,15 @@ export default function LoginPage() {
               t.loginBtn
             )}
           </button>
-        </form>
+            <button
+              className="login-card__link"
+              type="button"
+              onClick={() => setShowChangePassword(true)}
+            >
+              {t.changePasswordLink}
+            </button>
+          </form>
+        )}
       </section>
     </main>
   );

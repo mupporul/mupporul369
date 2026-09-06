@@ -27,6 +27,14 @@ const jsonRepository = {
     fs.writeFileSync(USERS_PATH, JSON.stringify(remaining, null, 2), "utf8");
     return true;
   },
+  updatePasswordHash: async (id, passwordHash) => {
+    const users = JSON.parse(fs.readFileSync(USERS_PATH, "utf8"));
+    const user = users.find((candidate) => candidate.id === id);
+    if (!user) return false;
+    user.passwordHash = passwordHash;
+    fs.writeFileSync(USERS_PATH, JSON.stringify(users, null, 2), "utf8");
+    return true;
+  },
 };
 
 function getUserRepository() {

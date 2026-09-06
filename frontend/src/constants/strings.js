@@ -103,6 +103,15 @@ const STRINGS = {
     passwordLabel: "கடவுச்சொல்",
     rememberCredentialsLabel: "பயனர் எண் மற்றும் கடவுச்சொல் நினைவில் கொள்ளவும்",
     loginBtn: "உள்நுழை",
+    changePasswordLink: "கடவுச்சொல்லை மாற்று",
+    backToLoginLink: "உள்நுழைவுக்குத் திரும்பு",
+    changePasswordSubtitle: "உங்கள் கடவுச்சொல்லை மாற்றவும்",
+    oldPasswordLabel: "பழைய கடவுச்சொல்",
+    newPasswordLabel: "புதிய கடவுச்சொல்",
+    changePasswordBtn: "கடவுச்சொல்லைப் புதுப்பி",
+    changePasswordSuccess: "கடவுச்சொல் வெற்றிகரமாக புதுப்பிக்கப்பட்டது",
+    changePasswordDifferentError:
+      "புதிய கடவுச்சொல் பழைய கடவுச்சொல்லிலிருந்து வேறுபட்டதாக இருக்க வேண்டும்",
 
     // Review
     reviewEmpty: "பரிசீலனைக்கு நிலுவை இல்லை",
@@ -229,6 +238,15 @@ const STRINGS = {
     passwordLabel: "Password",
     rememberCredentialsLabel: "Remember username and password",
     loginBtn: "Login",
+    changePasswordLink: "Change password",
+    backToLoginLink: "Back to login",
+    changePasswordSubtitle: "Update your password",
+    oldPasswordLabel: "Old password",
+    newPasswordLabel: "New password",
+    changePasswordBtn: "Update password",
+    changePasswordSuccess: "Password updated successfully",
+    changePasswordDifferentError:
+      "New password must be different from the old password",
 
     // Review
     reviewEmpty: "No pending reviews",

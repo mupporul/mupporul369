@@ -60,4 +60,20 @@ async function remove(id) {
   return rows.length > 0;
 }
 
-module.exports = { findByMobile, findById, findAll, insert, remove };
+async function updatePasswordHash(id, passwordHash) {
+  const rows = await requestSupabase(`users?id=eq.${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    headers: { Prefer: "return=representation" },
+    body: JSON.stringify({ password_hash: passwordHash }),
+  });
+  return rows.length > 0;
+}
+
+module.exports = {
+  findByMobile,
+  findById,
+  findAll,
+  insert,
+  remove,
+  updatePasswordHash,
+};

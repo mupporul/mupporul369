@@ -35,6 +35,12 @@ function verifyPassword(password, hashValue) {
   return crypto.timingSafeEqual(actual, expected);
 }
 
+function hashPassword(password) {
+  const salt = crypto.randomBytes(16).toString("hex");
+  const hash = crypto.scryptSync(password, salt, 64).toString("hex");
+  return `scrypt$${salt}$${hash}`;
+}
+
 function sanitizeUser(user) {
   return {
     id: user.id,
@@ -87,7 +93,28 @@ async function loginUser(mobile, password) {
   return { token, user: safeUser };
 }
 
+async function changePassword(mobile, oldPassword, newPassword) {
+  const normalizedMobile = String(mobile || "").trim();
+  if (
+    !/^\d{12}$/.test(normalizedMobile) ||
+    !oldPassword ||
+    !newPassword ||
+    oldPassword === newPassword
+  ) {
+    return false;
+  }
+
+  const repository = getUserRepository();
+  const user = await repository.findByMobile(normalizedMobile);
+  if (!user || !verifyPassword(oldPassword, user.passwordHash)) {
+    return false;
+  }
+
+  return repository.updatePasswordHash(user.id, hashPassword(newPassword));
+}
+
 module.exports = {
+  changePassword,
   getUserFromToken,
   loginUser,
 };

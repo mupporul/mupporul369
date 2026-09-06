@@ -126,3 +126,19 @@
   color: var(--accent);
   font-size: 0.82rem;
 }
+
+.login-card__success {
+  margin: 0.2rem 0 0;
+  color: var(--success, #287a4d);
+  font-size: 0.82rem;
+}
+
+.login-card__link {
+  justify-self: center;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font-size: 0.82rem;
+  text-decoration: underline;
+  cursor: pointer;
+}

@@ -125,6 +125,18 @@ export function AuthProvider({ children }) {
     [normalizeUser],
   );
 
+  const changePassword = useCallback(async (mobile, oldPassword, newPassword) => {
+    const res = await fetch(buildApiUrl("/api/auth/change-password"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mobile, oldPassword, newPassword }),
+    });
+
+    if (!res.ok) {
+      throw new Error("Invalid mobile number or old password");
+    }
+  }, []);
+
   const logout = useCallback(() => {
     clearAuth();
   }, [clearAuth]);
@@ -151,10 +163,19 @@ export function AuthProvider({ children }) {
       token: auth.token,
       isAuthReady,
       login,
+      changePassword,
       logout,
       authFetch,
     }),
-    [auth.user, auth.token, isAuthReady, login, logout, authFetch],
+    [
+      auth.user,
+      auth.token,
+      isAuthReady,
+      login,
+      changePassword,
+      logout,
+      authFetch,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -163,7 +184,7 @@ export function AuthProvider({ children }) {
 /**
  * Returns auth state and auth actions.
  *
- * @returns {{ user: Object|null, token: string, isAuthReady: boolean, login: Function, logout: Function, authFetch: Function }}
+ * @returns {{ user: Object|null, token: string, isAuthReady: boolean, login: Function, changePassword: Function, logout: Function, authFetch: Function }}
  */
 export function useAuth() {
   return useContext(AuthContext);
