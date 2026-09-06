@@ -73,6 +73,7 @@ export default function LoginPage() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [changePasswordMessage, setChangePasswordMessage] = useState("");
   const [changePasswordError, setChangePasswordError] = useState("");
+  const [changePasswordSubmitting, setChangePasswordSubmitting] = useState(false);
   const [rememberCredentials, setRememberCredentials] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -125,6 +126,7 @@ export default function LoginPage() {
       return;
     }
 
+    setChangePasswordSubmitting(true);
     try {
       await changePassword(
         changePasswordForm.mobile,
@@ -135,6 +137,8 @@ export default function LoginPage() {
       setChangePasswordMessage(t.changePasswordSuccess);
     } catch (err) {
       setChangePasswordError(err.message);
+    } finally {
+      setChangePasswordSubmitting(false);
     }
   }
 
@@ -223,8 +227,16 @@ export default function LoginPage() {
               <p className="login-card__success">{changePasswordMessage}</p>
             )}
 
-            <button className="login-card__submit" type="submit">
-              {t.changePasswordBtn}
+            <button
+              className="login-card__submit"
+              type="submit"
+              disabled={changePasswordSubmitting}
+            >
+              {changePasswordSubmitting ? (
+                <InlineSpinner label={t.loading} />
+              ) : (
+                t.changePasswordBtn
+              )}
             </button>
             <button
               className="login-card__link"
