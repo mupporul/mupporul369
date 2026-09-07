@@ -46,4 +46,33 @@ describe("auth routes", () => {
     expect(me.body.user.role).toBe("admin");
     expect(me.body.user.name).toBe("SA");
   });
+
+  it("uses an in-memory session store instead of sessions.json", async () => {
+    const fs = require("fs");
+    const originalWriteFileSync = fs.writeFileSync;
+    const writeSpy = jest.spyOn(fs, "writeFileSync").mockImplementation((filePath, ...args) => {
+      if (String(filePath).includes("sessions.json")) {
+        throw new Error("sessions.json should not be used for auth sessions");
+      }
+      return originalWriteFileSync.call(fs, filePath, ...args);
+    });
+
+    try {
+      const login = await request(app).post("/api/auth/login").send({
+        mobile: "919876543210",
+        password: "test1234",
+      });
+
+      const me = await request(app)
+        .get("/api/auth/me")
+        .set("Authorization", `Bearer ${login.body.token}`);
+
+      expect(login.status).toBe(200);
+      expect(login.body.user.mobile).toBe("919876543210");
+      expect(me.status).toBe(200);
+      expect(me.body.user.name).toBe("Thangaraj");
+    } finally {
+      writeSpy.mockRestore();
+    }
+  });
 });

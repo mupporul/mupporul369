@@ -1,25 +1,10 @@
 "use strict";
 
 const crypto = require("crypto");
-const fs = require("fs");
-const path = require("path");
 const { getUserRepository } = require("../repositories/userRepository");
+const { getSessionRepository } = require("../repositories/sessionRepository");
 
-const SESSIONS_PATH = path.join(__dirname, "../data/sessions.json");
 const TOKEN_TTL_MS = 1000 * 60 * 60 * 12;
-
-function readSessions() {
-  try {
-    const data = fs.readFileSync(SESSIONS_PATH, "utf8");
-    return JSON.parse(data);
-  } catch {
-    return {};
-  }
-}
-
-function writeSessions(sessions) {
-  fs.writeFileSync(SESSIONS_PATH, JSON.stringify(sessions, null, 2), "utf8");
-}
 
 function parseHash(hashValue) {
   const parts = String(hashValue || "").split("$");
@@ -51,25 +36,21 @@ function sanitizeUser(user) {
   };
 }
 
-function createSession(user) {
+async function createSession(user) {
   const token = crypto.randomUUID();
-  const sessions = readSessions();
-  sessions[token] = {
-    userId: user.id,
-    expiresAt: Date.now() + TOKEN_TTL_MS,
-  };
-  writeSessions(sessions);
+  const expiresAt = Date.now() + TOKEN_TTL_MS;
+  const repository = getSessionRepository();
+  await repository.createSession(token, user.id, expiresAt);
   return token;
 }
 
 async function getUserFromToken(token) {
-  const sessions = readSessions();
-  const session = sessions[token];
+  const repository = getSessionRepository();
+  const session = await repository.findByToken(token);
 
   if (!session) return null;
   if (session.expiresAt < Date.now()) {
-    delete sessions[token];
-    writeSessions(sessions);
+    await repository.deleteByToken(token);
     return null;
   }
 
@@ -89,7 +70,7 @@ async function loginUser(mobile, password) {
   }
 
   const safeUser = sanitizeUser(user);
-  const token = createSession(safeUser);
+  const token = await createSession(safeUser);
   return { token, user: safeUser };
 }
 
