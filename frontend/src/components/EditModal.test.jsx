@@ -9,6 +9,47 @@ function renderWithLang(ui) {
 }
 
 describe("EditModal cancel behavior", () => {
+  it("calls onClose when X icon is clicked in edit mode", async () => {
+    const onClose = vi.fn();
+
+    renderWithLang(
+      <EditModal
+        temple={{
+          id: "id-x-edit",
+          temple: "Meenakshi Amman Temple",
+          location: "Madurai",
+          state: "Tamil Nadu",
+          house: "மீனம்",
+          planets: ["சனி"],
+        }}
+        mode="edit"
+        onSave={vi.fn()}
+        onCreate={vi.fn()}
+        onClose={onClose}
+      />,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "மூடு" }));
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("calls onClose when X icon is clicked in create mode", async () => {
+    const onClose = vi.fn();
+
+    renderWithLang(
+      <EditModal
+        temple={null}
+        mode="create"
+        onSave={vi.fn()}
+        onCreate={vi.fn()}
+        onClose={onClose}
+      />,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "மூடு" }));
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
   it("calls onClose when cancel is clicked in edit mode", async () => {
     const onClose = vi.fn();
     const onSave = vi.fn();

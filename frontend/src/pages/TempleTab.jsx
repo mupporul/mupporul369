@@ -18,6 +18,7 @@ export default function TempleTab({
   error,
   canContribute,
   addTempleClickCount,
+  onAddTempleRequestConsumed,
   onCreate,
   onPatch,
   onProposalQueued,
@@ -35,7 +36,8 @@ export default function TempleTab({
     if (!canContribute || addTempleClickCount === 0) return;
     setModalMode("create");
     setEditingTemple(null);
-  }, [addTempleClickCount, canContribute]);
+    onAddTempleRequestConsumed?.();
+  }, [addTempleClickCount, canContribute, onAddTempleRequestConsumed]);
 
   function openEditModal(row) {
     if (!canContribute) return;
@@ -148,8 +150,6 @@ export default function TempleTab({
         onCreate={async (payload) => {
           setSubmitMessage("");
           await onCreate(payload);
-          setSubmitMessage(t.reviewQueuedMessage);
-          await onProposalQueued();
         }}
         onSave={async (id, payload) => {
           setSubmitMessage("");

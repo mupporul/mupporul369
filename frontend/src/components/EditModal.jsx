@@ -111,6 +111,15 @@ export default function EditModal({
         aria-modal="true"
         aria-label={isCreate ? t.modalAriaLabelAdd : t.modalAriaLabel}
       >
+        <button
+          type="button"
+          className="edit-modal__icon-close"
+          onClick={onClose}
+          disabled={saving}
+          aria-label={t.detailsCloseBtn}
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
         <div className="edit-modal__handle" aria-hidden="true" />
         <h2 className="edit-modal__title">
           {isCreate ? t.modalTitleAdd : t.modalTitle}

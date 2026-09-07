@@ -50,6 +50,10 @@ function AuthenticatedApp({ user, logout }) {
     await fetchReviews();
   }
 
+  function handleAddTempleRequestConsumed() {
+    setAddTempleClickCount(0);
+  }
+
   async function handleApprove(reviewId) {
     const payload = await approveReview(reviewId);
     if (payload.applied) {
@@ -79,6 +83,13 @@ function AuthenticatedApp({ user, logout }) {
       throw new Error(`Update failed (${response.status})`);
     }
     return response.json();
+  }
+
+  async function handleTempleCreate(payload) {
+    const result = await queueTempleCreate(payload);
+    await fetchReviews();
+    setActiveTab("review");
+    return result;
   }
 
   async function handleDelete(reviewId) {
@@ -124,7 +135,8 @@ function AuthenticatedApp({ user, logout }) {
           error={error}
           canContribute={canContribute}
           addTempleClickCount={addTempleClickCount}
-          onCreate={queueTempleCreate}
+          onAddTempleRequestConsumed={handleAddTempleRequestConsumed}
+          onCreate={handleTempleCreate}
           onPatch={queueTempleEdit}
           onProposalQueued={handleProposalQueued}
         />

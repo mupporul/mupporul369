@@ -18,6 +18,32 @@
   max-height: 90dvh;
   overflow-y: auto;
   animation: em-slide-up 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+}
+
+.edit-modal__icon-close {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.75rem;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: 999px;
+  background: var(--modal-surface-bg);
+  color: var(--text-soft);
+  font-size: 1.35rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.edit-modal__icon-close:hover,
+.edit-modal__icon-close:focus-visible {
+  color: var(--text-strong);
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 
 @keyframes em-slide-up {

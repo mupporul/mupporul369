@@ -219,4 +219,74 @@ describe("App", () => {
       ).toBe(true);
     });
   });
+
+  it("redirects to review tab after add temple and avoids temple queued message", async () => {
+    const storedUser = {
+      id: "u-contrib-001",
+      mobile: "919876543210",
+      initials: "TR",
+      role: "contributor",
+    };
+
+    globalThis.fetch = vi.fn((url, options = {}) => {
+      if (url === "/api/auth/me") {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ user: storedUser }),
+        });
+      }
+
+      if (url === "/api/temples" && options.method === "POST") {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ queuedReview: { id: "r-add-1" } }),
+        });
+      }
+
+      if (url === "/api/temples") {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(SAMPLE_TEMPLE_GROUPS),
+        });
+      }
+
+      if (url === "/api/reviews") {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve([]) });
+      }
+
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+    });
+
+    setStoredAuth(storedUser, "test-token");
+    render(<App />);
+
+    expect(
+      await screen.findByText("Arulmigu Subramania Swami Temple"),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "கோவில் சேர்" }));
+    expect(
+      await screen.findByRole("dialog", { name: "புதிய கோவில் சேர்" }),
+    ).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText("கோவில்", { selector: "input" }), {
+      target: { value: "Integration Add Temple" },
+    });
+    fireEvent.change(screen.getByLabelText("இடம்", { selector: "input" }), {
+      target: { value: "Chennai" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "சனி" }));
+    fireEvent.click(screen.getByRole("button", { name: "சேர்க்கவும்" }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "பரிசீலனை" }),
+      ).toHaveAttribute("aria-current", "page");
+    });
+
+    expect(screen.queryByText("பரிசீலனைக்கு அனுப்பப்பட்டது")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Temple add request queued for review."),
+    ).not.toBeInTheDocument();
+  });
 });
