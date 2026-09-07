@@ -5,6 +5,43 @@
   font-size: 0.95rem;
 }
 
+.temple-tab__loading-ring {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 5.5rem;
+  min-height: 2.5rem;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  isolation: isolate;
+}
+
+.temple-tab__loading-ring::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: inherit;
+  animation: temple-loading-ring 0.8s linear infinite;
+}
+
+.temple-tab__loading-ring::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border-radius: inherit;
+  background: var(--card-bg);
+  z-index: -1;
+}
+
+@keyframes temple-loading-ring {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .temple-tab__status--error {
   color: var(--accent);
 }

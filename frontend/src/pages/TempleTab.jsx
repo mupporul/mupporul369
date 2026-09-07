@@ -120,7 +120,9 @@ export default function TempleTab({
 
       {loading && (
         <p className="temple-tab__status" role="status">
-          {t.loading}
+          <span className="temple-tab__loading-ring">
+            {t.loading}
+          </span>
         </p>
       )}
       {error && (
