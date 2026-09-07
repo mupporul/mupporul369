@@ -33,4 +33,24 @@ describe("TopAppBar profile card", () => {
     expect(screen.getByText("பெயர்: Thangaraj")).toBeInTheDocument();
     expect(screen.getByText("மொபைல்: 919876543210")).toBeInTheDocument();
   });
+
+  it("falls back to initials when name is missing", async () => {
+    renderWithProviders(
+      <TopAppBar
+        user={{
+          id: "u-2",
+          mobile: "919876543200",
+          initials: "SA",
+          role: "admin",
+        }}
+        onLogout={() => {}}
+      />,
+    );
+
+    await userEvent.click(screen.getByLabelText("Account menu"));
+    await userEvent.click(screen.getByRole("button", { name: "சுயவிவரம்" }));
+
+    expect(screen.getByText("SA")).toBeInTheDocument();
+    expect(screen.getByText("பெயர்: SA")).toBeInTheDocument();
+  });
 });

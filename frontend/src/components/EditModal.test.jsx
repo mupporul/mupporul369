@@ -279,7 +279,9 @@ describe("EditModal cancel behavior", () => {
     await userEvent.click(screen.getByRole("button", { name: "சேமி" }));
 
     expect(onSave).toHaveBeenCalledTimes(1);
-    expect(screen.getByText("நீங்கள் எந்த மாற்றமும் செய்யவில்லை.")).toBeInTheDocument();
+    expect(
+      screen.getByText("நீங்கள் எந்த மாற்றமும் செய்யவில்லை."),
+    ).toBeInTheDocument();
     expect(onClose).not.toHaveBeenCalled();
 
     await userEvent.click(screen.getByRole("button", { name: "சரி" }));

@@ -71,7 +71,9 @@ describe("TempleRow", () => {
       url: "https://www.youtube.com/watch?v=pX5VBhaVPas",
     };
 
-    renderWithLang(<TempleRow row={row} onEdit={null} onViewDetails={vi.fn()} />);
+    renderWithLang(
+      <TempleRow row={row} onEdit={null} onViewDetails={vi.fn()} />,
+    );
 
     const link = screen.getByRole("link", {
       name: "kuzhandhai velappar Watch this video",
@@ -97,7 +99,9 @@ describe("TempleRow", () => {
       planets: ["செ", "ராகு"],
     };
 
-    renderWithLang(<TempleRow row={row} onEdit={null} onViewDetails={vi.fn()} />);
+    renderWithLang(
+      <TempleRow row={row} onEdit={null} onViewDetails={vi.fn()} />,
+    );
 
     expect(screen.queryByRole("link")).not.toBeInTheDocument();
   });

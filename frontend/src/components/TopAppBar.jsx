@@ -26,6 +26,7 @@ export default function TopAppBar({ user, onLogout }) {
   const { theme, setTheme, themes } = useTheme();
   const accountMenuRef = useRef(null);
   const [profileOpen, setProfileOpen] = useState(false);
+  const displayName = user.name || user.initials || "-";
 
   useEffect(() => {
     function handleOutsidePointerDown(event) {
@@ -195,8 +196,9 @@ export default function TopAppBar({ user, onLogout }) {
                 <p className="top-app-bar__account-id">
                   {user.initials} · {user.role}
                 </p>
+                <p className="top-app-bar__profile-name">{displayName}</p>
                 <p className="top-app-bar__profile-line">
-                  {t.profileNameLabel}: {user.name || user.initials}
+                  {t.profileNameLabel}: {displayName}
                 </p>
                 <p className="top-app-bar__profile-line">
                   {t.profileMobileLabel}: {user.mobile}

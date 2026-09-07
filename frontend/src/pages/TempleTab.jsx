@@ -124,9 +124,7 @@ export default function TempleTab({
         </p>
       )}
       {error && (
-        <p className="temple-tab__status temple-tab__status--error">
-          {error}
-        </p>
+        <p className="temple-tab__status temple-tab__status--error">{error}</p>
       )}
       {submitMessage && (
         <p className="temple-tab__status" role="status">

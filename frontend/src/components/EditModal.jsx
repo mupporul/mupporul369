@@ -256,7 +256,9 @@ export default function EditModal({
               aria-modal="true"
               aria-label={t.noEditChangesMessage}
             >
-              <p className="edit-modal__notice-text">{t.noEditChangesMessage}</p>
+              <p className="edit-modal__notice-text">
+                {t.noEditChangesMessage}
+              </p>
               <button
                 type="button"
                 className="edit-modal__notice-ok"
