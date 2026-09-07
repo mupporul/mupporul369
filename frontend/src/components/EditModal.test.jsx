@@ -85,6 +85,8 @@ describe("EditModal cancel behavior", () => {
 
   it("submits create payload with optional url", async () => {
     const onCreate = vi.fn().mockResolvedValue(undefined);
+    const significanceText =
+      "Navagraha pariharam, ancestral vow, 108-deepam; symbols @#$%^&*()[]{}<>?/, தமிழ் + English.";
 
     renderWithLang(
       <EditModal
@@ -112,6 +114,10 @@ describe("EditModal cancel behavior", () => {
       screen.getByLabelText("YouTube URL", { selector: "input" }),
       "https://www.youtube.com/watch?v=pX5VBhaVPas",
     );
+    await userEvent.type(
+      screen.getByLabelText("முக்கியத்துவம்", { selector: "textarea" }),
+      significanceText,
+    );
     await userEvent.click(screen.getByRole("button", { name: "செ" }));
 
     await userEvent.click(screen.getByRole("button", { name: "சேர்க்கவும்" }));
@@ -122,12 +128,15 @@ describe("EditModal cancel behavior", () => {
         location: "Kodaikanal",
         state: "Tamilnadu",
         url: "https://www.youtube.com/watch?v=pX5VBhaVPas",
+        significance: significanceText,
       }),
     );
   });
 
   it("submits edit payload with empty url when cleared", async () => {
     const onSave = vi.fn().mockResolvedValue(undefined);
+    const significanceText =
+      "ரகசிய அர்த்தம், lineage-note, commas, semi-colons; and symbols <>[]{}|~`!";
 
     renderWithLang(
       <EditModal
@@ -137,6 +146,7 @@ describe("EditModal cancel behavior", () => {
           location: "Kodaikanal",
           state: "Tamilnadu",
           url: "https://www.youtube.com/watch?v=pX5VBhaVPas",
+          significance: "Old significance",
           house: "விருச்சிகம்",
           planets: ["செ", "குரு"],
         }}
@@ -151,12 +161,18 @@ describe("EditModal cancel behavior", () => {
       selector: "input",
     });
     await userEvent.clear(urlInput);
+    const significanceInput = screen.getByLabelText("முக்கியத்துவம்", {
+      selector: "textarea",
+    });
+    await userEvent.clear(significanceInput);
+    await userEvent.type(significanceInput, significanceText);
     await userEvent.click(screen.getByRole("button", { name: "சேமி" }));
 
     expect(onSave).toHaveBeenCalledWith(
       "id-3",
       expect.objectContaining({
         url: "",
+        significance: significanceText,
       }),
     );
   });

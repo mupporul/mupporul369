@@ -68,6 +68,12 @@
   width: 100%;
 }
 
+.edit-modal__textarea {
+  resize: vertical;
+  min-height: 96px;
+  line-height: 1.35;
+}
+
 .edit-modal__input:focus,
 .edit-modal__select:focus {
   outline: none;

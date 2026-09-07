@@ -7,6 +7,7 @@ export const NEW_TEMPLE_DEFAULTS = {
   location: "",
   state: "Tamilnadu",
   url: "",
+  significance: "",
   house: "",
   planets: [],
 };

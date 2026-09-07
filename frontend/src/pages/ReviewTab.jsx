@@ -36,6 +36,7 @@ export default function ReviewTab({
           location: item.payload?.location || "",
           state: item.payload?.state || "",
           url: item.payload?.url || "",
+          significance: item.payload?.significance || "",
           house: item.payload?.house || "",
           planets: Array.isArray(item.payload?.planets)
             ? item.payload.planets
@@ -146,6 +147,11 @@ export default function ReviewTab({
                   >
                     {t.youtubeLinkLabel}
                   </a>
+                ) : null}
+                {row.payload.significance ? (
+                  <p className="review-item__significance">
+                    {t.significanceLabel}: {row.payload.significance}
+                  </p>
                 ) : null}
                 <div className="review-item__tags">
                   <span className="review-item__tag review-item__tag--house">

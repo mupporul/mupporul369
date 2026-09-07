@@ -33,6 +33,11 @@ export default function TempleRow({ row, onEdit, onViewDetails }) {
         <p className="temple-row__meta">
           {toTitleCase(row.location)}, {toTitleCase(row.state)}
         </p>
+        {row.significance ? (
+          <p className="temple-row__significance">
+            {t.significanceLabel}: {row.significance}
+          </p>
+        ) : null}
         <div className="temple-row__tags">
           <span className="temple-row__tag temple-row__tag--house">
             {row.house}

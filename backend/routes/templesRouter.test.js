@@ -327,6 +327,8 @@ describe("temples routes", () => {
   it("review approval persists url for add and edit flows", async () => {
     const contributorOne = await loginAndGetToken("919876543210", "test1234");
     const contributorTwo = await loginAndGetToken("919876543211", "test1234");
+    const addSignificance =
+      "Pariharam, 108 deepam, special symbols @#$%^&*(), and long text support.";
 
     const addQueue = await request(app)
       .post("/api/temples")
@@ -336,6 +338,7 @@ describe("temples routes", () => {
         location: "Kodaikanal",
         state: "Tamilnadu",
         url: "https://www.youtube.com/watch?v=pX5VBhaVPas",
+        significance: addSignificance,
         house: "விருச்சிகம்",
         planets: ["செ", "குரு"],
       });
@@ -355,6 +358,7 @@ describe("temples routes", () => {
       .find((temple) => temple.temple === "Temple With Url");
     expect(addedTemple).toBeDefined();
     expect(addedTemple.url).toBe("https://www.youtube.com/watch?v=pX5VBhaVPas");
+    expect(addedTemple.significance).toBe(addSignificance);
 
     const patchQueue = await request(app)
       .patch(`/api/temples/${addedTemple.id}`)
@@ -364,6 +368,7 @@ describe("temples routes", () => {
         location: "Kodaikanal",
         state: "Tamilnadu",
         url: "",
+        significance: "",
         house: "விருச்சிகம்",
         planets: ["செ", "குரு"],
       });
@@ -383,5 +388,6 @@ describe("temples routes", () => {
       .find((temple) => temple.id === addedTemple.id);
     expect(editedTemple).toBeDefined();
     expect(editedTemple.url).toBeUndefined();
+    expect(editedTemple.significance).toBeUndefined();
   });
 });

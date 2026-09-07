@@ -43,6 +43,7 @@ export default function EditModal({
         location: temple.location,
         state: temple.state,
         url: temple.url || "",
+        significance: temple.significance || "",
         house: temple.house,
         planets: [...temple.planets],
       });
@@ -163,6 +164,16 @@ export default function EditModal({
             type="url"
             value={form.url}
             onChange={(e) => handleField("url", e.target.value)}
+          />
+        </label>
+
+        <label className="edit-modal__label">
+          {t.fieldSignificance}
+          <textarea
+            className="edit-modal__input edit-modal__textarea"
+            rows={4}
+            value={form.significance}
+            onChange={(e) => handleField("significance", e.target.value)}
           />
         </label>
 

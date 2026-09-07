@@ -36,9 +36,12 @@ function toTitleCase(value) {
 }
 
 function normalizeTemplePayload(payload) {
-  const { temple, location, state, url, house, planets } = payload || {};
+  const { temple, location, state, url, significance, house, planets } =
+    payload || {};
   const houseText = typeof house === "string" ? house.trim() : "";
   const urlText = typeof url === "string" ? url.trim() : "";
+  const significanceText =
+    typeof significance === "string" ? significance.trim() : "";
   const normalizedPlanets = [
     ...new Set(
       (Array.isArray(planets) ? planets : [])
@@ -66,6 +69,7 @@ function normalizeTemplePayload(payload) {
     location: toTitleCase(location),
     state: toTitleCase(state),
     url: urlText,
+    significance: significanceText,
     house: houseText || UNKNOWN_HOUSE,
     planets: normalizedPlanets,
   };
@@ -138,6 +142,7 @@ async function queueTempleEdit(templeId, payload, user) {
   const existingLocation = toTitleCase(context.temple.location);
   const existingState = toTitleCase(context.temple.state);
   const existingUrl = String(context.temple.url || "").trim();
+  const existingSignificance = String(context.temple.significance || "").trim();
   const existingHouse =
     String(context.group.house || "").trim() || UNKNOWN_HOUSE;
   const existingPlanets = [...(context.group.planets || [])].sort();
@@ -147,6 +152,7 @@ async function queueTempleEdit(templeId, payload, user) {
     payload.location !== existingLocation ||
     payload.state !== existingState ||
     payload.url !== existingUrl ||
+    payload.significance !== existingSignificance ||
     payload.house !== existingHouse ||
     JSON.stringify(nextPlanets) !== JSON.stringify(existingPlanets);
 
@@ -170,6 +176,10 @@ function addTempleToGroups(groups, normalized) {
 
   if (normalized.url) {
     newTemple.url = normalized.url;
+  }
+
+  if (normalized.significance) {
+    newTemple.significance = normalized.significance;
   }
 
   if (targetGroup) {
@@ -215,6 +225,10 @@ function applyTempleEdit(groups, templeId, normalized) {
 
   if (normalized.url) {
     updatedTemple.url = normalized.url;
+  }
+
+  if (normalized.significance) {
+    updatedTemple.significance = normalized.significance;
   }
 
   const targetGroup = groups.find((group) =>

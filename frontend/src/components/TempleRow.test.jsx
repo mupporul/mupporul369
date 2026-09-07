@@ -65,6 +65,7 @@ describe("TempleRow", () => {
       temple: "kuzhandhai velappar",
       location: "kodaikanal",
       state: "tamilnadu",
+      significance: "Pariharam, family-vow, symbols @#$%",
       house: "விருச்சிகம்",
       planets: ["செ", "குரு"],
       url: "https://www.youtube.com/watch?v=pX5VBhaVPas",
@@ -81,6 +82,9 @@ describe("TempleRow", () => {
     );
     expect(link).toHaveAttribute("target", "_blank");
     expect(link).toHaveAttribute("rel", "noopener noreferrer");
+    expect(
+      screen.getByText("முக்கியத்துவம்: Pariharam, family-vow, symbols @#$%"),
+    ).toBeInTheDocument();
   });
 
   it("does not render a YouTube launch link when url is missing", () => {

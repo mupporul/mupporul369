@@ -46,6 +46,14 @@
   color: var(--text-soft);
 }
 
+.temple-row__significance {
+  margin: 0 0 0.45rem;
+  font-size: 0.8rem;
+  color: var(--text-soft);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .temple-row__tags {
   display: flex;
   flex-wrap: wrap;

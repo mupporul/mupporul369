@@ -71,6 +71,8 @@ const STRINGS = {
     fieldLocation: "இடம்",
     fieldState: "மாநிலம்",
     fieldUrl: "YouTube URL",
+    fieldSignificance: "முக்கியத்துவம்",
+    significanceLabel: "முக்கியத்துவம்",
     stateSelectAriaLabel: "மாநிலம் தேர்வு",
     fieldRasi: "ராசி",
     fieldRasiUnknownOption: "ராசி தெரியாது",
@@ -83,7 +85,7 @@ const STRINGS = {
     modalTitleAdd: "புதிய கோவில்",
     modalAriaLabelAdd: "புதிய கோவில் சேர்",
     requiredFieldsExceptRasiError:
-      "ராசி மற்றும் வீடியோ URL தவிர மற்ற எல்லா புலங்களும் கட்டாயம்.",
+      "ராசி, வீடியோ URL மற்றும் முக்கியத்துவம் தவிர மற்ற எல்லா புலங்களும் கட்டாயம்.",
     noEditChangesMessage: "நீங்கள் எந்த மாற்றமும் செய்யவில்லை.",
 
     // Navigation
@@ -205,6 +207,8 @@ const STRINGS = {
     fieldLocation: "Location",
     fieldState: "State",
     fieldUrl: "YouTube URL",
+    fieldSignificance: "Significance",
+    significanceLabel: "Significance",
     stateSelectAriaLabel: "Select state",
     fieldRasi: "Rasi",
     fieldRasiUnknownOption: "Rasi unknown",
@@ -217,7 +221,7 @@ const STRINGS = {
     modalTitleAdd: "New Temple",
     modalAriaLabelAdd: "Add new temple",
     requiredFieldsExceptRasiError:
-      "All fields are mandatory except Rasi and Video URL.",
+      "All fields are mandatory except Rasi, Video URL, and Significance.",
     noEditChangesMessage:
       "No changes detected. Review request was not created.",
 

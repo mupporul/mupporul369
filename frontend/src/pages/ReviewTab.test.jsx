@@ -20,6 +20,8 @@ describe("ReviewTab", () => {
               location: "Kodaikanal",
               state: "Tamilnadu",
               url: "https://www.youtube.com/watch?v=pX5VBhaVPas",
+              significance:
+                "A long note, comma-separated, symbols @#$%^&*(), and more.",
               house: "விருச்சிகம்",
               planets: ["செ", "குரு"],
             },
@@ -41,5 +43,10 @@ describe("ReviewTab", () => {
       "href",
       "https://www.youtube.com/watch?v=pX5VBhaVPas",
     );
+    expect(
+      screen.getByText(
+        "முக்கியத்துவம்: A long note, comma-separated, symbols @#$%^&*(), and more.",
+      ),
+    ).toBeInTheDocument();
   });
 });

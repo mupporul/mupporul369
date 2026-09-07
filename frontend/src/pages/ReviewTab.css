@@ -61,6 +61,14 @@
   outline: none;
 }
 
+.review-item__significance {
+  margin: 0 0 0.45rem;
+  color: var(--text-soft);
+  font-size: 0.8rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .review-item__tags {
   display: flex;
   flex-wrap: wrap;
