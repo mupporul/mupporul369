@@ -202,14 +202,21 @@ export default function UsersTab({ authFetch }) {
             <button
               key={fileName}
               type="button"
-              className="users-tab__btn-export"
+              className={`users-tab__btn-export api-loading-button${
+                importingFile ? " is-loading" : ""
+              }`}
               onClick={() => handleExportFile(fileName)}
             >
               {t.exportBtn}: {fileName}
             </button>
           ))}
         </div>
-        <label className="users-tab__import-label" htmlFor="users-tab-import">
+        <label
+          className={`users-tab__import-label api-loading-button${
+            importingFile ? " is-loading" : ""
+          }`}
+          htmlFor="users-tab-import"
+        >
           {importingFile ? t.loading : t.importBtn}
         </label>
         <input
@@ -290,7 +297,9 @@ export default function UsersTab({ authFetch }) {
           </select>
           <button
             type="submit"
-            className="users-tab__btn-add"
+            className={`users-tab__btn-add api-loading-button${
+              addingUser ? " is-loading" : ""
+            }`}
             disabled={addingUser}
           >
             {addingUser ? <InlineSpinner label={t.loading} /> : t.usersAddSubmitBtn}
@@ -316,7 +325,9 @@ export default function UsersTab({ authFetch }) {
                   </p>
                 </div>
                 <button
-                  className="users-tab__btn-delete"
+                  className={`users-tab__btn-delete api-loading-button${
+                    deletingUserId === user.id ? " is-loading" : ""
+                  }`}
                   onClick={() => handleDeleteUser(user.id)}
                   aria-label={t.deleteBtn}
                   disabled={deletingUserId === user.id}

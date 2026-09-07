@@ -63,6 +63,45 @@
   --space-xl: 2rem;
 }
 
+.api-loading-button {
+  position: relative;
+  isolation: isolate;
+}
+
+.api-loading-button::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(130, 225, 176, 0.95) 16deg,
+    rgba(130, 225, 176, 0.4) 42deg,
+    transparent 62deg,
+    transparent 360deg
+  );
+  opacity: 0;
+  transition: opacity 160ms ease;
+  z-index: 0;
+}
+
+.api-loading-button.is-loading::before {
+  opacity: 1;
+  animation: api-loading-ring 1.05s linear infinite;
+}
+
+.api-loading-button > * {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes api-loading-ring {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 :root[data-theme="rose-gold"] {
   --page-bg: radial-gradient(
     circle at top,

@@ -176,7 +176,9 @@ export default function ReviewTab({
                   !alreadyApproved &&
                   row.status === "pending" ? (
                     <button
-                      className="review-item__approver-btn"
+                      className={`review-item__approver-btn api-loading-button${
+                        approvingId === row.id ? " is-loading" : ""
+                      }`}
                       onClick={() => handleApprove(row.id)}
                       disabled={approvingId === row.id}
                     >
@@ -195,7 +197,9 @@ export default function ReviewTab({
                       return (
                         <button
                           key={initial}
-                          className="review-item__approver-btn"
+                          className={`review-item__approver-btn api-loading-button${
+                            approvingId === row.id ? " is-loading" : ""
+                          }`}
                           onClick={() => handleApprove(row.id)}
                           disabled={approvingId === row.id}
                         >
@@ -258,7 +262,9 @@ export default function ReviewTab({
                 {t.deleteConfirmCancelBtn}
               </button>
               <button
-                className="review-confirm-modal__btn review-confirm-modal__btn--delete"
+                className={`review-confirm-modal__btn review-confirm-modal__btn--delete api-loading-button${
+                  deletingId ? " is-loading" : ""
+                }`}
                 onClick={handleConfirmDelete}
                 disabled={Boolean(deletingId)}
               >

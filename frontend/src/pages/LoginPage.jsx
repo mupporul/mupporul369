@@ -322,9 +322,10 @@ export default function LoginPage() {
           {error && <p className="login-card__error">{error}</p>}
 
           <button
-            className="login-card__submit"
+            className={`login-card__submit${submitting ? " is-loading" : ""}`}
             type="submit"
             disabled={submitting}
+            aria-busy={submitting}
           >
             {submitting ? (
               <InlineSpinner label={t.loading} />

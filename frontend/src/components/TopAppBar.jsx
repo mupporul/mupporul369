@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLang } from "../context/LangContext";
 import { useTheme } from "../context/ThemeContext";
+import InlineSpinner from "./InlineSpinner";
 import "./TopAppBar.css";
 
 const USER_PREFS_KEY = "mupporul369-user-prefs";
@@ -26,6 +27,7 @@ export default function TopAppBar({ user, onLogout }) {
   const { theme, setTheme, themes } = useTheme();
   const accountMenuRef = useRef(null);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const displayName = user.name || user.initials || "-";
 
   useEffect(() => {
@@ -74,6 +76,15 @@ export default function TopAppBar({ user, onLogout }) {
       lang: nextLang,
     };
     globalThis.localStorage?.setItem(USER_PREFS_KEY, JSON.stringify(prefs));
+  }
+
+  async function handleLogout() {
+    try {
+      setLoggingOut(true);
+      await onLogout();
+    } finally {
+      setLoggingOut(false);
+    }
   }
 
   return (
@@ -229,8 +240,18 @@ export default function TopAppBar({ user, onLogout }) {
               </div>
             </div>
 
-            <button className="top-app-bar__logout" onClick={onLogout}>
-              {t.logoutLabel}
+            <button
+              className={`top-app-bar__logout api-loading-button${
+                loggingOut ? " is-loading" : ""
+              }`}
+              onClick={handleLogout}
+              disabled={loggingOut}
+            >
+              {loggingOut ? (
+                <InlineSpinner label={t.loading} />
+              ) : (
+                t.logoutLabel
+              )}
             </button>
           </div>
         </details>
