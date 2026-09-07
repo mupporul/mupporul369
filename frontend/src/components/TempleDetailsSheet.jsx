@@ -73,6 +73,12 @@ export default function TempleDetailsSheet({ temple, onClose }) {
               </div>
             </dd>
           </div>
+          {temple.significance ? (
+            <div className="temple-details-sheet__row">
+              <dt>{t.fieldSignificance}</dt>
+              <dd>{temple.significance}</dd>
+            </div>
+          ) : null}
         </dl>
 
         <button

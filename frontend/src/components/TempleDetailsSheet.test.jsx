@@ -18,6 +18,7 @@ describe("TempleDetailsSheet", () => {
           temple: "arulmigu very very long temple name for testing",
           location: "tiruchendur",
           state: "tamil nadu",
+          significance: "Pariharam, lineage vow, symbols @#$%^&*()",
           house: "விருச்சிகம்",
           planets: ["செ", "குரு"],
         }}
@@ -30,6 +31,9 @@ describe("TempleDetailsSheet", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText("Arulmigu Very Very Long Temple Name For Testing"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Pariharam, lineage vow, symbols @#$%^&*()"),
     ).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole("button", { name: "மூடு" }));
