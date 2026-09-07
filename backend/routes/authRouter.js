@@ -1,10 +1,20 @@
 "use strict";
 
 const express = require("express");
-const { changePassword, loginUser } = require("../services/authService");
+const {
+  changePassword,
+  loginUser,
+  logoutUser,
+} = require("../services/authService");
 const requireAuth = require("../middleware/requireAuth");
 
 const router = express.Router();
+
+function extractToken(authHeader) {
+  const raw = String(authHeader || "").trim();
+  if (!raw) return "";
+  return raw.replace(/^Bearer\s+/i, "").trim();
+}
 
 router.post("/login", async (req, res) => {
   const { mobile, password } = req.body || {};
@@ -38,6 +48,20 @@ router.post("/change-password", async (req, res) => {
   }
 
   return res.json({ message: "Password updated successfully" });
+});
+
+router.post("/logout", requireAuth, async (req, res) => {
+  const token = extractToken(req.headers.authorization);
+  if (!token) {
+    return res.status(400).json({ error: "Token is required" });
+  }
+
+  const loggedOut = await logoutUser(token);
+  if (!loggedOut) {
+    return res.status(200).json({ message: "Logged out successfully" });
+  }
+
+  return res.json({ message: "Logged out successfully" });
 });
 
 router.get("/me", requireAuth, (req, res) => {

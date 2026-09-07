@@ -94,8 +94,15 @@ async function changePassword(mobile, oldPassword, newPassword) {
   return repository.updatePasswordHash(user.id, hashPassword(newPassword));
 }
 
+async function logoutUser(token) {
+  if (!token) return false;
+  const repository = getSessionRepository();
+  return repository.deleteByToken(token);
+}
+
 module.exports = {
   changePassword,
   getUserFromToken,
   loginUser,
+  logoutUser,
 };

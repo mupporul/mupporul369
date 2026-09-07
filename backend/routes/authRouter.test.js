@@ -47,6 +47,25 @@ describe("auth routes", () => {
     expect(me.body.user.name).toBe("SA");
   });
 
+  it("POST /api/auth/logout removes the active session", async () => {
+    const login = await request(app).post("/api/auth/login").send({
+      mobile: "919876543210",
+      password: "test1234",
+    });
+
+    const logout = await request(app)
+      .post("/api/auth/logout")
+      .set("Authorization", `Bearer ${login.body.token}`);
+
+    const me = await request(app)
+      .get("/api/auth/me")
+      .set("Authorization", `Bearer ${login.body.token}`);
+
+    expect(logout.status).toBe(200);
+    expect(logout.body.message).toBe("Logged out successfully");
+    expect(me.status).toBe(401);
+  });
+
   it("uses an in-memory session store instead of sessions.json", async () => {
     const fs = require("fs");
     const originalWriteFileSync = fs.writeFileSync;

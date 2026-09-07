@@ -10,6 +10,7 @@ import { buildApiUrl } from "../utils/apiUrl";
 
 const AUTH_STORAGE_KEY = "mupporul369-auth";
 const LEGACY_TOKEN_KEY = "mupporul369.authToken";
+const IDLE_TIMEOUT_MS = 20 * 60 * 1000;
 const AuthContext = createContext(null);
 
 function readStoredAuth() {
@@ -137,9 +138,61 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    const currentToken = auth.token;
+    if (currentToken) {
+      try {
+        await fetch(buildApiUrl("/api/auth/logout"), {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${currentToken}`,
+          },
+        });
+      } catch {
+        // Ignore logout request failures and still clear local auth state.
+      }
+    }
+
     clearAuth();
-  }, [clearAuth]);
+  }, [auth.token, clearAuth]);
+
+  useEffect(() => {
+    if (!auth.token) return undefined;
+
+    let timeoutId = null;
+    const resetTimer = () => {
+      if (timeoutId) {
+        globalThis.clearTimeout(timeoutId);
+      }
+      timeoutId = globalThis.setTimeout(() => {
+        logout();
+      }, IDLE_TIMEOUT_MS);
+    };
+
+    const activityEvents = [
+      "mousedown",
+      "mousemove",
+      "keydown",
+      "scroll",
+      "touchstart",
+      "click",
+    ];
+
+    const listener = () => resetTimer();
+    activityEvents.forEach((eventName) => {
+      globalThis.addEventListener(eventName, listener, { passive: true });
+    });
+    resetTimer();
+
+    return () => {
+      if (timeoutId) {
+        globalThis.clearTimeout(timeoutId);
+      }
+      activityEvents.forEach((eventName) => {
+        globalThis.removeEventListener(eventName, listener);
+      });
+    };
+  }, [auth.token, logout]);
 
   const authFetch = useCallback(
     async (url, options = {}) => {
