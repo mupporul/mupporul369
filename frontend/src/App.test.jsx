@@ -1,4 +1,4 @@
-﻿import { render, screen } from "@testing-library/react";
+﻿import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
 import App from "./App.jsx";
 
@@ -186,5 +186,37 @@ describe("App", () => {
     expect(
       screen.queryByRole("button", { name: /திருத்து/i }),
     ).not.toBeInTheDocument();
+  });
+
+  it("submits temple edits to PATCH /api/temples/:id", async () => {
+    const storedUser = {
+      id: "u-contrib-001",
+      mobile: "919876543210",
+      initials: "TR",
+      role: "contributor",
+    };
+
+    mockFetchForUser(storedUser);
+    setStoredAuth(storedUser, "test-token");
+
+    render(<App />);
+
+    expect(
+      await screen.findByText("Arulmigu Subramania Swami Temple"),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getAllByRole("button", { name: /திருத்து/i })[0]);
+    fireEvent.click(
+      await screen.findByRole("button", { name: /சேமி|Queue Edit/i }),
+    );
+
+    await waitFor(() => {
+      expect(
+        globalThis.fetch.mock.calls.some(
+          ([url, options]) =>
+            url === "/api/temples/t-1" && options?.method === "PATCH",
+        ),
+      ).toBe(true);
+    });
   });
 });

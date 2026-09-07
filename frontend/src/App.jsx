@@ -58,10 +58,10 @@ function AuthenticatedApp({ user, logout }) {
   }
 
   async function queueTempleCreate(payload) {
-    const response = await authFetch("/api/reviews", {
+    const response = await authFetch("/api/temples", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "add", payload }),
+      body: JSON.stringify(payload),
     });
     if (!response.ok) {
       throw new Error(`Create failed (${response.status})`);
@@ -70,10 +70,10 @@ function AuthenticatedApp({ user, logout }) {
   }
 
   async function queueTempleEdit(templeId, payload) {
-    const response = await authFetch("/api/reviews", {
-      method: "POST",
+    const response = await authFetch(`/api/temples/${templeId}`, {
+      method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "edit", templeId, payload }),
+      body: JSON.stringify(payload),
     });
     if (!response.ok) {
       throw new Error(`Update failed (${response.status})`);

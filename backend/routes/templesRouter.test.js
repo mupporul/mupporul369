@@ -230,11 +230,32 @@ describe("temples routes", () => {
 
     const reviewId = queueRes.body.queuedReview.id;
 
+    const pendingBeforeApproval = await request(app)
+      .get("/api/reviews")
+      .set("Authorization", `Bearer ${contributorOne}`);
+    expect(pendingBeforeApproval.status).toBe(200);
+    expect(
+      pendingBeforeApproval.body.some((item) => item.id === reviewId),
+    ).toBe(true);
+
     const approveOne = await request(app)
       .post(`/api/reviews/${reviewId}/approve`)
       .set("Authorization", `Bearer ${contributorOne}`);
     expect(approveOne.status).toBe(200);
     expect(approveOne.body.applied).toBe(false);
+
+    const stillPendingAfterOneApproval = await request(app)
+      .get("/api/reviews")
+      .set("Authorization", `Bearer ${contributorOne}`);
+    expect(
+      stillPendingAfterOneApproval.body.some((item) => item.id === reviewId),
+    ).toBe(true);
+
+    const templesBeforeSecondApproval = await request(app).get("/api/temples");
+    const notYetCreated = templesBeforeSecondApproval.body
+      .flatMap((group) => group.data)
+      .find((temple) => temple.temple === "Two Approvals Temple");
+    expect(notYetCreated).toBeUndefined();
 
     const approveTwo = await request(app)
       .post(`/api/reviews/${reviewId}/approve`)
