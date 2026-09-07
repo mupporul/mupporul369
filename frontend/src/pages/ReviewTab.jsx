@@ -35,6 +35,7 @@ export default function ReviewTab({
           temple: item.payload?.temple || "",
           location: item.payload?.location || "",
           state: item.payload?.state || "",
+          url: item.payload?.url || "",
           house: item.payload?.house || "",
           planets: Array.isArray(item.payload?.planets)
             ? item.payload.planets
@@ -136,6 +137,16 @@ export default function ReviewTab({
                   {toTitleCase(row.payload.state) || "-"}
                 </p>
                 <p className="review-item__meta">{row.status}</p>
+                {row.payload.url ? (
+                  <a
+                    className="review-item__video-link"
+                    href={row.payload.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {t.youtubeLinkLabel}
+                  </a>
+                ) : null}
                 <div className="review-item__tags">
                   <span className="review-item__tag review-item__tag--house">
                     {row.payload.house || "-"}

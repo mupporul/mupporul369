@@ -46,6 +46,21 @@
   font-size: 0.83rem;
 }
 
+.review-item__video-link {
+  display: inline-flex;
+  margin: 0 0 0.45rem;
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.review-item__video-link:hover,
+.review-item__video-link:focus-visible {
+  color: var(--text-strong);
+  outline: none;
+}
+
 .review-item__tags {
   display: flex;
   flex-wrap: wrap;
