@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 
 import App from "../src/App";
 
@@ -46,23 +46,69 @@ describe("temples page", () => {
   });
 
   it("queues add and edit requests including noChanges feedback", async () => {
-    const reviewCalls = [];
+    const createCalls = [];
+    const editCalls = [];
+    let reviewsReadCount = 0;
 
     vi.spyOn(global, "fetch").mockImplementation(async (url, options = {}) => {
       const method = options.method || "GET";
       if (String(url).includes("/api/auth/me") && method === "GET") {
-        return new Response(JSON.stringify({ id: "u1" }), { status: 200 });
+        return new Response(
+          JSON.stringify({
+            id: "u1",
+            mobile: "919876543210",
+            initials: "TR",
+            name: "Thangaraj",
+            role: "contributor",
+          }),
+          { status: 200 },
+        );
+      }
+      if (String(url).includes("/api/users/contributors") && method === "GET") {
+        return new Response(
+          JSON.stringify([
+            { id: "u1", initials: "TR", role: "contributor" },
+            { id: "u2", initials: "RR", role: "contributor" },
+            { id: "u3", initials: "RA", role: "contributor" },
+          ]),
+          { status: 200 },
+        );
       }
       if (String(url).includes("/api/temples") && method === "GET") {
         return new Response(JSON.stringify(templePayload), { status: 200 });
       }
-      if (String(url).includes("/api/reviews") && method === "POST") {
-        reviewCalls.push(JSON.parse(options.body));
-        if (reviewCalls.length === 1) {
-          return new Response(JSON.stringify({ id: "r1", status: "pending" }), {
-            status: 200,
-          });
+      if (String(url).includes("/api/temples") && method === "POST") {
+        createCalls.push(JSON.parse(options.body));
+        return new Response(JSON.stringify({ queuedReview: { id: "r1" } }), {
+          status: 200,
+        });
+      }
+      if (String(url).includes("/api/reviews") && method === "GET") {
+        reviewsReadCount += 1;
+        if (reviewsReadCount >= 1) {
+          return new Response(
+            JSON.stringify([
+              {
+                id: "r1",
+                action: "add",
+                status: "pending",
+                approvals: [],
+                payload: {
+                  temple: "New Temple",
+                  location: "Chennai",
+                  state: "Tamil Nadu",
+                  house: "",
+                  planets: ["சனி"],
+                },
+                createdBy: { initials: "TR" },
+              },
+            ]),
+            { status: 200 },
+          );
         }
+      }
+      if (String(url).includes("/api/temples/") && method === "PATCH") {
+        editCalls.push(JSON.parse(options.body));
         return new Response(JSON.stringify({ noChanges: true }), {
           status: 200,
         });
@@ -72,6 +118,7 @@ describe("temples page", () => {
 
     render(<App />);
     await screen.findByText("Some Temple");
+    fireEvent.click(screen.getByRole("button", { name: "English" }));
 
     fireEvent.click(screen.getByRole("button", { name: "Add Temple" }));
     fireEvent.change(screen.getByLabelText("Temple"), {
@@ -83,10 +130,20 @@ describe("temples page", () => {
     fireEvent.change(screen.getByLabelText("State"), {
       target: { value: "Tamil Nadu" },
     });
+    const createDialog = screen.getByRole("dialog", { name: "Add new temple" });
+    fireEvent.click(within(createDialog).getByRole("button", { name: "சனி" }));
     fireEvent.click(screen.getByRole("button", { name: "Queue Add" }));
 
-    await screen.findByText("Temple add request queued for review.");
-    expect(reviewCalls[0].action).toBe("add");
+    await screen.findByText(/pending/i);
+    expect(createCalls[0]).toEqual(
+      expect.objectContaining({
+        temple: "New Temple",
+        location: "Chennai",
+        state: "Tamil Nadu",
+      }),
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Temples" }));
 
     fireEvent.click(screen.getAllByRole("button", { name: "Edit" })[0]);
     fireEvent.click(screen.getByRole("button", { name: "Queue Edit" }));
@@ -94,6 +151,6 @@ describe("temples page", () => {
     await screen.findByText(
       "No changes detected. Review request was not created.",
     );
-    expect(reviewCalls[1].action).toBe("edit");
+    expect(editCalls.length).toBe(1);
   });
 });

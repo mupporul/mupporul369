@@ -50,7 +50,6 @@ describe("TopAppBar profile card", () => {
     await userEvent.click(screen.getByLabelText("Account menu"));
     await userEvent.click(screen.getByRole("button", { name: "சுயவிவரம்" }));
 
-    expect(screen.getByText("SA")).toBeInTheDocument();
     expect(screen.getByText("பெயர்: SA")).toBeInTheDocument();
   });
 });

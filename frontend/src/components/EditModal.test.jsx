@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
 import EditModal from "./EditModal";
@@ -139,39 +139,39 @@ describe("EditModal cancel behavior", () => {
       />,
     );
 
-    await userEvent.type(
-      screen.getByLabelText("கோவில்", { selector: "input" }),
-      "Arulmigu Kuzhandhai Velappar Thirukkovil",
-    );
-    await userEvent.type(
-      screen.getByLabelText("இடம்", { selector: "input" }),
-      "Kodaikanal",
-    );
-    await userEvent.selectOptions(
-      screen.getByRole("combobox", { name: "மாநிலம் தேர்வு" }),
-      "Tamilnadu",
-    );
-    await userEvent.type(
-      screen.getByLabelText("YouTube URL", { selector: "input" }),
-      "https://www.youtube.com/watch?v=pX5VBhaVPas",
-    );
-    await userEvent.type(
+    fireEvent.change(screen.getByLabelText("கோவில்", { selector: "input" }), {
+      target: { value: "Arulmigu Kuzhandhai Velappar Thirukkovil" },
+    });
+    fireEvent.change(screen.getByLabelText("இடம்", { selector: "input" }), {
+      target: { value: "Kodaikanal" },
+    });
+    fireEvent.change(screen.getByRole("combobox", { name: "மாநிலம் தேர்வு" }), {
+      target: { value: "Tamilnadu" },
+    });
+    fireEvent.change(screen.getByLabelText("YouTube URL", { selector: "input" }), {
+      target: { value: "https://www.youtube.com/watch?v=pX5VBhaVPas" },
+    });
+    fireEvent.change(
       screen.getByLabelText("முக்கியத்துவம்", { selector: "textarea" }),
-      significanceText,
+      {
+        target: { value: significanceText },
+      },
     );
-    await userEvent.click(screen.getByRole("button", { name: "செ" }));
+    fireEvent.click(screen.getByRole("button", { name: "செ" }));
 
-    await userEvent.click(screen.getByRole("button", { name: "சேர்க்கவும்" }));
+    fireEvent.click(screen.getByRole("button", { name: "சேர்க்கவும்" }));
 
-    expect(onCreate).toHaveBeenCalledWith(
-      expect.objectContaining({
-        temple: "Arulmigu Kuzhandhai Velappar Thirukkovil",
-        location: "Kodaikanal",
-        state: "Tamilnadu",
-        url: "https://www.youtube.com/watch?v=pX5VBhaVPas",
-        significance: significanceText,
-      }),
-    );
+    await waitFor(() => {
+      expect(onCreate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          temple: "Arulmigu Kuzhandhai Velappar Thirukkovil",
+          location: "Kodaikanal",
+          state: "Tamilnadu",
+          url: "https://www.youtube.com/watch?v=pX5VBhaVPas",
+          significance: significanceText,
+        }),
+      );
+    });
   });
 
   it("submits edit payload with empty url when cleared", async () => {
@@ -201,21 +201,25 @@ describe("EditModal cancel behavior", () => {
     const urlInput = screen.getByLabelText("YouTube URL", {
       selector: "input",
     });
-    await userEvent.clear(urlInput);
+    fireEvent.change(urlInput, { target: { value: "" } });
     const significanceInput = screen.getByLabelText("முக்கியத்துவம்", {
       selector: "textarea",
     });
-    await userEvent.clear(significanceInput);
-    await userEvent.type(significanceInput, significanceText);
-    await userEvent.click(screen.getByRole("button", { name: "சேமி" }));
+    fireEvent.change(significanceInput, { target: { value: "" } });
+    fireEvent.change(significanceInput, {
+      target: { value: significanceText },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "சேமி" }));
 
-    expect(onSave).toHaveBeenCalledWith(
-      "id-3",
-      expect.objectContaining({
-        url: "",
-        significance: significanceText,
-      }),
-    );
+    await waitFor(() => {
+      expect(onSave).toHaveBeenCalledWith(
+        "id-3",
+        expect.objectContaining({
+          url: "",
+          significance: significanceText,
+        }),
+      );
+    });
   });
 
   it("allows saving when both rasi and video url are empty", async () => {

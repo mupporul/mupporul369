@@ -1,4 +1,10 @@
-﻿import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+﻿import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { vi } from "vitest";
 import App from "./App.jsx";
 
@@ -19,21 +25,33 @@ const SAMPLE_TEMPLE_GROUPS = [
 
 function mockFetchForUser(user) {
   globalThis.fetch = vi.fn((url) => {
-    if (url === "/api/auth/me") {
+    if (String(url).includes("/api/auth/me")) {
       return Promise.resolve({
         ok: true,
         json: () => Promise.resolve({ user }),
       });
     }
 
-    if (url === "/api/temples") {
+    if (String(url).includes("/api/users/contributors")) {
+      return Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve([
+            { id: "u-contrib-001", initials: "TR", role: "contributor" },
+            { id: "u-contrib-002", initials: "RR", role: "contributor" },
+            { id: "u-contrib-003", initials: "RA", role: "contributor" },
+          ]),
+      });
+    }
+
+    if (String(url).includes("/api/temples")) {
       return Promise.resolve({
         ok: true,
         json: () => Promise.resolve(SAMPLE_TEMPLE_GROUPS),
       });
     }
 
-    if (url === "/api/reviews") {
+    if (String(url).includes("/api/reviews")) {
       return Promise.resolve({ ok: true, json: () => Promise.resolve([]) });
     }
 
@@ -55,14 +73,14 @@ describe("App", () => {
   beforeEach(() => {
     localStorage.clear();
     globalThis.fetch = vi.fn((url) => {
-      if (url === "/api/temples") {
+      if (String(url).includes("/api/temples")) {
         return Promise.resolve({
           ok: true,
           json: () => Promise.resolve(SAMPLE_TEMPLE_GROUPS),
         });
       }
 
-      if (url === "/api/reviews") {
+      if (String(url).includes("/api/reviews")) {
         return Promise.resolve({ ok: true, json: () => Promise.resolve([]) });
       }
 
@@ -214,7 +232,8 @@ describe("App", () => {
       expect(
         globalThis.fetch.mock.calls.some(
           ([url, options]) =>
-            url === "/api/temples/t-1" && options?.method === "PATCH",
+            String(url).includes("/api/temples/t-1") &&
+            options?.method === "PATCH",
         ),
       ).toBe(true);
     });
@@ -229,28 +248,40 @@ describe("App", () => {
     };
 
     globalThis.fetch = vi.fn((url, options = {}) => {
-      if (url === "/api/auth/me") {
+      if (String(url).includes("/api/auth/me")) {
         return Promise.resolve({
           ok: true,
           json: () => Promise.resolve({ user: storedUser }),
         });
       }
 
-      if (url === "/api/temples" && options.method === "POST") {
+      if (String(url).includes("/api/users/contributors")) {
+        return Promise.resolve({
+          ok: true,
+          json: () =>
+            Promise.resolve([
+              { id: "u-contrib-001", initials: "TR", role: "contributor" },
+              { id: "u-contrib-002", initials: "RR", role: "contributor" },
+              { id: "u-contrib-003", initials: "RA", role: "contributor" },
+            ]),
+        });
+      }
+
+      if (String(url).includes("/api/temples") && options.method === "POST") {
         return Promise.resolve({
           ok: true,
           json: () => Promise.resolve({ queuedReview: { id: "r-add-1" } }),
         });
       }
 
-      if (url === "/api/temples") {
+      if (String(url).includes("/api/temples") && !options.method) {
         return Promise.resolve({
           ok: true,
           json: () => Promise.resolve(SAMPLE_TEMPLE_GROUPS),
         });
       }
 
-      if (url === "/api/reviews") {
+      if (String(url).includes("/api/reviews")) {
         return Promise.resolve({ ok: true, json: () => Promise.resolve([]) });
       }
 
@@ -275,16 +306,22 @@ describe("App", () => {
     fireEvent.change(screen.getByLabelText("இடம்", { selector: "input" }), {
       target: { value: "Chennai" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "சனி" }));
+    const addDialog = await screen.findByRole("dialog", {
+      name: "புதிய கோவில் சேர்",
+    });
+    fireEvent.click(within(addDialog).getByRole("button", { name: "சனி" }));
     fireEvent.click(screen.getByRole("button", { name: "சேர்க்கவும்" }));
 
     await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: "பரிசீலனை" }),
-      ).toHaveAttribute("aria-current", "page");
+      expect(screen.getByRole("button", { name: "பரிசீலனை" })).toHaveAttribute(
+        "aria-current",
+        "page",
+      );
     });
 
-    expect(screen.queryByText("பரிசீலனைக்கு அனுப்பப்பட்டது")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("பரிசீலனைக்கு அனுப்பப்பட்டது"),
+    ).not.toBeInTheDocument();
     expect(
       screen.queryByText("Temple add request queued for review."),
     ).not.toBeInTheDocument();

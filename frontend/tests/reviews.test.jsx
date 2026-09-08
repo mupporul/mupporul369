@@ -25,12 +25,33 @@ describe("reviews page", () => {
     vi.restoreAllMocks();
   });
 
-  it("renders review status and approval action", async () => {
+  it("renders review status chips for other contributors", async () => {
     vi.spyOn(global, "fetch").mockImplementation((url, options = {}) => {
       const method = options.method || "GET";
       if (String(url).includes("/api/auth/me") && method === "GET") {
         return Promise.resolve(
-          new Response(JSON.stringify({ id: "u1" }), { status: 200 }),
+          new Response(
+            JSON.stringify({
+              id: "u1",
+              mobile: "919876543210",
+              initials: "TR",
+              name: "Thangaraj",
+              role: "contributor",
+            }),
+            { status: 200 },
+          ),
+        );
+      }
+      if (String(url).includes("/api/users/contributors") && method === "GET") {
+        return Promise.resolve(
+          new Response(
+            JSON.stringify([
+              { id: "u1", initials: "TR", role: "contributor" },
+              { id: "u2", initials: "RR", role: "contributor" },
+              { id: "u3", initials: "RA", role: "contributor" },
+            ]),
+            { status: 200 },
+          ),
         );
       }
       if (String(url).includes("/api/temples") && method === "GET") {
@@ -38,14 +59,17 @@ describe("reviews page", () => {
           new Response(JSON.stringify([]), { status: 200 }),
         );
       }
-      if (String(url).includes("/api/reviews/") && method === "POST") {
-        return Promise.resolve(
-          new Response(JSON.stringify({ status: "approved" }), { status: 200 }),
-        );
-      }
       if (String(url).includes("/api/reviews") && method === "GET") {
         return Promise.resolve(
-          new Response(JSON.stringify(reviewItems), { status: 200 }),
+          new Response(
+            JSON.stringify([
+              {
+                ...reviewItems[0],
+                approvals: [{ userId: "u2", initials: "RR" }],
+              },
+            ]),
+            { status: 200 },
+          ),
         );
       }
       return Promise.resolve(new Response(JSON.stringify([]), { status: 200 }));
@@ -57,7 +81,9 @@ describe("reviews page", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Reviews" }));
     await screen.findByText(/pending/i);
-    fireEvent.click(screen.getByRole("button", { name: "Approve" }));
-    await screen.findByText(/approved/i);
+    expect(screen.queryByRole("button", { name: "TR" })).not.toBeInTheDocument();
+    expect(screen.getByText("RR")).toBeInTheDocument();
+    expect(screen.getByText("👀")).toBeInTheDocument();
+    expect(screen.getByText("✓✓")).toBeInTheDocument();
   });
 });

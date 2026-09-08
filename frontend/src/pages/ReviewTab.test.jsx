@@ -33,7 +33,6 @@ describe("ReviewTab", () => {
         error={null}
         currentUser={{ id: "u-1", initials: "RA" }}
         contributorInitials={["TR", "RR", "RA", "MA"]}
-        onApprove={async () => {}}
         onDelete={async () => {}}
       />,
     );
@@ -54,5 +53,49 @@ describe("ReviewTab", () => {
     expect(screen.getByText("TR")).toBeInTheDocument();
     expect(screen.getByText("RR")).toBeInTheDocument();
     expect(screen.getByText("MA")).toBeInTheDocument();
+  });
+
+  it("shows only other contributors with eyes/ticks for pending/approved", () => {
+    const { container } = renderWithLang(
+      <ReviewTab
+        reviews={[
+          {
+            id: "r-2",
+            action: "add",
+            status: "pending",
+            payload: {
+              temple: "Temple Review Flow",
+              location: "Trichy",
+              state: "Tamilnadu",
+              house: "மேஷம்",
+              planets: ["சூரி"],
+            },
+            createdBy: { initials: "TR" },
+            approvals: [{ userId: "u-rr", initials: "RR" }],
+          },
+        ]}
+        loading={false}
+        error={null}
+        currentUser={{ id: "u-tr", initials: "TR", role: "contributor" }}
+        contributorInitials={["TR", "RR", "RA", "MA"]}
+        onDelete={async () => {}}
+      />,
+    );
+
+    expect(screen.queryByRole("button", { name: "TR" })).not.toBeInTheDocument();
+
+    const chipInitials = Array.from(
+      container.querySelectorAll(
+        ".review-item__approver-text .review-item__approver-initial",
+      ),
+    ).map((node) => node.textContent?.trim());
+    expect(chipInitials).toEqual(["RR", "RA", "MA"]);
+
+    const chipIndicators = Array.from(
+      container.querySelectorAll(
+        ".review-item__approver-text .review-item__approver-indicator",
+      ),
+    ).map((node) => node.textContent?.trim());
+    expect(chipIndicators).toEqual(["✓✓", "👀", "👀"]);
   });
 });

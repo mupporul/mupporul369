@@ -7,7 +7,7 @@ import "./ReviewTab.css";
 /**
  * Review queue tab with per-item approvals.
  *
- * @param {{ reviews: Array, loading: boolean, error: string|null, currentUser: Object, contributorInitials?: Array<string>, onApprove: Function, onDelete: Function }} props
+ * @param {{ reviews: Array, loading: boolean, error: string|null, currentUser: Object, contributorInitials?: Array<string>, onDelete: Function }} props
  * @returns {JSX.Element}
  */
 export default function ReviewTab({
@@ -16,12 +16,10 @@ export default function ReviewTab({
   error,
   currentUser,
   contributorInitials = [],
-  onApprove,
   onDelete,
 }) {
   const { t } = useLang();
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
-  const [approvingId, setApprovingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
 
   const rows = useMemo(
@@ -65,15 +63,6 @@ export default function ReviewTab({
     }
   };
 
-  const handleApprove = async (id) => {
-    try {
-      setApprovingId(id);
-      await onApprove(id);
-    } finally {
-      setApprovingId(null);
-    }
-  };
-
   const handleCancelDelete = () => {
     setDeleteConfirmId(null);
   };
@@ -106,9 +95,6 @@ export default function ReviewTab({
     <>
       <ul className="review-list" aria-label={t.reviewListAriaLabel}>
         {rows.map((row) => {
-          const alreadyApproved = row.approvals.some(
-            (entry) => entry.userId === currentUser.id,
-          );
           const approvedInitials = row.approvals
             .map((entry) => String(entry.initials || "").trim())
             .filter(Boolean);
@@ -182,24 +168,6 @@ export default function ReviewTab({
                   role="group"
                   aria-label={t.reviewApproversLabel}
                 >
-                  {currentUser.role === "contributor" &&
-                  currentUser.initials &&
-                  !alreadyApproved &&
-                  row.status === "pending" ? (
-                    <button
-                      className={`review-item__approver-btn api-loading-button${
-                        approvingId === row.id ? " is-loading" : ""
-                      }`}
-                      onClick={() => handleApprove(row.id)}
-                      disabled={approvingId === row.id}
-                    >
-                      {approvingId === row.id ? (
-                        <InlineSpinner label={t.loading} />
-                      ) : (
-                        currentUser.initials
-                      )}
-                    </button>
-                  ) : null}
                   {approverStatusInitials.map((initial) => {
                     const isApproved = approvedInitials.includes(initial);
                     return (
