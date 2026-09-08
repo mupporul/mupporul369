@@ -1,4 +1,5 @@
 ﻿import { useEffect, useState } from "react";
+import { buildApiUrl } from "./utils/apiUrl";
 import { LangProvider } from "./context/LangContext";
 import { useLang } from "./context/LangContext";
 import { ThemeProvider } from "./context/ThemeContext";
@@ -17,6 +18,48 @@ import "./pages/TempleTab.css";
 import "./pages/ReviewTab.css";
 import "./pages/QuizTab.css";
 import "./pages/LoginPage.css";
+
+const BACKEND_KEEP_ALIVE_INTERVAL_MS = 10 * 60 * 1000;
+const BACKEND_KEEP_ALIVE_TIMEOUT_MS = 8 * 1000;
+
+function pingBackend() {
+  const controller = new AbortController();
+  const timeoutId = globalThis.setTimeout(
+    () => controller.abort(),
+    BACKEND_KEEP_ALIVE_TIMEOUT_MS,
+  );
+
+  fetch(buildApiUrl("/health"), {
+    signal: controller.signal,
+    cache: "no-store",
+  })
+    .catch(() => {})
+    .finally(() => globalThis.clearTimeout(timeoutId));
+}
+
+function BackendKeepAlive() {
+  useEffect(() => {
+    const pingIfVisible = () => {
+      if (document.visibilityState === "visible") {
+        pingBackend();
+      }
+    };
+
+    pingIfVisible();
+    const intervalId = globalThis.setInterval(
+      pingIfVisible,
+      BACKEND_KEEP_ALIVE_INTERVAL_MS,
+    );
+    document.addEventListener("visibilitychange", pingIfVisible);
+
+    return () => {
+      globalThis.clearInterval(intervalId);
+      document.removeEventListener("visibilitychange", pingIfVisible);
+    };
+  }, []);
+
+  return null;
+}
 
 function AuthenticatedApp({ user, logout }) {
   const { t } = useLang();
@@ -123,6 +166,15 @@ function AuthenticatedApp({ user, logout }) {
     return result;
   }
 
+  async function handleTempleEdit(templeId, payload) {
+    const result = await queueTempleEdit(templeId, payload);
+    if (!result?.noChanges) {
+      await fetchReviews();
+      setActiveTab("review");
+    }
+    return result;
+  }
+
   async function handleDelete(reviewId) {
     try {
       const response = await authFetch(`/api/reviews/${reviewId}`, {
@@ -168,7 +220,7 @@ function AuthenticatedApp({ user, logout }) {
           addTempleClickCount={addTempleClickCount}
           onAddTempleRequestConsumed={handleAddTempleRequestConsumed}
           onCreate={handleTempleCreate}
-          onPatch={queueTempleEdit}
+          onPatch={handleTempleEdit}
           onProposalQueued={handleProposalQueued}
         />
       )}
@@ -213,6 +265,7 @@ export default function App() {
     <ThemeProvider>
       <LangProvider>
         <AuthProvider>
+          <BackendKeepAlive />
           <AppInner />
         </AuthProvider>
       </LangProvider>

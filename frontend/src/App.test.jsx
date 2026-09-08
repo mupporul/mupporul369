@@ -237,6 +237,13 @@ describe("App", () => {
         ),
       ).toBe(true);
     });
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "பரிசீலனை" })).toHaveAttribute(
+        "aria-current",
+        "page",
+      );
+    });
   });
 
   it("redirects to review tab after add temple and avoids temple queued message", async () => {
