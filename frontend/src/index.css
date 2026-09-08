@@ -480,6 +480,60 @@
   --modal-cancel-text: #ffd5df;
 }
 
+:root[data-theme="kiwi-chrome"] {
+  --page-bg: radial-gradient(
+    circle at top,
+    #252526 0%,
+    #1e1e1e 52%,
+    #151515 100%
+  );
+  --card-bg: rgba(37, 37, 38, 0.96);
+  --card-border: rgba(150, 155, 160, 0.32);
+  --text-strong: #d4d4d4;
+  --text-soft: #a7adb4;
+  --accent: #9ece6a;
+  --accent-soft: rgba(158, 206, 106, 0.18);
+  --on-accent: #182018;
+  --surface-muted: rgba(156, 163, 170, 0.14);
+  --success-soft: rgba(158, 206, 106, 0.18);
+  --success-strong: rgba(158, 206, 106, 0.48);
+  --danger-soft: rgba(244, 135, 113, 0.18);
+  --danger-strong: rgba(244, 135, 113, 0.48);
+  --elevation-md: 0 10px 28px rgba(0, 0, 0, 0.5);
+  --shadow: 0 24px 62px rgba(0, 0, 0, 0.58);
+  --header-bg: linear-gradient(180deg, #252526 0%, #202021 52%, #181818 100%);
+  --header-inset-top: rgba(255, 255, 255, 0.1);
+  --header-inset-bottom: rgba(0, 0, 0, 0.72);
+  --filter-bg: linear-gradient(180deg, #252526 0%, #202021 54%, #191919 100%);
+  --filter-inset-top: rgba(255, 255, 255, 0.08);
+  --filter-inset-bottom: rgba(0, 0, 0, 0.68);
+  --temple-row-bg: linear-gradient(
+    180deg,
+    rgba(45, 45, 46, 0.98) 0%,
+    rgba(38, 38, 39, 0.98) 52%,
+    rgba(30, 30, 30, 0.99) 100%
+  );
+  --ui-surface-bg: rgba(30, 30, 31, 0.96);
+  --ui-surface-text: #d4d4d4;
+  --ui-surface-border: rgba(150, 155, 160, 0.42);
+  --dropdown-menu-bg: #252526;
+  --dropdown-menu-text: #d4d4d4;
+  --tab-idle-bg: rgba(30, 30, 30, 0.92);
+  --tab-active-ring: rgba(158, 206, 106, 0.3);
+  --tab-active-shadow: rgba(158, 206, 106, 0.24);
+  --chip-idle-bg: rgba(30, 30, 30, 0.94);
+  --chip-idle-border: rgba(158, 206, 106, 0.76);
+  --chip-idle-text: #c5e89b;
+  --chip-active-ring: rgba(158, 206, 106, 0.28);
+  --chip-active-shadow: rgba(158, 206, 106, 0.22);
+  --modal-overlay-bg: rgba(0, 0, 0, 0.74);
+  --modal-bg: #252526;
+  --modal-surface-bg: #2d2d2e;
+  --modal-chip-bg: rgba(45, 45, 46, 0.96);
+  --modal-cancel-bg: rgba(158, 206, 106, 0.16);
+  --modal-cancel-text: #c5e89b;
+}
+
 /* ── Global resets ── */
 *,
 *::before,

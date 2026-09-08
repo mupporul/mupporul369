@@ -34,6 +34,11 @@ export const THEMES = [
     labelTa: "செம்பருத்தி குரோம்",
     labelEn: "Hibiscus Chrome",
   },
+  {
+    id: "kiwi-chrome",
+    labelTa: "கிவி குரோம்",
+    labelEn: "Kiwi Chrome",
+  },
 ];
 
 export const DEFAULT_THEME = "lavender-copper";
