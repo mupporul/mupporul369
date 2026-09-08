@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 import { buildApiUrl } from "./utils/apiUrl";
 import { LangProvider } from "./context/LangContext";
 import { useLang } from "./context/LangContext";
@@ -65,6 +65,7 @@ function AuthenticatedApp({ user, logout }) {
   const { t } = useLang();
   const { authFetch } = useAuth();
   const [activeTab, setActiveTab] = useState("temples");
+  const previousTab = useRef(activeTab);
   const [addTempleClickCount, setAddTempleClickCount] = useState(0);
   const [contributorInitials, setContributorInitials] = useState([]);
 
@@ -80,6 +81,17 @@ function AuthenticatedApp({ user, logout }) {
   const isAdmin = user.role === "admin";
   const canContribute = user.role === "contributor" || isAdmin;
   const reviewCount = reviews.length;
+
+  useEffect(() => {
+    if (previousTab.current === activeTab) return;
+
+    previousTab.current = activeTab;
+    if (activeTab === "temples") {
+      fetchTemples();
+    } else if (activeTab === "review") {
+      fetchReviews();
+    }
+  }, [activeTab, fetchReviews, fetchTemples]);
 
   useEffect(() => {
     async function loadContributorInitials() {

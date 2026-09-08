@@ -246,6 +246,43 @@ describe("App", () => {
     });
   });
 
+  it("refreshes data when entering the temples and review tabs", async () => {
+    const storedUser = {
+      id: "u-contrib-001",
+      mobile: "919876543210",
+      initials: "TR",
+      role: "contributor",
+    };
+
+    mockFetchForUser(storedUser);
+    setStoredAuth(storedUser, "test-token");
+    render(<App />);
+
+    expect(
+      await screen.findByText("Arulmigu Subramania Swami Temple"),
+    ).toBeInTheDocument();
+    globalThis.fetch.mockClear();
+
+    fireEvent.click(screen.getByRole("button", { name: "பரிசீலனை" }));
+    await waitFor(() => {
+      expect(
+        globalThis.fetch.mock.calls.some(([url]) =>
+          String(url).includes("/api/reviews"),
+        ),
+      ).toBe(true);
+    });
+
+    globalThis.fetch.mockClear();
+    fireEvent.click(screen.getByRole("button", { name: "கோவில்கள்" }));
+    await waitFor(() => {
+      expect(
+        globalThis.fetch.mock.calls.some(([url]) =>
+          String(url).includes("/api/temples"),
+        ),
+      ).toBe(true);
+    });
+  });
+
   it("redirects to review tab after add temple and avoids temple queued message", async () => {
     const storedUser = {
       id: "u-contrib-001",
