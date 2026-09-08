@@ -195,6 +195,19 @@ function AuthenticatedApp({ user, logout }) {
     }
   }
 
+  async function handleReviewEdit(reviewId, payload) {
+    const response = await authFetch(`/api/reviews/${reviewId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) {
+      throw new Error(`Review update failed (${response.status})`);
+    }
+    await fetchReviews();
+    return response.json();
+  }
+
   return (
     <Shell
       tabs={TABS}
@@ -232,6 +245,7 @@ function AuthenticatedApp({ user, logout }) {
           currentUser={user}
           contributorInitials={contributorInitials}
           onApprove={handleApprove}
+          onEdit={handleReviewEdit}
           onDelete={handleDelete}
         />
       )}

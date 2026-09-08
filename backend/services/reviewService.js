@@ -163,6 +163,28 @@ async function queueTempleEdit(templeId, payload, user) {
   return queueReview("edit", payload, user, templeId);
 }
 
+async function updateReview(reviewId, payload, user) {
+  const reviews = await readReviews();
+  const reviewItem = reviews.find((item) => item.id === reviewId);
+
+  if (!reviewItem) {
+    return { notFound: true };
+  }
+
+  reviewItem.payload = payload;
+  reviewItem.approvals = [];
+  reviewItem.modifiedBy = {
+    userId: user.id,
+    mobile: user.mobile,
+    initials: user.initials,
+    role: user.role,
+  };
+  reviewItem.modifiedAt = new Date().toISOString();
+
+  await writeReviews(reviews);
+  return { notFound: false, review: reviewItem };
+}
+
 function addTempleToGroups(groups, normalized) {
   const targetGroup = groups.find((group) =>
     sameGroup(group, normalized.house, normalized.planets),
@@ -330,6 +352,7 @@ module.exports = {
   normalizeTemplePayload,
   queueTempleAddition,
   queueTempleEdit,
+  updateReview,
   approveReview,
   deleteReview,
   readTemples,

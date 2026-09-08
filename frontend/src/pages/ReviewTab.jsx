@@ -2,12 +2,13 @@ import { useMemo, useState } from "react";
 import { useLang } from "../context/LangContext";
 import { toTitleCase } from "../utils/titleCase";
 import InlineSpinner from "../components/InlineSpinner";
+import EditModal from "../components/EditModal";
 import "./ReviewTab.css";
 
 /**
  * Review queue tab with per-item approvals.
  *
- * @param {{ reviews: Array, loading: boolean, error: string|null, currentUser: Object, contributorInitials?: Array<string>, onDelete: Function }} props
+ * @param {{ reviews: Array, loading: boolean, error: string|null, currentUser: Object, contributorInitials?: Array<string>, onEdit: Function, onDelete: Function }} props
  * @returns {JSX.Element}
  */
 export default function ReviewTab({
@@ -16,16 +17,20 @@ export default function ReviewTab({
   error,
   currentUser,
   contributorInitials = [],
+  onEdit,
   onDelete,
 }) {
   const { t } = useLang();
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [editingReview, setEditingReview] = useState(null);
+  const [approvingId, setApprovingId] = useState(null);
 
   const rows = useMemo(
     () =>
       reviews.map((item) => ({
         id: item.id,
+        templeId: item.templeId,
         action: item.action,
         status: item.status || "pending",
         payload: {
@@ -65,6 +70,20 @@ export default function ReviewTab({
 
   const handleCancelDelete = () => {
     setDeleteConfirmId(null);
+  };
+
+  const handleCloseEdit = () => {
+    setEditingReview(null);
+  };
+
+  const handleApprove = async (id) => {
+    if (!onApprove) return;
+    try {
+      setApprovingId(id);
+      await onApprove(id);
+    } finally {
+      setApprovingId(null);
+    }
   };
 
   if (loading) {
@@ -191,6 +210,29 @@ export default function ReviewTab({
                 <div className="review-item__footer">
                   <p className="review-item__source">{sourceLabel}</p>
                   <button
+                    className="review-item__approver-btn"
+                    onClick={() => handleApprove(row.id)}
+                    disabled={
+                      approvingId === row.id ||
+                      row.approvals.some(
+                        (approval) => approval.userId === currentUser.id,
+                      )
+                    }
+                  >
+                    {row.approvals.some(
+                      (approval) => approval.userId === currentUser.id,
+                    )
+                      ? t.approvedBtn
+                      : t.approveBtn}
+                  </button>
+                  <button
+                    className="review-item__edit-btn"
+                    onClick={() => setEditingReview(row)}
+                    aria-label={t.reviewEditBtn}
+                  >
+                    {t.reviewEditBtn}
+                  </button>
+                  <button
                     className="review-item__delete-btn"
                     onClick={() => handleDeleteClick(row.id)}
                     aria-label={t.deleteBtn}
@@ -235,6 +277,18 @@ export default function ReviewTab({
             </div>
           </div>
         </div>
+      )}
+
+      {editingReview && (
+        <EditModal
+          temple={{ id: editingReview.templeId, ...editingReview.payload }}
+          mode="edit"
+          onSave={(_templeId, payload) =>
+            onEdit(editingReview.id, payload)
+          }
+          onCreate={async () => {}}
+          onClose={handleCloseEdit}
+        />
       )}
     </>
   );

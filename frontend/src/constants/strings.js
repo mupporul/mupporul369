@@ -127,6 +127,7 @@ const STRINGS = {
     reviewWaitingForApproval: "2 அங்கீகாரங்களுக்கு காத்திருக்கிறது",
     reviewAddedBy: "சேர்க்கப்பட்டது",
     reviewModifiedBy: "திருத்தப்பட்டது",
+    reviewEditBtn: "திருத்து",
     deleteBtn: "நீக்கு",
     deleteConfirmTitle: "நீக்குவதை உறுதிப்படுத்தவும்",
     deleteConfirmText:
@@ -264,6 +265,7 @@ const STRINGS = {
     reviewWaitingForApproval: "Waiting for 2 approvals",
     reviewAddedBy: "Added by",
     reviewModifiedBy: "Modified by",
+    reviewEditBtn: "Edit",
     deleteBtn: "Delete",
     deleteConfirmTitle: "Confirm Delete?",
     deleteConfirmText: "Are you sure you want to permanently delete this item?",

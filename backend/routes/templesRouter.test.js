@@ -390,4 +390,68 @@ describe("temples routes", () => {
     expect(editedTemple.url).toBeUndefined();
     expect(editedTemple.significance).toBeUndefined();
   });
+
+  it("editing a pending review resets approvals and keeps the same review", async () => {
+    const contributorOne = await loginAndGetToken("919876543210", "test1234");
+    const contributorTwo = await loginAndGetToken("919876543211", "test1234");
+    const templesBefore = await request(app).get("/api/temples");
+    const sourceGroup = templesBefore.body[0];
+    const sourceTemple = sourceGroup.data[0];
+
+    const queued = await request(app)
+      .patch(`/api/temples/${sourceTemple.id}`)
+      .set("Authorization", `Bearer ${contributorOne}`)
+      .send({
+        temple: "First Pending Edit",
+        location: sourceTemple.location,
+        state: sourceTemple.state,
+        house: sourceGroup.house,
+        planets: sourceGroup.planets,
+      });
+    const reviewId = queued.body.queuedReview.id;
+
+    await request(app)
+      .post(`/api/reviews/${reviewId}/approve`)
+      .set("Authorization", `Bearer ${contributorOne}`);
+
+    const edited = await request(app)
+      .patch(`/api/reviews/${reviewId}`)
+      .set("Authorization", `Bearer ${contributorTwo}`)
+      .send({
+        temple: "Second Pending Edit",
+        location: sourceTemple.location,
+        state: sourceTemple.state,
+        house: sourceGroup.house,
+        planets: sourceGroup.planets,
+      });
+
+    expect(edited.status).toBe(200);
+    expect(edited.body.review.id).toBe(reviewId);
+    expect(edited.body.review.payload.temple).toBe("Second Pending Edit");
+    expect(edited.body.review.approvals).toEqual([]);
+
+    const stillOriginal = await request(app).get("/api/temples");
+    expect(
+      stillOriginal.body
+        .flatMap((group) => group.data)
+        .find((temple) => temple.id === sourceTemple.id).temple,
+    ).toBe(sourceTemple.temple);
+
+    const approveAgainOne = await request(app)
+      .post(`/api/reviews/${reviewId}/approve`)
+      .set("Authorization", `Bearer ${contributorOne}`);
+    expect(approveAgainOne.body.applied).toBe(false);
+
+    const approveAgainTwo = await request(app)
+      .post(`/api/reviews/${reviewId}/approve`)
+      .set("Authorization", `Bearer ${contributorTwo}`);
+    expect(approveAgainTwo.body.applied).toBe(true);
+
+    const updatedTemples = await request(app).get("/api/temples");
+    expect(
+      updatedTemples.body
+        .flatMap((group) => group.data)
+        .find((temple) => temple.id === sourceTemple.id).temple,
+    ).toBe("Second Pending Edit");
+  });
 });

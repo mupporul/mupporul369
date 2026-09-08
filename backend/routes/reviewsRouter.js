@@ -6,7 +6,9 @@ const requireRole = require("../middleware/requireRole");
 const {
   approveReview,
   deleteReview,
+  normalizeTemplePayload,
   readReviews,
+  updateReview,
 } = require("../services/reviewService");
 
 const router = express.Router();
@@ -41,6 +43,30 @@ router.post("/:id/approve", async (req, res, next) => {
     applied: result.applied,
   });
 });
+
+router.patch(
+  "/:id",
+  requireRole(["contributor", "admin"]),
+  async (req, res, next) => {
+    const normalized = normalizeTemplePayload(req.body);
+    if (!normalized) {
+      return res
+        .status(400)
+        .json({ error: "Missing or invalid required fields" });
+    }
+
+    try {
+      const result = await updateReview(req.params.id, normalized, req.user);
+      if (result.notFound) {
+        return res.status(404).json({ error: "Review item not found" });
+      }
+
+      return res.json({ review: result.review });
+    } catch (error) {
+      return next(error);
+    }
+  },
+);
 
 router.delete(
   "/:id",

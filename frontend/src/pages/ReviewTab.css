@@ -199,6 +199,29 @@
   white-space: nowrap;
 }
 
+.review-item__edit-btn {
+  padding: 0.5rem 1.2rem;
+  border-radius: 20px;
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.review-item__edit-btn:hover,
+.review-item__edit-btn:focus-visible {
+  background: var(--accent);
+  color: var(--on-accent);
+  outline: none;
+}
+
 .review-item__delete-btn:hover,
 .review-item__delete-btn:focus-visible {
   background: var(--accent);
