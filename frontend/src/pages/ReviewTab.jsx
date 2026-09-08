@@ -24,7 +24,6 @@ export default function ReviewTab({
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [editingReview, setEditingReview] = useState(null);
-  const [approvingId, setApprovingId] = useState(null);
 
   const rows = useMemo(
     () =>
@@ -76,20 +75,11 @@ export default function ReviewTab({
     setEditingReview(null);
   };
 
-  const handleApprove = async (id) => {
-    if (!onApprove) return;
-    try {
-      setApprovingId(id);
-      await onApprove(id);
-    } finally {
-      setApprovingId(null);
-    }
-  };
 
   if (loading) {
     return (
       <p className="review-tab__status" role="status">
-        {t.loading}
+        <span className="review-tab__loading-ring">{t.loading}</span>
       </p>
     );
   }
@@ -209,22 +199,6 @@ export default function ReviewTab({
 
                 <div className="review-item__footer">
                   <p className="review-item__source">{sourceLabel}</p>
-                  <button
-                    className="review-item__approver-btn"
-                    onClick={() => handleApprove(row.id)}
-                    disabled={
-                      approvingId === row.id ||
-                      row.approvals.some(
-                        (approval) => approval.userId === currentUser.id,
-                      )
-                    }
-                  >
-                    {row.approvals.some(
-                      (approval) => approval.userId === currentUser.id,
-                    )
-                      ? t.approvedBtn
-                      : t.approveBtn}
-                  </button>
                   <button
                     className="review-item__edit-btn"
                     onClick={() => setEditingReview(row)}
