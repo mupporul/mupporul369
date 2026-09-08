@@ -4,12 +4,10 @@ import { toTitleCase } from "../utils/titleCase";
 import InlineSpinner from "../components/InlineSpinner";
 import "./ReviewTab.css";
 
-const CONTRIBUTOR_INITIALS = ["TR", "RR", "RA", "MA"];
-
 /**
  * Review queue tab with per-item approvals.
  *
- * @param {{ reviews: Array, loading: boolean, error: string|null, currentUser: Object, onApprove: Function, onDelete: Function }} props
+ * @param {{ reviews: Array, loading: boolean, error: string|null, currentUser: Object, contributorInitials?: Array<string>, onApprove: Function, onDelete: Function }} props
  * @returns {JSX.Element}
  */
 export default function ReviewTab({
@@ -17,6 +15,7 @@ export default function ReviewTab({
   loading,
   error,
   currentUser,
+  contributorInitials = [],
   onApprove,
   onDelete,
 }) {
@@ -110,11 +109,22 @@ export default function ReviewTab({
           const alreadyApproved = row.approvals.some(
             (entry) => entry.userId === currentUser.id,
           );
-          const approvedInitials = row.approvals.map((entry) => entry.initials);
-          const createdByInitials = row.createdBy?.initials || "";
-          const candidates = CONTRIBUTOR_INITIALS.filter(
-            (initial) => initial !== createdByInitials,
-          );
+          const approvedInitials = row.approvals
+            .map((entry) => String(entry.initials || "").trim())
+            .filter(Boolean);
+          const candidateContributorInitials = [
+            ...new Set(
+              (Array.isArray(contributorInitials) ? contributorInitials : [])
+                .map((initial) => String(initial || "").trim())
+                .filter(Boolean),
+            ),
+          ].filter((initial) => initial !== currentUser.initials);
+          const approverStatusInitials =
+            candidateContributorInitials.length > 0
+              ? candidateContributorInitials
+              : [...new Set(approvedInitials)].filter(
+                  (initial) => initial !== currentUser.initials,
+                );
           const approvalText =
             approvedInitials.length > 0
               ? `${t.reviewApprovedBy} ${approvedInitials.join(", ")}`
@@ -172,7 +182,8 @@ export default function ReviewTab({
                   role="group"
                   aria-label={t.reviewApproversLabel}
                 >
-                  {!currentUser.initials &&
+                  {currentUser.role === "contributor" &&
+                  currentUser.initials &&
                   !alreadyApproved &&
                   row.status === "pending" ? (
                     <button
@@ -185,33 +196,12 @@ export default function ReviewTab({
                       {approvingId === row.id ? (
                         <InlineSpinner label={t.loading} />
                       ) : (
-                        t.approveBtn
+                        currentUser.initials
                       )}
                     </button>
                   ) : null}
-                  {candidates.map((initial) => {
-                    const isCurrentUser = currentUser.initials === initial;
+                  {approverStatusInitials.map((initial) => {
                     const isApproved = approvedInitials.includes(initial);
-
-                    if (isCurrentUser && !alreadyApproved && !isApproved) {
-                      return (
-                        <button
-                          key={initial}
-                          className={`review-item__approver-btn api-loading-button${
-                            approvingId === row.id ? " is-loading" : ""
-                          }`}
-                          onClick={() => handleApprove(row.id)}
-                          disabled={approvingId === row.id}
-                        >
-                          {approvingId === row.id ? (
-                            <InlineSpinner label={t.loading} />
-                          ) : (
-                            initial
-                          )}
-                        </button>
-                      );
-                    }
-
                     return (
                       <span
                         className={`review-item__approver-text${isApproved ? " review-item__approver-text--approved" : " review-item__approver-text--pending"}`}

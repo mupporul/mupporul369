@@ -51,6 +51,45 @@ describe("users router", () => {
     expect(response.body[0].name).toBe("Thangaraj");
   });
 
+  it("GET /api/users/contributors returns only contributor users", async () => {
+    getAllUsers.mockReturnValue([
+      {
+        id: "u-1",
+        mobile: "919876543210",
+        name: "Thangaraj",
+        initials: "TR",
+        role: "contributor",
+      },
+      {
+        id: "u-2",
+        mobile: "919876543200",
+        name: "Siva",
+        initials: "SA",
+        role: "admin",
+      },
+      {
+        id: "u-3",
+        mobile: "919876543214",
+        name: "Uma",
+        initials: "UC",
+        role: "user",
+      },
+    ]);
+
+    const response = await request(app).get("/api/users/contributors");
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([
+      {
+        id: "u-1",
+        mobile: "919876543210",
+        name: "Thangaraj",
+        initials: "TR",
+        role: "contributor",
+      },
+    ]);
+  });
+
   it("POST /api/users requires name", async () => {
     const response = await request(app).post("/api/users").send({
       mobile: "919876543215",

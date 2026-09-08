@@ -11,8 +11,24 @@ const {
 
 const router = express.Router();
 
-// All user endpoints require authentication and admin role
+// All user endpoints require authentication.
 router.use(requireAuth);
+
+// GET /api/users/contributors — list contributor users for dynamic review chips
+router.get(
+  "/contributors",
+  requireRole(["contributor", "admin"]),
+  async (_req, res) => {
+    try {
+      const users = await getAllUsers();
+      return res.json(users.filter((user) => user.role === "contributor"));
+    } catch {
+      return res.status(500).json({ error: "Failed to fetch contributors" });
+    }
+  },
+);
+
+// Admin-only endpoints.
 router.use(requireRole(["admin"]));
 
 // GET /api/users — list all users

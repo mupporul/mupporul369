@@ -32,6 +32,7 @@ describe("ReviewTab", () => {
         loading={false}
         error={null}
         currentUser={{ id: "u-1", initials: "RA" }}
+        contributorInitials={["TR", "RR", "RA", "MA"]}
         onApprove={async () => {}}
         onDelete={async () => {}}
       />,
@@ -48,5 +49,10 @@ describe("ReviewTab", () => {
         "முக்கியத்துவம்: A long note, comma-separated, symbols @#$%^&*(), and more.",
       ),
     ).toBeInTheDocument();
+
+    expect(screen.queryByText("RA")).not.toBeInTheDocument();
+    expect(screen.getByText("TR")).toBeInTheDocument();
+    expect(screen.getByText("RR")).toBeInTheDocument();
+    expect(screen.getByText("MA")).toBeInTheDocument();
   });
 });

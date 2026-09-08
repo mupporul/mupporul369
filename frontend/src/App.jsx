@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { LangProvider } from "./context/LangContext";
 import { useLang } from "./context/LangContext";
 import { ThemeProvider } from "./context/ThemeContext";
@@ -23,6 +23,7 @@ function AuthenticatedApp({ user, logout }) {
   const { authFetch } = useAuth();
   const [activeTab, setActiveTab] = useState("temples");
   const [addTempleClickCount, setAddTempleClickCount] = useState(0);
+  const [contributorInitials, setContributorInitials] = useState([]);
 
   const { temples, loading, error, fetchTemples } = useTemples(authFetch);
   const {
@@ -36,6 +37,36 @@ function AuthenticatedApp({ user, logout }) {
   const isAdmin = user.role === "admin";
   const canContribute = user.role === "contributor" || isAdmin;
   const reviewCount = reviews.length;
+
+  useEffect(() => {
+    async function loadContributorInitials() {
+      if (!canContribute) {
+        setContributorInitials([]);
+        return;
+      }
+
+      try {
+        const response = await authFetch("/api/users/contributors");
+        if (!response.ok) {
+          setContributorInitials([]);
+          return;
+        }
+
+        const users = await response.json();
+        const initials = Array.isArray(users)
+          ? users
+              .map((entry) => String(entry?.initials || "").trim())
+              .filter(Boolean)
+          : [];
+
+        setContributorInitials(initials);
+      } catch {
+        setContributorInitials([]);
+      }
+    }
+
+    loadContributorInitials();
+  }, [authFetch, canContribute]);
 
   const TABS = [
     { id: "temples", label: t.tabTemples },
@@ -147,6 +178,7 @@ function AuthenticatedApp({ user, logout }) {
           loading={reviewsLoading}
           error={reviewsError}
           currentUser={user}
+          contributorInitials={contributorInitials}
           onApprove={handleApprove}
           onDelete={handleDelete}
         />
