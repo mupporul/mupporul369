@@ -9,6 +9,7 @@ const rateLimit = require('express-rate-limit');
 const rateLimiter = rateLimit({
   windowMs:          15 * 60 * 1000, // 15 minutes
   max:               100,
+  skip:              (req) => req.path === '/health',
   standardHeaders:   true,
   legacyHeaders:     false,
   handler: (_req, res) => {

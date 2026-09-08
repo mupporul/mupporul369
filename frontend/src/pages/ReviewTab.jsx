@@ -3,6 +3,7 @@ import { useLang } from "../context/LangContext";
 import { toTitleCase } from "../utils/titleCase";
 import InlineSpinner from "../components/InlineSpinner";
 import EditModal from "../components/EditModal";
+import BrandLoadingIndicator from "../components/BrandLoadingIndicator";
 import "./ReviewTab.css";
 
 /**
@@ -78,9 +79,9 @@ export default function ReviewTab({
 
   if (loading) {
     return (
-      <p className="review-tab__status" role="status">
-        <span className="review-tab__loading-ring">{t.loading}</span>
-      </p>
+      <div className="review-tab__status" role="status">
+        <BrandLoadingIndicator label={t.loading} />
+      </div>
     );
   }
 

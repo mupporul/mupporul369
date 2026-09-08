@@ -4,6 +4,7 @@ import FilterBar from "../components/FilterBar";
 import TempleList from "../components/TempleList";
 import EditModal from "../components/EditModal";
 import TempleDetailsSheet from "../components/TempleDetailsSheet";
+import BrandLoadingIndicator from "../components/BrandLoadingIndicator";
 import { ALL_RASI } from "../constants/rasi";
 
 /**
@@ -119,11 +120,9 @@ export default function TempleTab({
       />
 
       {loading && (
-        <p className="temple-tab__status" role="status">
-          <span className="temple-tab__loading-ring">
-            {t.loading}
-          </span>
-        </p>
+        <div className="temple-tab__status" role="status">
+          <BrandLoadingIndicator label={t.loading} />
+        </div>
       )}
       {error && (
         <p className="temple-tab__status temple-tab__status--error">{error}</p>
