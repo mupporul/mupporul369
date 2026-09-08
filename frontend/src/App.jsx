@@ -125,10 +125,10 @@ function AuthenticatedApp({ user, logout }) {
 
   const TABS = [
     { id: "temples", label: t.tabTemples },
-    { id: "quiz", label: t.tabQuiz },
     ...(canContribute
       ? [{ id: "review", label: t.tabReview, badgeCount: reviewCount }]
       : []),
+    { id: "quiz", label: t.tabQuiz },
     ...(isAdmin ? [{ id: "users", label: t.tabUsers }] : []),
   ];
 
