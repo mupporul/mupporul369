@@ -148,9 +148,12 @@ describe("EditModal cancel behavior", () => {
     fireEvent.change(screen.getByRole("combobox", { name: "மாநிலம் தேர்வு" }), {
       target: { value: "Tamilnadu" },
     });
-    fireEvent.change(screen.getByLabelText("YouTube URL", { selector: "input" }), {
-      target: { value: "https://www.youtube.com/watch?v=pX5VBhaVPas" },
-    });
+    fireEvent.change(
+      screen.getByLabelText("YouTube URL", { selector: "input" }),
+      {
+        target: { value: "https://www.youtube.com/watch?v=pX5VBhaVPas" },
+      },
+    );
     fireEvent.change(
       screen.getByLabelText("முக்கியத்துவம்", { selector: "textarea" }),
       {

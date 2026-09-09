@@ -145,7 +145,8 @@ describe("temples page", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Temples" }));
 
-    fireEvent.click(screen.getAllByRole("button", { name: "Edit" })[0]);
+  const editButton = await screen.findByRole("button", { name: "Edit" });
+  fireEvent.click(editButton);
     fireEvent.click(screen.getByRole("button", { name: "Queue Edit" }));
 
     await screen.findByText(

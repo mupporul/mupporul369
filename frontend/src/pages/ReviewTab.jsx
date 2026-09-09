@@ -2,14 +2,12 @@ import { useMemo, useState } from "react";
 import { useLang } from "../context/LangContext";
 import { toTitleCase } from "../utils/titleCase";
 import InlineSpinner from "../components/InlineSpinner";
-import EditModal from "../components/EditModal";
-import BrandLoadingIndicator from "../components/BrandLoadingIndicator";
 import "./ReviewTab.css";
 
 /**
  * Review queue tab with per-item approvals.
  *
- * @param {{ reviews: Array, loading: boolean, error: string|null, currentUser: Object, contributorInitials?: Array<string>, onEdit: Function, onDelete: Function }} props
+ * @param {{ reviews: Array, loading: boolean, error: string|null, currentUser: Object, contributorInitials?: Array<string>, onDelete: Function }} props
  * @returns {JSX.Element}
  */
 export default function ReviewTab({
@@ -18,19 +16,16 @@ export default function ReviewTab({
   error,
   currentUser,
   contributorInitials = [],
-  onEdit,
   onDelete,
 }) {
   const { t } = useLang();
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
-  const [editingReview, setEditingReview] = useState(null);
 
   const rows = useMemo(
     () =>
       reviews.map((item) => ({
         id: item.id,
-        templeId: item.templeId,
         action: item.action,
         status: item.status || "pending",
         payload: {
@@ -72,16 +67,11 @@ export default function ReviewTab({
     setDeleteConfirmId(null);
   };
 
-  const handleCloseEdit = () => {
-    setEditingReview(null);
-  };
-
-
   if (loading) {
     return (
-      <div className="review-tab__status" role="status">
-        <BrandLoadingIndicator label={t.loading} />
-      </div>
+      <p className="review-tab__status" role="status">
+        {t.loading}
+      </p>
     );
   }
 
@@ -108,19 +98,14 @@ export default function ReviewTab({
           const approvedInitials = row.approvals
             .map((entry) => String(entry.initials || "").trim())
             .filter(Boolean);
-          const candidateContributorInitials = [
-            ...new Set(
-              (Array.isArray(contributorInitials) ? contributorInitials : [])
+          const approverStatusInitials = [
+            ...new Set([
+              ...(Array.isArray(contributorInitials) ? contributorInitials : [])
                 .map((initial) => String(initial || "").trim())
                 .filter(Boolean),
-            ),
-          ].filter((initial) => initial !== currentUser.initials);
-          const approverStatusInitials =
-            candidateContributorInitials.length > 0
-              ? candidateContributorInitials
-              : [...new Set(approvedInitials)].filter(
-                  (initial) => initial !== currentUser.initials,
-                );
+              ...approvedInitials,
+            ]),
+          ];
           const approvalText =
             approvedInitials.length > 0
               ? `${t.reviewApprovedBy} ${approvedInitials.join(", ")}`
@@ -201,13 +186,6 @@ export default function ReviewTab({
                 <div className="review-item__footer">
                   <p className="review-item__source">{sourceLabel}</p>
                   <button
-                    className="review-item__edit-btn"
-                    onClick={() => setEditingReview(row)}
-                    aria-label={t.reviewEditBtn}
-                  >
-                    {t.reviewEditBtn}
-                  </button>
-                  <button
                     className="review-item__delete-btn"
                     onClick={() => handleDeleteClick(row.id)}
                     aria-label={t.deleteBtn}
@@ -252,18 +230,6 @@ export default function ReviewTab({
             </div>
           </div>
         </div>
-      )}
-
-      {editingReview && (
-        <EditModal
-          temple={{ id: editingReview.templeId, ...editingReview.payload }}
-          mode="edit"
-          onSave={(_templeId, payload) =>
-            onEdit(editingReview.id, payload)
-          }
-          onCreate={async () => {}}
-          onClose={handleCloseEdit}
-        />
       )}
     </>
   );

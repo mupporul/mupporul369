@@ -25,7 +25,7 @@ describe("reviews page", () => {
     vi.restoreAllMocks();
   });
 
-  it("renders review status chips for other contributors", async () => {
+  it("renders review status chips for all contributors", async () => {
     vi.spyOn(global, "fetch").mockImplementation((url, options = {}) => {
       const method = options.method || "GET";
       if (String(url).includes("/api/auth/me") && method === "GET") {
@@ -75,15 +75,25 @@ describe("reviews page", () => {
       return Promise.resolve(new Response(JSON.stringify([]), { status: 200 }));
     });
 
-    render(<App />);
+    const { container } = render(<App />);
     await screen.findByRole("searchbox");
     fireEvent.click(screen.getByRole("button", { name: "English" }));
 
     fireEvent.click(screen.getByRole("button", { name: "Reviews" }));
     await screen.findByText(/pending/i);
-    expect(screen.queryByRole("button", { name: "TR" })).not.toBeInTheDocument();
-    expect(screen.getByText("RR")).toBeInTheDocument();
-    expect(screen.getByText("👀")).toBeInTheDocument();
-    expect(screen.getByText("✓✓")).toBeInTheDocument();
+
+    const chipInitials = Array.from(
+      container.querySelectorAll(
+        ".review-item__approver-text .review-item__approver-initial",
+      ),
+    ).map((node) => node.textContent?.trim());
+    expect(chipInitials).toEqual(["TR", "RR", "RA"]);
+
+    const chipIndicators = Array.from(
+      container.querySelectorAll(
+        ".review-item__approver-text .review-item__approver-indicator",
+      ),
+    ).map((node) => node.textContent?.trim());
+    expect(chipIndicators).toEqual(["👀", "✓✓", "👀"]);
   });
 });

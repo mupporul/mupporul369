@@ -49,13 +49,13 @@ describe("ReviewTab", () => {
       ),
     ).toBeInTheDocument();
 
-    expect(screen.queryByText("RA")).not.toBeInTheDocument();
+    expect(screen.getByText("RA")).toBeInTheDocument();
     expect(screen.getByText("TR")).toBeInTheDocument();
     expect(screen.getByText("RR")).toBeInTheDocument();
     expect(screen.getByText("MA")).toBeInTheDocument();
   });
 
-  it("shows only other contributors with eyes/ticks for pending/approved", () => {
+  it("shows all contributors with eyes/ticks for pending/approved", () => {
     const { container } = renderWithLang(
       <ReviewTab
         reviews={[
@@ -82,20 +82,18 @@ describe("ReviewTab", () => {
       />,
     );
 
-    expect(screen.queryByRole("button", { name: "TR" })).not.toBeInTheDocument();
-
     const chipInitials = Array.from(
       container.querySelectorAll(
         ".review-item__approver-text .review-item__approver-initial",
       ),
     ).map((node) => node.textContent?.trim());
-    expect(chipInitials).toEqual(["RR", "RA", "MA"]);
+    expect(chipInitials).toEqual(["TR", "RR", "RA", "MA"]);
 
     const chipIndicators = Array.from(
       container.querySelectorAll(
         ".review-item__approver-text .review-item__approver-indicator",
       ),
     ).map((node) => node.textContent?.trim());
-    expect(chipIndicators).toEqual(["✓✓", "👀", "👀"]);
+    expect(chipIndicators).toEqual(["👀", "✓✓", "👀", "👀"]);
   });
 });

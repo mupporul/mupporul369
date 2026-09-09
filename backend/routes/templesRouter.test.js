@@ -213,9 +213,8 @@ describe("temples routes", () => {
     expect(res.status).toBe(403);
   });
 
-  it("review approval with two distinct users applies queued temple and clears it", async () => {
+  it("review approval with one approval applies queued temple and clears it", async () => {
     const contributorOne = await loginAndGetToken("919876543210", "test1234");
-    const contributorTwo = await loginAndGetToken("919876543211", "test1234");
 
     const queueRes = await request(app)
       .post("/api/temples")
@@ -242,26 +241,7 @@ describe("temples routes", () => {
       .post(`/api/reviews/${reviewId}/approve`)
       .set("Authorization", `Bearer ${contributorOne}`);
     expect(approveOne.status).toBe(200);
-    expect(approveOne.body.applied).toBe(false);
-
-    const stillPendingAfterOneApproval = await request(app)
-      .get("/api/reviews")
-      .set("Authorization", `Bearer ${contributorOne}`);
-    expect(
-      stillPendingAfterOneApproval.body.some((item) => item.id === reviewId),
-    ).toBe(true);
-
-    const templesBeforeSecondApproval = await request(app).get("/api/temples");
-    const notYetCreated = templesBeforeSecondApproval.body
-      .flatMap((group) => group.data)
-      .find((temple) => temple.temple === "Two Approvals Temple");
-    expect(notYetCreated).toBeUndefined();
-
-    const approveTwo = await request(app)
-      .post(`/api/reviews/${reviewId}/approve`)
-      .set("Authorization", `Bearer ${contributorTwo}`);
-    expect(approveTwo.status).toBe(200);
-    expect(approveTwo.body.applied).toBe(true);
+    expect(approveOne.body.applied).toBe(true);
 
     const templesRes = await request(app).get("/api/temples");
     const created = templesRes.body
@@ -275,9 +255,8 @@ describe("temples routes", () => {
     expect(reviewsRes.body.some((item) => item.id === reviewId)).toBe(false);
   });
 
-  it("does not apply when same user approves twice; applies on second distinct approval", async () => {
+  it("does not count duplicate approvals from the same user", async () => {
     const contributorOne = await loginAndGetToken("919876543210", "test1234");
-    const contributorTwo = await loginAndGetToken("919876543211", "test1234");
 
     const queueRes = await request(app)
       .post("/api/temples")
@@ -296,32 +275,19 @@ describe("temples routes", () => {
       .post(`/api/reviews/${reviewId}/approve`)
       .set("Authorization", `Bearer ${contributorOne}`);
     expect(approveOne.status).toBe(200);
-    expect(approveOne.body.applied).toBe(false);
+    expect(approveOne.body.applied).toBe(true);
 
     const approveOneAgain = await request(app)
       .post(`/api/reviews/${reviewId}/approve`)
       .set("Authorization", `Bearer ${contributorOne}`);
-    expect(approveOneAgain.status).toBe(200);
-    expect(approveOneAgain.body.applied).toBe(false);
+    expect(approveOneAgain.status).toBe(404);
 
     const stillPendingRes = await request(app)
       .get("/api/reviews")
       .set("Authorization", `Bearer ${contributorOne}`);
-    const pendingItem = stillPendingRes.body.find((item) => item.id === reviewId);
-    expect(pendingItem).toBeDefined();
-    expect(pendingItem.approvals.length).toBe(1);
-
-    const approveTwo = await request(app)
-      .post(`/api/reviews/${reviewId}/approve`)
-      .set("Authorization", `Bearer ${contributorTwo}`);
-    expect(approveTwo.status).toBe(200);
-    expect(approveTwo.body.applied).toBe(true);
-
-    const templesRes = await request(app).get("/api/temples");
-    const appliedTemple = templesRes.body
-      .flatMap((group) => group.data)
-      .find((temple) => temple.temple === "Distinct Approval Rule Temple");
-    expect(appliedTemple).toBeDefined();
+    expect(stillPendingRes.body.some((item) => item.id === reviewId)).toBe(
+      false,
+    );
   });
 
   it("review approval persists url for add and edit flows", async () => {
@@ -348,9 +314,6 @@ describe("temples routes", () => {
     await request(app)
       .post(`/api/reviews/${addReviewId}/approve`)
       .set("Authorization", `Bearer ${contributorOne}`);
-    await request(app)
-      .post(`/api/reviews/${addReviewId}/approve`)
-      .set("Authorization", `Bearer ${contributorTwo}`);
 
     let templesRes = await request(app).get("/api/temples");
     const addedTemple = templesRes.body
@@ -378,9 +341,6 @@ describe("temples routes", () => {
     await request(app)
       .post(`/api/reviews/${patchReviewId}/approve`)
       .set("Authorization", `Bearer ${contributorOne}`);
-    await request(app)
-      .post(`/api/reviews/${patchReviewId}/approve`)
-      .set("Authorization", `Bearer ${contributorTwo}`);
 
     templesRes = await request(app).get("/api/temples");
     const editedTemple = templesRes.body
@@ -410,9 +370,15 @@ describe("temples routes", () => {
       });
     const reviewId = queued.body.queuedReview.id;
 
-    await request(app)
-      .post(`/api/reviews/${reviewId}/approve`)
-      .set("Authorization", `Bearer ${contributorOne}`);
+    const reviewsBeforeEdit = JSON.parse(fs.readFileSync(REVIEW_PATH, "utf8"));
+    const reviewItem = reviewsBeforeEdit.find((item) => item.id === reviewId);
+    reviewItem.approvals.push({
+      userId: "u-preapproved",
+      initials: "PP",
+      mobile: "9000000000",
+      approvedAt: new Date().toISOString(),
+    });
+    fs.writeFileSync(REVIEW_PATH, JSON.stringify(reviewsBeforeEdit, null, 2));
 
     const edited = await request(app)
       .patch(`/api/reviews/${reviewId}`)
@@ -440,12 +406,7 @@ describe("temples routes", () => {
     const approveAgainOne = await request(app)
       .post(`/api/reviews/${reviewId}/approve`)
       .set("Authorization", `Bearer ${contributorOne}`);
-    expect(approveAgainOne.body.applied).toBe(false);
-
-    const approveAgainTwo = await request(app)
-      .post(`/api/reviews/${reviewId}/approve`)
-      .set("Authorization", `Bearer ${contributorTwo}`);
-    expect(approveAgainTwo.body.applied).toBe(true);
+    expect(approveAgainOne.body.applied).toBe(true);
 
     const updatedTemples = await request(app).get("/api/temples");
     expect(

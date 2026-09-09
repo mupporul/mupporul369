@@ -4,7 +4,7 @@ const crypto = require("crypto");
 const {
   getTempleReviewRepository,
 } = require("../repositories/templeReviewRepository");
-const MIN_APPROVALS = 2;
+const MIN_APPROVALS = 1;
 const UNKNOWN_HOUSE = "தெரியாது";
 
 function readTemples() {
