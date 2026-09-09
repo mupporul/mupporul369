@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useLang } from "../context/LangContext";
 import { toTitleCase } from "../utils/titleCase";
+import BrandLoadingIndicator from "../components/BrandLoadingIndicator";
 import InlineSpinner from "../components/InlineSpinner";
 import "./ReviewTab.css";
 
@@ -70,9 +71,9 @@ export default function ReviewTab({
 
   if (loading) {
     return (
-      <p className="review-tab__status" role="status">
-        {t.loading}
-      </p>
+      <div className="review-tab__status" role="status">
+        <BrandLoadingIndicator label={t.loading} />
+      </div>
     );
   }
 

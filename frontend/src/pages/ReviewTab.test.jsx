@@ -7,6 +7,20 @@ function renderWithLang(ui) {
 }
 
 describe("ReviewTab", () => {
+  it("shows the brand loading state while reviews are being fetched", () => {
+    renderWithLang(
+      <ReviewTab
+        reviews={[]}
+        loading={true}
+        error={null}
+        currentUser={{ id: "u-1", initials: "RA" }}
+        onDelete={async () => {}}
+      />,
+    );
+
+    expect(document.querySelector(".brand-loading")).toBeInTheDocument();
+  });
+
   it("shows queued video link when review payload includes url", () => {
     renderWithLang(
       <ReviewTab
