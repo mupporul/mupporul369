@@ -7,7 +7,7 @@ import "./ReviewTab.css";
 /**
  * Review queue tab with per-item approvals.
  *
- * @param {{ reviews: Array, loading: boolean, error: string|null, currentUser: Object, contributorInitials?: Array<string>, onDelete: Function }} props
+ * @param {{ reviews: Array, loading: boolean, error: string|null, currentUser: Object, contributorInitials?: Array<string>, onApprove?: Function, onDelete: Function }} props
  * @returns {JSX.Element}
  */
 export default function ReviewTab({
@@ -16,6 +16,7 @@ export default function ReviewTab({
   error,
   currentUser,
   contributorInitials = [],
+  onApprove,
   onDelete,
 }) {
   const { t } = useLang();
@@ -166,8 +167,12 @@ export default function ReviewTab({
                   {approverStatusInitials.map((initial) => {
                     const isApproved = approvedInitials.includes(initial);
                     return (
-                      <span
-                        className={`review-item__approver-text${isApproved ? " review-item__approver-text--approved" : " review-item__approver-text--pending"}`}
+                      <button
+                        type="button"
+                        className={`review-item__approver-btn review-item__approver-text${isApproved ? " review-item__approver-text--approved" : " review-item__approver-text--pending"}`}
+                        onClick={() => onApprove?.(row.id)}
+                        aria-label={`${t.approveBtn} ${initial}`}
+                        title={`${t.approveBtn} ${initial}`}
                         key={initial}
                       >
                         <span className="review-item__approver-initial">
@@ -176,7 +181,7 @@ export default function ReviewTab({
                         <span className="review-item__approver-indicator">
                           {isApproved ? "✓✓" : "👀"}
                         </span>
-                      </span>
+                      </button>
                     );
                   })}
                 </div>

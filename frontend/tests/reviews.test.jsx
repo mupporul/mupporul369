@@ -26,6 +26,7 @@ describe("reviews page", () => {
   });
 
   it("renders review status chips for all contributors", async () => {
+    const approveCalls = [];
     vi.spyOn(global, "fetch").mockImplementation((url, options = {}) => {
       const method = options.method || "GET";
       if (String(url).includes("/api/auth/me") && method === "GET") {
@@ -72,6 +73,15 @@ describe("reviews page", () => {
           ),
         );
       }
+      if (String(url).includes("/api/reviews/") && String(url).includes("/approve") && method === "POST") {
+        approveCalls.push(String(url));
+        return Promise.resolve(
+          new Response(
+            JSON.stringify({ reviews: [], temples: [], applied: false }),
+            { status: 200 },
+          ),
+        );
+      }
       return Promise.resolve(new Response(JSON.stringify([]), { status: 200 }));
     });
 
@@ -95,5 +105,9 @@ describe("reviews page", () => {
       ),
     ).map((node) => node.textContent?.trim());
     expect(chipIndicators).toEqual(["👀", "✓✓", "👀"]);
+
+    await screen.findByRole("button", { name: "Approve TR" });
+    fireEvent.click(screen.getByRole("button", { name: "Approve TR" }));
+    expect(approveCalls[0]).toContain("/api/reviews/review-uuid/approve");
   });
 });
