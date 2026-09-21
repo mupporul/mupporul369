@@ -2,13 +2,14 @@ import { useMemo, useState } from "react";
 import { useLang } from "../context/LangContext";
 import { toTitleCase } from "../utils/titleCase";
 import BrandLoadingIndicator from "../components/BrandLoadingIndicator";
+import EditModal from "../components/EditModal";
 import InlineSpinner from "../components/InlineSpinner";
 import "./ReviewTab.css";
 
 /**
  * Review queue tab with per-item approvals.
  *
- * @param {{ reviews: Array, loading: boolean, error: string|null, currentUser: Object, contributorInitials?: Array<string>, onApprove?: Function, onDelete: Function }} props
+ * @param {{ reviews: Array, loading: boolean, error: string|null, currentUser: Object, contributorInitials?: Array<string>, onApprove?: Function, onEdit?: Function, onDelete: Function }} props
  * @returns {JSX.Element}
  */
 export default function ReviewTab({
@@ -18,11 +19,13 @@ export default function ReviewTab({
   currentUser,
   contributorInitials = [],
   onApprove,
+  onEdit,
   onDelete,
 }) {
   const { t } = useLang();
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [editingReview, setEditingReview] = useState(null);
 
   const rows = useMemo(
     () =>
@@ -68,6 +71,14 @@ export default function ReviewTab({
   const handleCancelDelete = () => {
     setDeleteConfirmId(null);
   };
+
+  const locationOptions = useMemo(
+    () =>
+      [...new Set(rows.map((row) => row.payload.location).filter(Boolean))].sort(
+        (first, second) => first.localeCompare(second),
+      ),
+    [rows],
+  );
 
   if (loading) {
     return (
@@ -191,7 +202,18 @@ export default function ReviewTab({
 
                 <div className="review-item__footer">
                   <p className="review-item__source">{sourceLabel}</p>
+                  {onEdit && (
+                    <button
+                      type="button"
+                      className="review-item__edit-btn"
+                      onClick={() => setEditingReview(row)}
+                      aria-label={`${t.reviewEditBtn}: ${row.payload.temple}`}
+                    >
+                      {t.reviewEditBtn}
+                    </button>
+                  )}
                   <button
+                    type="button"
                     className="review-item__delete-btn"
                     onClick={() => handleDeleteClick(row.id)}
                     aria-label={t.deleteBtn}
@@ -237,6 +259,17 @@ export default function ReviewTab({
           </div>
         </div>
       )}
+
+      <EditModal
+        temple={editingReview ? { ...editingReview.payload, id: editingReview.id } : null}
+        mode="edit"
+        locationOptions={locationOptions}
+        onSave={async (reviewId, payload) => {
+          return onEdit?.(reviewId, payload);
+        }}
+        onCreate={async () => {}}
+        onClose={() => setEditingReview(null)}
+      />
     </>
   );
 }

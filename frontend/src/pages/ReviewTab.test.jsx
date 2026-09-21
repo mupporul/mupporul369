@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import ReviewTab from "./ReviewTab";
 import { LangProvider } from "../context/LangContext";
 
@@ -109,5 +109,40 @@ describe("ReviewTab", () => {
       ),
     ).map((node) => node.textContent?.trim());
     expect(chipIndicators).toEqual(["👀", "✓✓", "👀", "👀"]);
+  });
+
+  it("opens the editor for a queued review", () => {
+    const onEdit = vi.fn();
+
+    renderWithLang(
+      <ReviewTab
+        reviews={[
+          {
+            id: "r-edit",
+            action: "edit",
+            payload: {
+              temple: "Editable Temple",
+              location: "Madurai",
+              state: "Tamilnadu",
+              house: "மேஷம்",
+              planets: [],
+            },
+            createdBy: { initials: "TR" },
+            approvals: [],
+          },
+        ]}
+        loading={false}
+        error={null}
+        currentUser={{ id: "u-1", initials: "RA" }}
+        contributorInitials={[]}
+        onEdit={onEdit}
+        onDelete={async () => {}}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /திருத்து/i }));
+
+    expect(screen.getByDisplayValue("Editable Temple")).toBeInTheDocument();
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
   });
 });
