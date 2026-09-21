@@ -9,8 +9,7 @@ function renderWithLang(ui) {
 }
 
 describe("TempleRow", () => {
-  it("opens details when temple name is tapped", async () => {
-    const onViewDetails = vi.fn();
+  it("expands details when temple name is tapped", async () => {
     const row = {
       id: "t-11",
       temple: "arulmigu dheerga peyar kovil",
@@ -21,20 +20,26 @@ describe("TempleRow", () => {
     };
 
     renderWithLang(
-      <TempleRow row={row} onEdit={null} onViewDetails={onViewDetails} />,
+      <TempleRow row={row} onEdit={null} />,
     );
 
-    await userEvent.click(
-      screen.getByRole("button", {
-        name: "arulmigu dheerga peyar kovil விவரம்",
-      }),
-    );
+    const nameButton = screen.getByRole("button", {
+      name: "Arulmigu Dheerga Peyar Kovil",
+    });
+    expect(nameButton).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByText("மீனம்")).not.toBeInTheDocument();
 
-    expect(onViewDetails).toHaveBeenCalledWith(row);
+    await userEvent.click(nameButton);
+
+    expect(nameButton).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByText("மீனம்")).toBeInTheDocument();
+
+    await userEvent.click(nameButton);
+    expect(nameButton).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByText("மீனம்")).not.toBeInTheDocument();
   });
 
   it("still supports edit action independently", async () => {
-    const onViewDetails = vi.fn();
     const onEdit = vi.fn();
     const row = {
       id: "t-12",
@@ -46,7 +51,7 @@ describe("TempleRow", () => {
     };
 
     renderWithLang(
-      <TempleRow row={row} onEdit={onEdit} onViewDetails={onViewDetails} />,
+      <TempleRow row={row} onEdit={onEdit} />,
     );
 
     await userEvent.click(
@@ -56,10 +61,9 @@ describe("TempleRow", () => {
     );
 
     expect(onEdit).toHaveBeenCalledWith(row);
-    expect(onViewDetails).not.toHaveBeenCalled();
   });
 
-  it("renders a YouTube launch link when url exists", () => {
+  it("renders a YouTube launch link when url exists", async () => {
     const row = {
       id: "t-13",
       temple: "kuzhandhai velappar",
@@ -72,9 +76,12 @@ describe("TempleRow", () => {
     };
 
     renderWithLang(
-      <TempleRow row={row} onEdit={null} onViewDetails={vi.fn()} />,
+      <TempleRow row={row} onEdit={null} />,
     );
 
+    await userEvent.click(
+      screen.getByRole("button", { name: "Kuzhandhai Velappar" }),
+    );
     const link = screen.getByRole("link", {
       name: "kuzhandhai velappar Watch this video",
     });
@@ -100,7 +107,7 @@ describe("TempleRow", () => {
     };
 
     renderWithLang(
-      <TempleRow row={row} onEdit={null} onViewDetails={vi.fn()} />,
+      <TempleRow row={row} onEdit={null} />,
     );
 
     expect(screen.queryByRole("link")).not.toBeInTheDocument();

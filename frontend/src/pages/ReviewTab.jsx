@@ -26,6 +26,7 @@ export default function ReviewTab({
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [editingReview, setEditingReview] = useState(null);
+  const [expandedReviewId, setExpandedReviewId] = useState(null);
 
   const rows = useMemo(
     () =>
@@ -130,45 +131,67 @@ export default function ReviewTab({
           const sourceLabel = isAddAction
             ? `${t.reviewAddedBy} ${sourceInitials}`
             : `${t.reviewModifiedBy} ${sourceInitials}`;
+          const isExpanded = expandedReviewId === row.id;
+          const detailsId = `review-details-${row.id}`;
 
           return (
             <li className="review-item" key={row.id}>
               <div className="review-item__main">
-                <p className="review-item__name">
-                  {toTitleCase(row.payload.temple) || "-"}
-                </p>
+                <button
+                  type="button"
+                  className="review-item__name-btn"
+                  onClick={() =>
+                    setExpandedReviewId(isExpanded ? null : row.id)
+                  }
+                  aria-expanded={isExpanded}
+                  aria-controls={detailsId}
+                  title={row.payload.temple}
+                >
+                  <span className="review-item__name">
+                    {toTitleCase(row.payload.temple) || "-"}
+                  </span>
+                  <span className="review-item__chevron" aria-hidden="true">
+                    {isExpanded ? "⌃" : "⌄"}
+                  </span>
+                </button>
                 <p className="review-item__meta">
                   {toTitleCase(row.payload.location) || "-"},{" "}
                   {toTitleCase(row.payload.state) || "-"}
                 </p>
                 <p className="review-item__meta">{row.status}</p>
-                {row.payload.url ? (
-                  <a
-                    className="review-item__video-link"
-                    href={row.payload.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {t.youtubeLinkLabel}
-                  </a>
-                ) : null}
-                {row.payload.significance ? (
-                  <p className="review-item__significance">
-                    {t.significanceLabel}: {row.payload.significance}
-                  </p>
-                ) : null}
-                <div className="review-item__tags">
-                  <span className="review-item__tag review-item__tag--house">
-                    {row.payload.house || "-"}
-                  </span>
-                  {row.payload.planets.map((planet) => (
-                    <span
-                      key={planet}
-                      className="review-item__tag review-item__tag--planet"
+                <div
+                  id={detailsId}
+                  className={`review-item__details${isExpanded ? " is-expanded" : ""}`}
+                  hidden={!isExpanded}
+                >
+                  {row.payload.url ? (
+                    <a
+                      className="review-item__video-link"
+                      href={row.payload.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
                     >
-                      {planet}
+                      {t.youtubeLinkLabel}
+                    </a>
+                  ) : null}
+                  {row.payload.significance ? (
+                    <p className="review-item__significance">
+                      {t.significanceLabel}: {row.payload.significance}
+                    </p>
+                  ) : null}
+                  <div className="review-item__tags">
+                    <span className="review-item__tag review-item__tag--house">
+                      {row.payload.house || "-"}
                     </span>
-                  ))}
+                    {row.payload.planets.map((planet) => (
+                      <span
+                        key={planet}
+                        className="review-item__tag review-item__tag--planet"
+                      >
+                        {planet}
+                      </span>
+                    ))}
+                  </div>
                 </div>
 
                 <div

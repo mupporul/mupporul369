@@ -51,6 +51,15 @@ describe("ReviewTab", () => {
       />,
     );
 
+    const nameButton = screen.getByRole("button", {
+      name: "Temple With Video",
+    });
+    expect(nameButton).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+
+    fireEvent.click(nameButton);
+
+    expect(nameButton).toHaveAttribute("aria-expanded", "true");
     const link = screen.getByRole("link", { name: /watch this video/i });
     expect(link).toBeInTheDocument();
     expect(link).toHaveAttribute(
